@@ -2340,7 +2340,7 @@ alias :checkRel :check_reliability
 # @return [RColumn] column with cells for disagreements
 # @example
 #   check_reliability_continuous('reach', 'reach_rel', 'reach_blocks', 100, 'hand', 'touch')
-# @since 1.3.9
+# @since 1.4.0
 def check_reliability_continuous(pri_col, rel_col, block_col, time_threshold, *codes_to_check)
   p_col = (pri_col.class == String)? get_column(pri_col) : pri_col
   r_col = (rel_col.class == String)? get_column(rel_col) : rel_col
