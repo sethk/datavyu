@@ -1031,6 +1031,12 @@
             <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>0.8.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -21,10 +21,7 @@ import org.datavyu.Datavyu;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 
 import javax.xml.crypto.Data;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static javafx.application.Application.launch;
 
@@ -114,16 +111,30 @@ public class ScriptCreatorV extends Application {
         topRoot.setCenter(doc);
         topRoot.setRight(rightPane);
 
+        BorderPane bottomPane = new BorderPane();
+
         ScriptArea scriptArea = new ScriptArea();
         scriptArea.setWrapText(true);
         scriptArea.setEditable(true);
-        scriptArea.setText("The script goes here and is built using the above system!");
-        scriptArea.setPrefRowCount(30);
+//        scriptArea.setText("The script goes here and is built using the above system!");
+//        scriptArea.setPrefRowCount(30);
+
+        bottomPane.setCenter(scriptArea);
+
+        TextArea outputArea = new TextArea();
+        outputArea.setEditable(false);
+        outputArea.setWrapText(true);
+
+        bottomPane.setRight(outputArea);
 
         ButtonBar buttonBar = new ButtonBar();
         Button addButton = new Button("Add Command");
         ButtonBar.setButtonData(addButton, ButtonBar.ButtonData.APPLY);
         buttonBar.getButtons().add(addButton);
+
+        RubyIntrospection ri = new RubyIntrospection(scriptArea);
+        List<String> lv = ri.getLocalVariables();
+        System.out.println(Arrays.toString(lv.toArray()));
 
         addButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -132,6 +143,8 @@ public class ScriptCreatorV extends Application {
                 System.out.println("Adding " + method);
                 scriptArea.addCommand(method);
                 scriptArea.refreshDisplay();
+                String output = ri.runScript();
+                outputArea.setText(output);
             }
         });
 
@@ -149,7 +162,9 @@ public class ScriptCreatorV extends Application {
 
         root.getChildren().add(topRoot);
         root.getChildren().add(buttonBar);
-        root.getChildren().add(scriptArea);
+        root.getChildren().add(bottomPane);
+
+        scene.getStylesheets().add(ScriptArea.class.getResource("ruby-keywords.css").toExternalForm());
 
         primaryStage.setTitle("Script Creator");
         primaryStage.setScene(scene);
