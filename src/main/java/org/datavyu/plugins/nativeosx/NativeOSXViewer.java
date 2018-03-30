@@ -26,12 +26,12 @@ import java.io.File;
 /**
  * The viewer for a quick time video file
  */
-public final class NativeOSXViewerDialog extends StreamViewerDialog {
+public final class NativeOSXViewer extends StreamViewerDialog {
 
     private static final int NUM_RETRY_FOR_DURATION = 2;
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getLogger(NativeOSXViewerDialog.class);
+    private static Logger logger = LogManager.getLogger(NativeOSXViewer.class);
 
     /** The quick time native OSXPlayer */
     private NativeOSXPlayer nativeOSXPlayer;
@@ -40,7 +40,7 @@ public final class NativeOSXViewerDialog extends StreamViewerDialog {
 
     private long duration = 0;
 
-    NativeOSXViewerDialog(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
+    NativeOSXViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
 
         logger.info("Set source file: "+ sourceFile.getAbsolutePath());

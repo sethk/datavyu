@@ -68,7 +68,7 @@ public class JfxPlugin implements Plugin {
     @Override
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
                                            boolean modal) {
-        return new JfxStreamViewerDialog(identifier, sourceFile, parent, modal);
+        return new JfxStreamViewer(identifier, sourceFile, parent, modal);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class JfxPlugin implements Plugin {
 
     @Override
     public Class<? extends StreamViewer> getViewerClass() {
-        return JfxStreamViewerDialog.class;
+        return JfxStreamViewer.class;
     }
 
     @Override

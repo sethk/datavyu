@@ -9,10 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-public class FFmpegStreamViewerDialog extends StreamViewerDialog {
+public class FFmpegStreamViewer extends StreamViewerDialog {
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(FFmpegStreamViewerDialog.class);
+    private static Logger logger = LogManager.getFormatterLogger(FFmpegStreamViewer.class);
 
     /** Previous setCurrentTime time */
     private long previousSeekTime = -1;
@@ -23,7 +23,7 @@ public class FFmpegStreamViewerDialog extends StreamViewerDialog {
     /** Currently is seeking */
     private boolean isSeeking = false;
 
-    FFmpegStreamViewerDialog(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
+    FFmpegStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
         player = new FFmpegPlayer();

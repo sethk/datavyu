@@ -14,9 +14,9 @@ import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
 
-public class JfxStreamViewerDialog extends StreamViewerDialog {
+public class JfxStreamViewer extends StreamViewerDialog {
 
-    private static Logger logger = LogManager.getFormatterLogger(JfxStreamViewerDialog.class);
+    private static Logger logger = LogManager.getFormatterLogger(JfxStreamViewer.class);
 
     /** Data to visualize */
     private File sourceFile;
@@ -30,7 +30,7 @@ public class JfxStreamViewerDialog extends StreamViewerDialog {
 
     private boolean assumedFPS = false;
 
-    JfxStreamViewerDialog(Identifier identifier, File sourceFile, final Frame parent, final boolean modal) {
+    JfxStreamViewer(Identifier identifier, File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
         jfxApplication = new JfxApplication(sourceFile);
         setSourceFile(sourceFile);
