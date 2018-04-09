@@ -285,7 +285,7 @@ public class DatavyuCell implements Cell {
 
     @Override
     public boolean isInTimeWindow(long time) {
-        if (time >= getOnset() && time < getOffset()) {
+        if (time >= getOnset() && time <= getOffset()) {
             return true;
         } else {
             return false;
