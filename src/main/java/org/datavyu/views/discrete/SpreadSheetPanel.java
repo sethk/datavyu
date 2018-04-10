@@ -885,7 +885,7 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
     private boolean platformCellMovementMask(final KeyEvent e) {
 
         if ((Datavyu.getPlatform() == Platform.MAC)
-                && (e.getModifiers() == InputEvent.ALT_MASK)) {
+                && (e.getModifiers() == Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask())) {
             return true;
         } else if ((Datavyu.getPlatform() == Platform.WINDOWS)
                 && (e.getModifiers() == InputEvent.CTRL_MASK)) {
