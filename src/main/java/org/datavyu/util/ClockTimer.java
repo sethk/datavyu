@@ -143,7 +143,7 @@ public final class ClockTimer {
     }
 
     /**
-     * Get the current Clock time
+     * Get the current Clock time, within the tolerance of the periodic sync.
      *
      * @return Current clock time
      */

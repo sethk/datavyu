@@ -526,7 +526,7 @@ public final class VideoController extends DatavyuDialog
      * @return Time in milliseconds.
      */
     public long getCurrentTime() {
-        return (long) clockTimer.getStreamTime();
+        return (long) clockTimer.getClockTime();
     }
 
     /**
@@ -1261,7 +1261,7 @@ public final class VideoController extends DatavyuDialog
     private void handleRegionChange(final RegionState region) {
         final long start = region.getRegionStart();
         final long end = region.getRegionEnd();
-        logger.info("Set Region with start " + start + " ane end " + end);
+        logger.info("Set Region with start " + start + " ane end " + end );
         clockTimer.setMinTime(start);
         clockTimer.setMaxTime(end);
     }
