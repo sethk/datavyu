@@ -54,3 +54,4 @@ target/
 /out/
 quaqua64.jnilib
 NativeOSXCanvas.jnilib
+package-macos.sh
