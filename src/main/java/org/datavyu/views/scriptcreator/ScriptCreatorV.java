@@ -19,6 +19,7 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.datavyu.Datavyu;
 import org.datavyu.views.discrete.SpreadsheetColumn;
+import org.jruby.Ruby;
 
 import javax.xml.crypto.Data;
 import java.util.*;
@@ -26,6 +27,8 @@ import java.util.*;
 import static javafx.application.Application.launch;
 
 public class ScriptCreatorV extends Application {
+    Map<String, Command> classMap = new HashMap<>();
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -38,11 +41,22 @@ public class ScriptCreatorV extends Application {
         Scene scene = new Scene(root, 800, 500);
 
         ListView<RubyClass> list = new ListView<>();
+        list.setCellFactory(lv -> new ListCell<RubyClass>() {
+            @Override
+            protected void updateItem(RubyClass item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item == null ? null : item.getName());
+            }
+        });
         ListView<RubyArg> argsList = new ListView<>();
         ListView<String> variablesList = new ListView<>();
         List<RubyClass> rubyClasses = RubyAPIParser.parseRubyAPI();
         Collections.sort(rubyClasses);
         System.out.println(rubyClasses);
+
+        for(RubyClass c : rubyClasses) {
+            classMap.put(c.getName(), c);
+        }
 
         TextArea doc = new TextArea();
         doc.setWrapText(true);
@@ -151,7 +165,7 @@ public class ScriptCreatorV extends Application {
         Button printButton = new Button("Print Script Wizard");
         ButtonBar.setButtonData(printButton, ButtonBar.ButtonData.APPLY);
         buttonBar.getButtons().add(printButton);
-        PrintCreatorV printCreator = new PrintCreatorV(getColumnNames(), scriptArea);
+        PrintCreatorV printCreator = new PrintCreatorV(getColumnNames(), scriptArea, classMap);
 
         printButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override

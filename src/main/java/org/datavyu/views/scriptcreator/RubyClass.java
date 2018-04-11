@@ -16,6 +16,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
     List<String> docStrings;
 
     RubyArg returnValue;
+    boolean appendReturnValue;
 
     public RubyClass(RubyClass r) {
         this.header = r.header;
@@ -31,6 +32,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         } else {
             this.returnValue = null;
         }
+        this.appendReturnValue = r.appendReturnValue;
     }
 
     public RubyClass(String classHeader, List<String> docStrings) {
@@ -40,6 +42,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         this.header = classHeader;
         this.docStrings = docStrings;
         this.args = new ArrayList<>();
+        this.appendReturnValue = false;
 
         this.returnValue = null;
 
@@ -124,8 +127,27 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
 
     }
 
+    public boolean isAppendReturnValue() {
+        return appendReturnValue;
+    }
+
+    public void setAppendReturnValue(boolean appendReturnValue) {
+        this.appendReturnValue = appendReturnValue;
+    }
+
     public String toString() {
-        return this.name;
+        String joinedParams = this.getParamsList().stream().collect(Collectors.joining(", "));
+        RubyArg lastArg = this.returnValue;
+        String cmd = this.name + "(" + joinedParams + ")";
+        if(lastArg != null) {
+            if(appendReturnValue) {
+                return lastArg.getValue() + " += " + cmd;
+            } else {
+                return lastArg.getValue() + " = " + cmd;
+            }
+        } else {
+            return cmd;
+        }
     }
 
     public int compareTo(RubyClass oc) {
@@ -150,19 +172,12 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         return params;
     }
 
-    public String toCommand() {
-        String joinedParams = this.getParamsList().stream().collect(Collectors.joining(", "));
-        RubyArg lastArg = this.getArgs().get(this.getArgs().size()-1);
-        String cmd = this.name + "(" + joinedParams + ")";
-        if(lastArg.returnValue) {
-            return lastArg.getValue() + " = " + cmd;
-        } else {
-            return cmd;
-        }
-    }
-
     public String getValue(int index) {
         return this.args.get(index).getValue();
+    }
+
+    public void setValue(int index, String value) {
+        this.args.get(index).setValue(value);
     }
 
     public String getHeader() {

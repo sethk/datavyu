@@ -23,7 +23,7 @@ public class ScriptArea extends CodeArea {
             ("alias   and   begin   break   case   class   def   " +
                     "defined?   do   else   elsif   end   ensure   false   " +
                     "for   if   in   module   next   nil   not   or   redo   " +
-                    "rescue   retry   return   self   super   then   true   " +
+                    "require   rescue   retry   return   self   super   then   true   " +
                     "undef   unless   until   when   while   yield").split("\\W+");
 
 
@@ -69,7 +69,7 @@ public class ScriptArea extends CodeArea {
     public void refreshDisplay() {
         String displayStr = "" + baseTextTop;
         for(RubyClass rc : commands) {
-            displayStr += "\t" + rc.toCommand() + "\n";
+            displayStr += "\t" + rc.toString() + "\n";
         }
         displayStr += baseTextBottom;
         this.replaceText(displayStr);

@@ -13,12 +13,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PrintCreatorV {
     List<String> variablesList;
+    Map<String, Command> classMap;
     ScriptArea scriptArea;
 
     enum CELL_OVERLAP {
@@ -28,9 +32,10 @@ public class PrintCreatorV {
         OFFSET
     }
 
-    public PrintCreatorV(List<String> variablesList, ScriptArea scriptArea) {
+    public PrintCreatorV(List<String> variablesList, ScriptArea scriptArea, Map<String, Command> classMap) {
         this.variablesList = variablesList;
         this.scriptArea = scriptArea;
+        this.classMap = classMap;
     }
 
     public void show() {
@@ -178,8 +183,62 @@ public class PrintCreatorV {
         // We will be adding all commands to the commands already in the scriptArea
         List<RubyClass> commands = scriptArea.getCommands();
 
-        for(String variable : selectedVariables.getItems()) {
+        List<String> parentCells = new ArrayList<>();
+        System.out.println(nestVariable(0, parentCells, selectedVariables.getItems(), overlap, trim));
+    }
 
+    private Command nestVariable(int nestLevel, List<String> parentVars, List<String> variablesToNest, CELL_OVERLAP overlap, boolean trim) {
+        String linePrefix = StringUtils.repeat("\t", nestLevel);
+        String interiorPrefix = StringUtils.repeat("\t", nestLevel+1);
+
+        if(variablesToNest.size() > 0) {
+            String var = variablesToNest.get(0);
+            variablesToNest.remove(0);
+
+            if(parentVars.size() == 0) {
+                parentVars.add(var);
+                Loop loop = new Loop(var, nestLevel);
+                loop.addCommand(nestVariable(nestLevel+1, parentVars, variablesToNest, overlap, trim));
+                return loop;
+            }
+            String parentVar = parentVars.get(parentVars.size()-1);
+            parentVars.add(var);
+
+
+            if(overlap == CELL_OVERLAP.NEST) {
+                IfStatement ifStatement = new IfStatement(var, parentVar, IF_TEMPLATE.NEST, nestLevel+1);
+                ifStatement.addCommand(nestVariable(nestLevel+2, parentVars, variablesToNest, overlap, trim));
+                Loop loop = new Loop(var, nestLevel);
+                loop.addCommand(ifStatement);
+                return loop;
+            } else {
+                return null;
+            }
+        } else {
+            RubyClass printCmd = (RubyClass)classMap.get("print_cell_codes");
+            CommandBlock block = new CommandBlock(nestLevel);
+            StringBuilder sb = new StringBuilder();
+            sb.append(interiorPrefix + "output_str = \"\"\n");
+            Command stringInit = new Command("arg_list = []");
+            block.addCommand(stringInit);
+            RubyArg returnValue = new RubyArg("arg_list", "arg_list", false, true);
+            for(String v : parentVars) {
+                RubyClass p = new RubyClass(printCmd);
+                p.setValue(0, v);
+                p.setAppendReturnValue(true);
+                p.setReturnValue(returnValue);
+                block.addCommand(p);
+            }
+            Command joinString = new Command("output_str = arglist.join(\",\")");
+            block.addCommand(joinString);
+            Command writeString = new Command("puts output_str");
+            block.addCommand(writeString);
+
+            return block;
         }
+    }
+
+    private String generateNestedIf(String cell1, String cell2) {
+        return String.format("if %1$s.onset <= %2$s.onset and %1$s.offset > %2$s.offset", cell1, cell2);
     }
 }
