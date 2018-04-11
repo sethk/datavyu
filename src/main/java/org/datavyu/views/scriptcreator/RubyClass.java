@@ -1,5 +1,7 @@
 package org.datavyu.views.scriptcreator;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -121,7 +123,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
 
         System.out.println(name);
         for(int i = 0; i < args.length; i++) {
-            System.out.println(args[i] + "\t" + this.args.get(i));
+            System.out.println(args[i] + ScriptArea.INDENT + this.args.get(i));
         }
 
 
@@ -136,17 +138,18 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
     }
 
     public String toString() {
+        String indent = StringUtils.repeat(ScriptArea.INDENT, nestLevel);
         String joinedParams = this.getParamsList().stream().collect(Collectors.joining(", "));
         RubyArg lastArg = this.returnValue;
         String cmd = this.name + "(" + joinedParams + ")";
         if(lastArg != null) {
             if(appendReturnValue) {
-                return lastArg.getValue() + " += " + cmd;
+                return indent + lastArg.getValue() + " += " + cmd;
             } else {
-                return lastArg.getValue() + " = " + cmd;
+                return indent + lastArg.getValue() + " = " + cmd;
             }
         } else {
-            return cmd;
+            return indent + cmd;
         }
     }
 
@@ -166,7 +169,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         List<String> params = new ArrayList<>();
         for(int i = 0; i < this.args.size(); i++) {
             if(!this.getArgs().get(i).returnValue) {
-                params.add(this.args.get(i).getValue());
+                params.add(this.args.get(i).toString());
             }
         }
         return params;

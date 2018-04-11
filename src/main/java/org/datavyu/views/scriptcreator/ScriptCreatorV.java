@@ -19,6 +19,7 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.datavyu.Datavyu;
 import org.datavyu.views.discrete.SpreadsheetColumn;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.jruby.Ruby;
 
 import javax.xml.crypto.Data;
@@ -38,7 +39,7 @@ public class ScriptCreatorV extends Application {
         VBox root = new VBox();
 
         BorderPane topRoot = new BorderPane();
-        Scene scene = new Scene(root, 800, 500);
+        Scene scene = new Scene(root, 950, 600);
 
         ListView<RubyClass> list = new ListView<>();
         list.setCellFactory(lv -> new ListCell<RubyClass>() {
@@ -133,7 +134,7 @@ public class ScriptCreatorV extends Application {
 //        scriptArea.setText("The script goes here and is built using the above system!");
 //        scriptArea.setPrefRowCount(30);
 
-        bottomPane.setCenter(scriptArea);
+        bottomPane.setCenter(new VirtualizedScrollPane<>(scriptArea));
 
         TextArea outputArea = new TextArea();
         outputArea.setEditable(false);
@@ -198,6 +199,8 @@ public class ScriptCreatorV extends Application {
             ArrayList<String> s = new ArrayList<>();
             s.add("test1");
             s.add("test2");
+            s.add("test3");
+            s.add("test4");
             return s;
         }
     }

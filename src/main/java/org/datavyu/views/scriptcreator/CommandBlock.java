@@ -21,9 +21,9 @@ public class CommandBlock extends Command {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        String indent = StringUtils.repeat("\t", nestLevel);
         for(Command c : commands) {
-            sb.append(indent + c.toString() + "\n");
+            c.setNestLevel(nestLevel);
+            sb.append(c.toString() + "\n");
         }
         return sb.toString();
     }

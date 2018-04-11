@@ -23,6 +23,11 @@ public class Loop extends Command {
         this.nestLevel = nestLevel;
     }
 
+    public Loop(String variable, String cellName, int nestLevel) {
+        this(variable, nestLevel);
+        this.cellName = cellName;
+    }
+
     public void addCommand(Command c) {
         commands.add(c);
     }
@@ -41,12 +46,13 @@ public class Loop extends Command {
 
     @Override
     public String toString() {
-        String indent = StringUtils.repeat("\t", nestLevel);
+        String indent = StringUtils.repeat(ScriptArea.INDENT, nestLevel);
         String s = indent + String.format("for %s in %s\n", this.cellName, this.variable);
         for(Command c : commands) {
-            s += indent + "\t" + c.toString() + "\n";
+            c.setNestLevel(nestLevel+1);
+            s += c.toString() + "\n";
         }
-        s += indent + "end\n";
+        s += indent + "end";
         return s;
     }
 }

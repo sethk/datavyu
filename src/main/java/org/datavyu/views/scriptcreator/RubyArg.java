@@ -15,8 +15,8 @@ public class RubyArg {
         this.value = a.getValue();
         this.optional = a.getOptional();
         this.returnValue = a.returnValue;
-        this.type = "";
-        this.description = "";
+        this.type = a.type;
+        this.description = a.description;
     }
 
     public RubyArg(String name, String defaultValue, boolean optional) {
@@ -25,6 +25,8 @@ public class RubyArg {
         this.optional = optional;
         this.returnValue = false;
         this.value = (defaultValue.length() > 0) ? defaultValue : "";
+        this.type = "";
+        this.description = "";
     }
 
     public RubyArg(String name, String defaultValue, boolean optional, boolean returnValue) {
@@ -101,10 +103,20 @@ public class RubyArg {
 
     @Override
     public String toString() {
+        System.out.println("TYPE");
+        System.out.println(type);
         if(value.length() > 0) {
-            return name + " = " + value;
+            if(type.equalsIgnoreCase("string")) {
+                return name + " = " + "\"" + value + "\"";
+            } else {
+                return name + " = " + value;
+            }
         } else {
-            return name;
+            if(type.equalsIgnoreCase("string")) {
+                return "\"" + name + "\"";
+            } else {
+                return name;
+            }
         }
     }
 }

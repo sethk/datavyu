@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScriptArea extends CodeArea {
-    List<RubyClass> commands;
+    List<Command> commands;
     String baseTextTop = "require 'Datavyu_API.rb'\n\nbegin\n";
     String baseTextBottom = "end";
 
@@ -45,6 +45,8 @@ public class ScriptArea extends CodeArea {
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
 
+    public static final String INDENT = "    ";
+
     public ScriptArea() {
         super();
         commands = new ArrayList<>();
@@ -68,8 +70,8 @@ public class ScriptArea extends CodeArea {
 
     public void refreshDisplay() {
         String displayStr = "" + baseTextTop;
-        for(RubyClass rc : commands) {
-            displayStr += "\t" + rc.toString() + "\n";
+        for(Command rc : commands) {
+            displayStr += rc.toString() + "\n";
         }
         displayStr += baseTextBottom;
         this.replaceText(displayStr);
@@ -100,11 +102,12 @@ public class ScriptArea extends CodeArea {
         return spansBuilder.create();
     }
 
-    public List<RubyClass> getCommands() {
+    public List<Command> getCommands() {
         return commands;
     }
 
-    public void setCommands(List<RubyClass> commands) {
+    public void setCommands(List<Command> commands) {
         this.commands = commands;
+        refreshDisplay();
     }
 }

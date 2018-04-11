@@ -12,9 +12,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +81,18 @@ public class PrintCreatorV {
         nestingOptionsLayout.setSpacing(100);
 
         VBox outputButtonBox = new VBox();
-        Button createScriptButton = new Button("Generate Script");
+        Button createScriptButton = new Button("Generate Single File Script");
+        Button createDirScriptButton = new Button("Generate Directory Print Script");
+        Button setOutputFileButton = new Button("Set Output File");
+
+        TextField outputFileTextField = new TextField();
+        HBox outputFileBox = new HBox();
+        outputFileBox.getChildren().addAll(outputFileTextField, setOutputFileButton);
+
+        outputButtonBox.getChildren().add(outputFileBox);
+
         outputButtonBox.getChildren().add(createScriptButton);
+        outputButtonBox.getChildren().add(createDirScriptButton);
         outputButtonBox.setAlignment(Pos.CENTER_RIGHT);
         nestingOptionsLayout.getChildren().add(outputButtonBox);
 
@@ -144,6 +157,20 @@ public class PrintCreatorV {
             }
         });
 
+
+
+        columnSelectLayout.getChildren().add(selectedVariables);
+        columnSelectLayout.getChildren().add(columnSelectButtons);
+        columnSelectLayout.getChildren().add(availableVariables);
+        columnSelectLayout.setAlignment(Pos.CENTER);
+
+        rootLayout.getChildren().add(columnSelectLayout);
+        rootLayout.getChildren().add(nestingOptionsLayout);
+        Scene printScene = new Scene(rootLayout, 600, 500);
+        Stage printWindow = new Stage();
+        printWindow.setTitle("Print Script Wizard");
+        printWindow.setScene(printScene);
+
         createScriptButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -159,56 +186,144 @@ public class PrintCreatorV {
                 } else {
                     oc = CELL_OVERLAP.ANY;
                 }
-                generatePrintScript(selectedVariables, scriptArea, oc, trimCheckbox.isSelected());
+                generatePrintScript(selectedVariables, scriptArea, oc, trimCheckbox.isSelected(), outputFileTextField.getText());
+                printWindow.close();
             }
         });
 
-        columnSelectLayout.getChildren().add(selectedVariables);
-        columnSelectLayout.getChildren().add(columnSelectButtons);
-        columnSelectLayout.getChildren().add(availableVariables);
-        columnSelectLayout.setAlignment(Pos.CENTER);
+        createDirScriptButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                RadioButton overlapButton = (RadioButton) overlapGroup.getSelectedToggle();
+                String text = overlapButton.getText();
+                CELL_OVERLAP oc;
+                if(text.contains("nested")) {
+                    oc = CELL_OVERLAP.NEST;
+                } else if (text.contains("onset")) {
+                    oc = CELL_OVERLAP.ONSET;
+                } else if (text.contains("offset")) {
+                    oc = CELL_OVERLAP.OFFSET;
+                } else {
+                    oc = CELL_OVERLAP.ANY;
+                }
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                directoryChooser.setTitle("Select directory containing study files.");
+                directoryChooser.setInitialDirectory(
+                        new File(System.getProperty("user.home"))
+                );
+                File f = directoryChooser.showDialog(printWindow);
+                generateDirectoryPrintScript(selectedVariables, scriptArea, oc, trimCheckbox.isSelected(),
+                        outputFileTextField.getText(), f.getAbsolutePath());
+                printWindow.close();
+            }
+        });
 
-        rootLayout.getChildren().add(columnSelectLayout);
-        rootLayout.getChildren().add(nestingOptionsLayout);
-        Scene printScene = new Scene(rootLayout, 600, 500);
-        Stage printWindow = new Stage();
-        printWindow.setTitle("Print Script Wizard");
-        printWindow.setScene(printScene);
+        setOutputFileButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select print script output file.");
+                fileChooser.setInitialDirectory(
+                        new File(System.getProperty("user.home"))
+                );
+                File f = fileChooser.showSaveDialog(printWindow);
+                outputFileTextField.setText(f.getAbsolutePath());
+            }
+        });
 
         printWindow.show();
     }
 
-    private void generatePrintScript(ListView<String> selectedVariables, ScriptArea scriptArea,
-                                     CELL_OVERLAP overlap, boolean trim) {
+    private void generateDirectoryPrintScript(ListView<String> selectedVariables, ScriptArea scriptArea,
+                                     CELL_OVERLAP overlap, boolean trim, String savePath, String dirPath) {
         // We will be adding all commands to the commands already in the scriptArea
-        List<RubyClass> commands = scriptArea.getCommands();
+        List<Command> commands = scriptArea.getCommands();
+        CommandBlock block = new CommandBlock(1);
+
+        // Create command for looping over files in directory
+        Command dirFiles = new Command("files = Dir.entries(\"" + dirPath + "\")");
+        Loop dirLoop = new Loop("files", "file", 1);
+        IfStatement fileCheck = new IfStatement("file", IF_TEMPLATE.FILE_CHECK, 2);
+
+        dirLoop.addCommand(fileCheck);
+
+        Command saveCmd;
+        if(savePath.length() > 0) {
+            // Open file for saving
+            Command openFile = new Command("output_file = File.new(\"" + savePath + "\", 'w')");
+            block.addCommand(openFile);
+            saveCmd = new Command("output_file.write(output_str)");
+        } else {
+            saveCmd = new Command("puts output_str");
+        }
 
         List<String> parentCells = new ArrayList<>();
-        System.out.println(nestVariable(0, parentCells, selectedVariables.getItems(), overlap, trim));
+
+        block.addCommand(dirFiles);
+        block.addCommand(dirLoop);
+        fileCheck.addCommand(nestVariable(3, parentCells, selectedVariables.getItems(), overlap, trim, saveCmd));
+        // Create command for writing to file, use puts if no file, print file name?
+
+        commands.add(block);
+        scriptArea.setCommands(commands);
     }
 
-    private Command nestVariable(int nestLevel, List<String> parentVars, List<String> variablesToNest, CELL_OVERLAP overlap, boolean trim) {
-        String linePrefix = StringUtils.repeat("\t", nestLevel);
-        String interiorPrefix = StringUtils.repeat("\t", nestLevel+1);
+    private void generatePrintScript(ListView<String> selectedVariables, ScriptArea scriptArea,
+                                     CELL_OVERLAP overlap, boolean trim, String savePath) {
+        // We will be adding all commands to the commands already in the scriptArea
+        List<Command> commands = scriptArea.getCommands();
+
+        List<String> parentCells = new ArrayList<>();
+
+        CommandBlock block = new CommandBlock(1);
+
+        Command saveCmd;
+        if(savePath.length() > 0) {
+            // Open file for saving
+            Command openFile = new Command("output_file = File.new(" + savePath + ", 'w')");
+            block.addCommand(openFile);
+            saveCmd = new Command("output_file.write(output_str)");
+        } else {
+            saveCmd = new Command("puts output_str");
+        }
+
+        block.addCommand(nestVariable(1, parentCells, selectedVariables.getItems(), overlap, trim, saveCmd));
+        commands.add(block);
+        scriptArea.setCommands(commands);
+    }
+
+    private Command nestVariable(int nestLevel, List<String> parentVars, List<String> variablesToNest,
+                                 CELL_OVERLAP overlap, boolean trim, Command saveCmd) {
 
         if(variablesToNest.size() > 0) {
             String var = variablesToNest.get(0);
-            variablesToNest.remove(0);
 
             if(parentVars.size() == 0) {
+                CommandBlock block = new CommandBlock(nestLevel);
+                RubyClass getCmd = (RubyClass)classMap.get("get_column");
+                for(String v : variablesToNest) {
+                    RubyClass g = new RubyClass(getCmd);
+                    g.setValue(0, v);
+                    RubyArg ret = new RubyArg(v, v, false, true);
+                    g.setReturnValue(ret);
+                    block.addCommand(g);
+                }
+                variablesToNest.remove(0);
                 parentVars.add(var);
                 Loop loop = new Loop(var, nestLevel);
-                loop.addCommand(nestVariable(nestLevel+1, parentVars, variablesToNest, overlap, trim));
-                return loop;
+                loop.addCommand(nestVariable(nestLevel, parentVars, variablesToNest, overlap, trim, saveCmd));
+                block.addCommand(loop);
+                return block;
             }
+            variablesToNest.remove(0);
             String parentVar = parentVars.get(parentVars.size()-1);
             parentVars.add(var);
 
 
             if(overlap == CELL_OVERLAP.NEST) {
-                IfStatement ifStatement = new IfStatement(var, parentVar, IF_TEMPLATE.NEST, nestLevel+1);
-                ifStatement.addCommand(nestVariable(nestLevel+2, parentVars, variablesToNest, overlap, trim));
-                Loop loop = new Loop(var, nestLevel);
+                IfStatement ifStatement = new IfStatement(var, parentVar, IF_TEMPLATE.NEST, nestLevel+2);
+                ifStatement.addCommand(nestVariable(nestLevel+2, parentVars, variablesToNest, overlap, trim, saveCmd));
+                Loop loop = new Loop(var, nestLevel+1);
                 loop.addCommand(ifStatement);
                 return loop;
             } else {
@@ -216,9 +331,7 @@ public class PrintCreatorV {
             }
         } else {
             RubyClass printCmd = (RubyClass)classMap.get("print_cell_codes");
-            CommandBlock block = new CommandBlock(nestLevel);
-            StringBuilder sb = new StringBuilder();
-            sb.append(interiorPrefix + "output_str = \"\"\n");
+            CommandBlock block = new CommandBlock(nestLevel+1);
             Command stringInit = new Command("arg_list = []");
             block.addCommand(stringInit);
             RubyArg returnValue = new RubyArg("arg_list", "arg_list", false, true);
@@ -231,14 +344,9 @@ public class PrintCreatorV {
             }
             Command joinString = new Command("output_str = arglist.join(\",\")");
             block.addCommand(joinString);
-            Command writeString = new Command("puts output_str");
-            block.addCommand(writeString);
+            block.addCommand(saveCmd);
 
             return block;
         }
-    }
-
-    private String generateNestedIf(String cell1, String cell2) {
-        return String.format("if %1$s.onset <= %2$s.onset and %1$s.offset > %2$s.offset", cell1, cell2);
     }
 }

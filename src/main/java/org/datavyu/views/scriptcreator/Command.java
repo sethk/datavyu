@@ -7,17 +7,28 @@ import java.util.stream.Collectors;
 
 public class Command  {
     String command;
+    int nestLevel;
 
     public Command() {
         command = "";
+        nestLevel = 0;
     }
 
     public Command(String command) {
         this.command = command;
     }
 
+    public int getNestLevel() {
+        return nestLevel;
+    }
+
+    public void setNestLevel(int nestLevel) {
+        this.nestLevel = nestLevel;
+    }
+
     @Override
     public String toString() {
-        return this.command;
+        String indent = StringUtils.repeat(ScriptArea.INDENT, nestLevel);
+        return indent + this.command;
     }
 }

@@ -9,7 +9,8 @@ import java.util.Map;
 
 enum IF_TEMPLATE {
     NEST,
-    OVERLAP
+    OVERLAP,
+    FILE_CHECK
 }
 
 public class IfStatement extends Command {
@@ -21,13 +22,29 @@ public class IfStatement extends Command {
 
     Map<IF_TEMPLATE, String> ifTemplates;
 
-    public IfStatement(String cell1, String cell2, IF_TEMPLATE template) {
+    public IfStatement() {
         ifTemplates = new HashMap<>();
         ifTemplates.put(IF_TEMPLATE.NEST, "if %1$s.onset <= %2$s.onset and %1$s.offset > %2$s.offset");
-        this.cell1 = cell1;
-        this.cell2 = cell2;
+        ifTemplates.put(IF_TEMPLATE.FILE_CHECK, "if %1$s.endswith(\".opf\")");
         this.nestLevel = 1;
         this.commands = new ArrayList<>();
+    }
+
+    public IfStatement(String val1, IF_TEMPLATE template) {
+        this();
+        this.cell1 = val1;
+        this.template = template;
+    }
+
+    public IfStatement(String val1, IF_TEMPLATE template, int nestLevel) {
+        this(val1, template);
+        this.nestLevel = nestLevel;
+    }
+
+    public IfStatement(String cell1, String cell2, IF_TEMPLATE template) {
+        this();
+        this.cell1 = cell1;
+        this.cell2 = cell2;
         this.template = template;
     }
 
@@ -51,12 +68,13 @@ public class IfStatement extends Command {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        String indent = StringUtils.repeat("\t", this.nestLevel);
+        String indent = StringUtils.repeat(ScriptArea.INDENT, nestLevel);
         sb.append(indent + String.format(ifTemplates.get(template), cell1, cell2) + "\n");
         for(Command c : this.commands) {
-            sb.append(indent + "\t" + c.toString() + "\n");
+            c.setNestLevel(nestLevel+1);
+            sb.append(c.toString() + "\n");
         }
-        sb.append(indent + "end\n");
+        sb.append(indent + "end");
         return sb.toString();
     }
 }
