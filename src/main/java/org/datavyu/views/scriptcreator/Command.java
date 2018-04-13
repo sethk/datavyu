@@ -11,7 +11,7 @@ public class Command  {
 
     public Command() {
         command = "";
-        nestLevel = 0;
+        nestLevel = 1;
     }
 
     public Command(String command) {
@@ -30,5 +30,9 @@ public class Command  {
     public String toString() {
         String indent = StringUtils.repeat(ScriptArea.INDENT, nestLevel);
         return indent + this.command;
+    }
+
+    public int countLines() {
+        return toString().split("\r\n|\r|\n", -1).length;
     }
 }

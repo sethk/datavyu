@@ -79,6 +79,25 @@ public class ScriptArea extends CodeArea {
         System.out.println(displayStr);
     }
 
+    private Command findBlock(int lineNumber) {
+
+    }
+
+    private Command findBlockHelper(Command currentBlock, int lineNumber, int currentLine) {
+        int linesInBlock = currentBlock.countLines();
+        if(currentLine + linesInBlock > lineNumber) {
+            // See if one of the blocks in this block is a narrower target
+            CommandBlock cb = ((CommandBlock) currentBlock);
+            for(int i = 0; i < cb.commands.size(); i++) {
+                Command c = cb.commands.get(i);
+                if(c instanceof CommandBlock) {
+                    // We need to test this block to see if its better
+                    
+                }
+            }
+        }
+    }
+
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;

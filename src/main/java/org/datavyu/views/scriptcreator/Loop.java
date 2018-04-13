@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Loop extends Command {
+public class Loop extends CommandBlock {
     List<Command> commands;
     String variable;
     String cellName;

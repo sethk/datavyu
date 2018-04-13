@@ -9,6 +9,11 @@ public class CommandBlock extends Command {
     List<Command> commands;
     int nestLevel;
 
+    public CommandBlock() {
+        nestLevel = 1;
+        commands = new ArrayList<>();
+    }
+
     public CommandBlock(int nestLevel) {
         this.nestLevel = nestLevel;
         commands = new ArrayList<>();

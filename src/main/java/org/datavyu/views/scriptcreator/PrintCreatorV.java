@@ -241,9 +241,15 @@ public class PrintCreatorV {
         CommandBlock block = new CommandBlock(1);
 
         // Create command for looping over files in directory
-        Command dirFiles = new Command("files = Dir.entries(\"" + dirPath + "\")");
+        Command dirVar = new Command("folder = '" + dirPath + File.separator + "'");
+        block.addCommand(dirVar);
+        Command dirFiles = new Command("files = Dir.entries(folder)");
         Loop dirLoop = new Loop("files", "file", 1);
+        // Load the file into Datavyu
+        Command loadData = new Command("$db, $pj = load_db(folder + file)");
+
         IfStatement fileCheck = new IfStatement("file", IF_TEMPLATE.FILE_CHECK, 2);
+        fileCheck.addCommand(loadData);
 
         dirLoop.addCommand(fileCheck);
 

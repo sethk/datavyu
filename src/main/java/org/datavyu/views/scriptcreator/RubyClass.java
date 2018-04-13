@@ -45,6 +45,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         this.docStrings = docStrings;
         this.args = new ArrayList<>();
         this.appendReturnValue = false;
+        this.nestLevel = 1;
 
         this.returnValue = null;
 

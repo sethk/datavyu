@@ -13,7 +13,7 @@ enum IF_TEMPLATE {
     FILE_CHECK
 }
 
-public class IfStatement extends Command {
+public class IfStatement extends CommandBlock {
     List<Command> commands;
     String cell1;
     String cell2;
