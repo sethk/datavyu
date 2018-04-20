@@ -1667,7 +1667,7 @@ def save_db(filename)
 
   # Create the controller that holds all the logic for opening projects and
   # databases.
-  save_c = SaveC.new
+  save_c = SaveController.new
 
   #
   # Saves a database (i.e. a .odb or .csv file). If you want to save a project
