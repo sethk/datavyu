@@ -1604,10 +1604,14 @@ public final class VideoController extends DatavyuDialog
                 // Get the stream time
                 long trackTime = clockTime - trackModel.getOffset();
                 // Notice that the new time is in jogs to frame markers by being modulo step size
-                long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize), 0),
-                        trackModel.getDuration());
-                if (Math.abs(newTime - streamViewer.getCurrentTime()) < SYNC_THRESHOLD) {
-                    streamViewer.setCurrentTime(newTime);
+//                long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize), 0),
+//                        trackModel.getDuration());
+                // We should sync according to the trackTime and not the newTime the hjog methods
+                // will set the new time fot the streams
+//                if (Math.abs(newTime - streamViewer.getCurrentTime()) < SYNC_THRESHOLD) {
+                if (Math.abs(trackTime - streamViewer.getCurrentTime()) >= ClockTimer.SYNC_THRESHOLD) {
+                    streamViewer.setCurrentTime(trackTime);
+//                    streamViewer.setCurrentTime(newTime);
                 }
             }
         }
