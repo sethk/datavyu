@@ -37,7 +37,7 @@
 
 
 
-# Datavyu 1.3.7 release
+# Datavyu 1.3.7 Release Notes
 ## 07/18/2017
 
 ### New Features
@@ -54,7 +54,7 @@
   to save files when encountering this issue.
 
 
-# Datavyu 1.3.6 release notes
+# Datavyu 1.3.6 Release Notes
 ## 4/3/2017
 
 ### New Features
