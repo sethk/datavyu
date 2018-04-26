@@ -1197,7 +1197,8 @@ public final class VideoController extends DatavyuDialog
         logger.info("Change time to " + e.getTime() + " milliseconds and toggle: " + e.getToggleStartStop());
 
         // Set the time
-        clockTimer.setTime(e.getTime());
+//        clockTimer.setTime(e.getTime());
+        clockTimer.setForceTime(e.getTime());
 
         // Toggle
         if (e.getToggleStartStop()) {
