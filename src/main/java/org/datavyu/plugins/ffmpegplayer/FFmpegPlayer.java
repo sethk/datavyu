@@ -114,6 +114,7 @@ public class FFmpegPlayer extends JPanel {
 	        movieStreamProvider.open(fileName, localVersion.getVersion(), reqColorSpace, input);
 	        
 	        // Load and display first frame.
+			movieStreamProvider.setCurrentTime(0);
             movieStreamProvider.startVideoListeners();
 	        movieStreamProvider.nextImageFrame();
 	        //movieStreamProvider.stopVideoListeners();
