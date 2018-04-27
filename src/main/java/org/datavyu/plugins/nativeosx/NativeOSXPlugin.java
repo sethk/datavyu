@@ -70,7 +70,7 @@ public final class NativeOSXPlugin implements Plugin {
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
                                            final boolean modal) {
         if (Platform.isMac() || Platform.isWindows()) {
-            return new NativeOSXViewerDialog(identifier, sourceFile, parent, modal);
+            return new NativeOSXViewer(identifier, sourceFile, parent, modal);
         } else {
             return null;
         }
@@ -109,7 +109,7 @@ public final class NativeOSXPlugin implements Plugin {
     public Class<? extends StreamViewer> getViewerClass() {
 
         if (Platform.isMac()) {
-            return NativeOSXViewerDialog.class;
+            return NativeOSXViewer.class;
         }
 
         return null;

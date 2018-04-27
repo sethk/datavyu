@@ -48,12 +48,12 @@ public class FFmpegPlugin implements Plugin {
     @Override
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
                                            final boolean modal) {
-        return Platform.isWindows() ? new FFmpegStreamViewerDialog(identifier, sourceFile, parent, modal) : null;
+        return Platform.isWindows() ? new FFmpegStreamViewer(identifier, sourceFile, parent, modal) : null;
     }
 
     @Override
     public Class<? extends StreamViewer> getViewerClass() {
-        return Platform.isWindows() ? FFmpegStreamViewerDialog.class : null;
+        return Platform.isWindows() ? FFmpegStreamViewer.class : null;
     }
 
     @Override

@@ -1,25 +1,43 @@
-# Datavyu 1.4. Pre-Release 3 Notes
-## 02/04/2018
+# Datavyu 1.4.0 Release Notes
+## 04/26/2018
 
 ### New features
-* Added ffmpeg plugin for playback under windows
+* FFMPEG plugin for Windows.
+  * Still under development. Currently only supports 480p video. Expect performance issues with higher quality files.
+* Removed plugins not being maintained (e.g., VLC, MPlayer).
+* Move left and right across columns using `CMD + Left Arrow` and `CMD + Right Arrow` on Mac and `CTRL + Left Arrow` and `CTRL + Right Arrow` on Windows.
+* Import/Export coding passes from/to JSON format.
+* Display foreign language characters (can not input through keystrokes yet).
+* `CMD + W`, `CTRL + W` closes currently open spreadsheet on Mac and Windows, respectively.
 * Updated dependencies for R and Ruby script plugins
 
 ### Bug fixes
 * Allows to save filenames with non-ascii characters, e.g. Umlaut in German
+* Fixed plugin loading error for NativeOSX plugin.
+* OSX plugin playback more responsive to jogs, cell locking, and seeks.
+* Fixed flickering during Cell Highlighting.
+* Fixed delete cell shortcut not working on Windows.
+* Fixed Code Editor not properly editing code/column names.
+* Recognize playback keys even when Spreadsheet window is not in focus.
+* ##### Ruby API
+  * Fixed `show_columns` crash.
+  * Fixed `save_db` crash.
 
 ### Known Issues
-* When using the ffmpeg plugin 
+* #### When using the ffmpeg plugin:
   * the window can't be resized
   * sound only plays back when playing at 1x
   * jumping to random locations within the stream may take 1-2sec
   * the sound after a stop/jump and playback may be a bit distorted
-  * when opening multiple streams and the ffmpeg as 2nd, 3rd it might 
+  * when opening multiple streams and the ffmpeg as 2nd, 3rd it might
     get stuck after playing for some time
+  * Inconsistent frame reporting between plugins. We suggest using the same plugin when coding to maintain consistency.
+* #### Ruby API
+  * Scripts may crash unexpectedly with error reported in `getAllVariables` functions. We suggest re-running the script and if the problem persists, re-opening Datavyu.
 
 
 
-#Datavyu 1.3.7 release
+# Datavyu 1.3.7 Release Notes
 ## 07/18/2017
 
 ### New Features
@@ -36,7 +54,7 @@
   to save files when encountering this issue.
 
 
-# Datavyu 1.3.6 release notes
+# Datavyu 1.3.6 Release Notes
 ## 4/3/2017
 
 ### New Features
