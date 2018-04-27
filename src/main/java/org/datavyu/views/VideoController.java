@@ -68,7 +68,7 @@ public final class VideoController extends DatavyuDialog
     private static final long SYNC_THRESHOLD = 31L; // milliseconds
 
     /** Threshold used to compare frame rates */
-    private static final double ALMOST_EQUAL_FRAME_RATES = 1e-1;
+    private static final double ALMOST_EQUAL_FRAME_RATES = 1e-1*5;
 
     /** The logger for this class */
     private static Logger logger = LogManager.getLogger(VideoController.class);
@@ -1197,7 +1197,8 @@ public final class VideoController extends DatavyuDialog
         logger.info("Change time to " + e.getTime() + " milliseconds and toggle: " + e.getToggleStartStop());
 
         // Set the time
-        clockTimer.setTime(e.getTime());
+//        clockTimer.setTime(e.getTime());
+        clockTimer.setForceTime(e.getTime());
 
         // Toggle
         if (e.getToggleStartStop()) {
@@ -1552,7 +1553,7 @@ public final class VideoController extends DatavyuDialog
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
             double frameRate = frameRateController.getFrameRate();
             long clockTime = (long) clockTimer.getStreamTime();
-            long stepSize = (long)(MILLI_IN_SEC / frameRate); // step size is in milliseconds
+            long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
             for (StreamViewer streamViewer : streamViewers) {
                 // TODO: Tie offset & duration to stream viewer only and pull it in the track model
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
@@ -1604,10 +1605,14 @@ public final class VideoController extends DatavyuDialog
                 // Get the stream time
                 long trackTime = clockTime - trackModel.getOffset();
                 // Notice that the new time is in jogs to frame markers by being modulo step size
-                long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize), 0),
-                        trackModel.getDuration());
-                if (Math.abs(newTime - streamViewer.getCurrentTime()) < SYNC_THRESHOLD) {
-                    streamViewer.setCurrentTime(newTime);
+//                long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize), 0),
+//                        trackModel.getDuration());
+                // We should sync according to the trackTime and not the newTime the hjog methods
+                // will set the new time fot the streams
+//                if (Math.abs(newTime - streamViewer.getCurrentTime()) < SYNC_THRESHOLD) {
+                if (Math.abs(trackTime - streamViewer.getCurrentTime()) >= ClockTimer.SYNC_THRESHOLD) {
+                    streamViewer.setCurrentTime(trackTime);
+//                    streamViewer.setCurrentTime(newTime);
                 }
             }
         }
@@ -1625,7 +1630,7 @@ public final class VideoController extends DatavyuDialog
             syncStreams();
             double frameRate = frameRateController.getFrameRate();
             long clockTime = (long) clockTimer.getStreamTime();
-            long stepSize = (long)(MILLI_IN_SEC / frameRate); // step size is in milliseconds
+            long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
             for (StreamViewer streamViewer : streamViewers) {
                 // TODO: Tie offset & duration to stream viewer only and pull it in the track model

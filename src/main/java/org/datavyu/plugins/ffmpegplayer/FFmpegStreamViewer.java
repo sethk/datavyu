@@ -61,8 +61,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
         launch(() -> {
             try {
                 logger.info("Set time to: " + time + " milliseconds.");
-                if (!isSeeking && (previousSeekTime != time)) {
-                    previousSeekTime = time;
+                if (!isSeeking) {
                     EventQueue.invokeLater(() -> {
                         isSeeking = true;
                         player.setCurrentTime(time / 1000.0);
