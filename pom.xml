@@ -180,6 +180,16 @@
             </roles>
             <timezone>-8</timezone>
         </developer>
+
+        <developer>
+            <id>Reda</id>
+            <name>Reda Nezzar</name>
+            <email>nezzar.reda@_no_spam_nyu.edu</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
     </developers>
 
     <contributors>
