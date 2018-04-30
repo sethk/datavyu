@@ -28,7 +28,7 @@ import java.io.*;
  * This file gets copied from the resource folder to the local temp directory where this application managers its
  * settings through the Swing Application Framework.
  */
-public final class ConfigurationProperties implements Serializable {
+public final class ConfigProperties implements Serializable {
 
     /** Unique identifier for this serial version */
     private static final long serialVersionUID = 4L;
@@ -144,10 +144,10 @@ public final class ConfigurationProperties implements Serializable {
     private String conversionUrl;
 
     /** This is the only instance for the configuration properties that is loaded at start-up */
-    private static ConfigurationProperties configurationProperties = new ConfigurationProperties();
+    private static ConfigProperties configurationProperties = new ConfigProperties();
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getLogger(ConfigurationProperties.class);
+    private static Logger logger = LogManager.getLogger(ConfigProperties.class);
 
     static {
         LocalStorage localStorage = Datavyu.getApplication().getContext().getLocalStorage();
@@ -181,12 +181,12 @@ public final class ConfigurationProperties implements Serializable {
         // Try to load the configuration
         try {
             logger.info("Configuration loaded from directory " + localDirectory);
-            configurationProperties = (ConfigurationProperties) localStorage.load(Constants.CONFIGURATION_FILE);
+            configurationProperties = (ConfigProperties) localStorage.load(Constants.CONFIGURATION_FILE);
             logger.info("Loaded configuration properties: " + configurationProperties);
         } catch (IOException io) {
             logger.error("Unable to load configuration file " + io.getMessage());
             logger.info("Setting default properties.");
-            configurationProperties = new ConfigurationProperties();
+            configurationProperties = new ConfigProperties();
         }
 
         // If values are not set/loaded set their defaults
@@ -258,14 +258,14 @@ public final class ConfigurationProperties implements Serializable {
      *
      * Public to be accessible by the XMLReader for JavaBeans to create an object instance.
      */
-    public ConfigurationProperties() {}
+    public ConfigProperties() {}
 
     /**
      * Get the static instance for the configuration.
      *
      * @return The configuration properties.
      */
-    public static ConfigurationProperties getInstance() {
+    public static ConfigProperties getInstance() {
         return configurationProperties;
     }
 

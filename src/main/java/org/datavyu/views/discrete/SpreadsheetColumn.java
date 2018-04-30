@@ -20,7 +20,7 @@ import org.datavyu.Datavyu;
 import org.datavyu.models.db.*;
 import org.datavyu.undoableedits.ChangeNameVariableEdit;
 import org.datavyu.util.ClockTimer;
-import org.datavyu.util.ConfigurationProperties;
+import org.datavyu.util.ConfigProperties;
 import org.datavyu.util.Constants;
 import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.jdesktop.application.Action;
@@ -405,7 +405,7 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
         this.selected = isSelected;
 
         if (selected) {
-            setBackground(ConfigurationProperties.getInstance().getSpreadSheetSelectedColor());
+            setBackground(ConfigProperties.getInstance().getSpreadSheetSelectedColor());
         } else {
             setBackground(backColor);
         }
