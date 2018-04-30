@@ -33,7 +33,7 @@ import org.datavyu.undoableedits.RemoveVariableEdit;
 import org.datavyu.undoableedits.RunScriptEdit;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import org.datavyu.util.ArrayDirection;
-import org.datavyu.util.ConfigurationProperties;
+import org.datavyu.util.ConfigProperties;
 import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.datavyu.util.FileFilters.*;
 import org.datavyu.util.FileSystemTreeModel;
@@ -81,7 +81,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     private static boolean redraw = true;
     private final Icon rubyIcon = new ImageIcon(getClass().getResource("/icons/ruby.png"));
     private final Icon opfIcon = new ImageIcon(getClass().getResource("/icons/datavyu.png"));
-    private String favoritesFolder = ConfigurationProperties.getInstance().getFavoritesFolder();
+    private String favoritesFolder = ConfigProperties.getInstance().getFavoritesFolder();
 
     /**
      * undo system elements
@@ -471,7 +471,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
                 if (selRow != -1) {
                     String path = convertTreePathToString(selPath);
-                    String baseDir = ConfigurationProperties.getInstance().getFavoritesFolder();
+                    String baseDir = ConfigProperties.getInstance().getFavoritesFolder();
                     baseDir = baseDir.substring(0, baseDir.lastIndexOf(File.separator));
                     final File file = new File(baseDir + File.separator + path);
 
@@ -1718,7 +1718,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     @Action
     public void setFavouritesFolder() {
         try {
-            ConfigurationProperties config = ConfigurationProperties.getInstance();
+            ConfigProperties config = ConfigProperties.getInstance();
             JFileChooser jd = new JFileChooser();
             FileFilter directoryFilter = new FileFilter() {
                 public boolean accept(File file) {
@@ -2546,7 +2546,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      * @param evt The event that triggered this action.
      */
     private void resetZoomMenuItemActionPerformed(final ActionEvent evt) {
-        ConfigurationProperties config = ConfigurationProperties.getInstance();
+        ConfigProperties config = ConfigProperties.getInstance();
         Font font = config.getSpreadSheetDataFont();
         changeFontSize(ZOOM_DEFAULT_SIZE - font.getSize());
     }
@@ -2674,7 +2674,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      * @param diff Add diff to current size.
      */
     public void changeFontSize(final int diff) {
-        ConfigurationProperties config = ConfigurationProperties.getInstance();
+        ConfigProperties config = ConfigProperties.getInstance();
         Font font = config.getSpreadSheetDataFont();
         config.setSpreadSheetDataFontSize(Math.max(Math.min(font.getSize() + diff, ZOOM_MAX_SIZE), ZOOM_MIN_SIZE));
         // Create and redraw fresh window pane so all of the fonts are new again.

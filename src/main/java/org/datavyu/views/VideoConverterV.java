@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.util.ConfigurationProperties;
+import org.datavyu.util.ConfigProperties;
 import org.datavyu.util.VideoConverter;
 
 import javax.swing.*;
@@ -135,7 +135,7 @@ public class VideoConverterV extends JFrame {
         class OpenUrlAction implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String conversion = ConfigurationProperties.getInstance().getConversionUrl();
+                String conversion = ConfigProperties.getInstance().getConversionUrl();
                 try {
                     URI uri = null;
                     try {
