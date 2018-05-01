@@ -97,16 +97,15 @@ public final class CreateNewCellController {
 
                         // notify the listeners
                         Datavyu.getView().getUndoSupport().postEdit(edit);
+                        newCell.setHighlighted(true);
                         break;
                     }
-
                     break;
                 }
             }
         }
 
         model.deselectAll();
-        newCell.setHighlighted(true);
     }
 
     /**
