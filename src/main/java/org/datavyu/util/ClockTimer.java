@@ -187,6 +187,10 @@ public final class ClockTimer {
             clockTime = time;
             // Notify a force sync
             notifyForceSync();
+        }else if (time < minTime){
+            clockTime = minTime;
+            // Notify a force sync
+            notifyForceSync();
         }
     }
 
