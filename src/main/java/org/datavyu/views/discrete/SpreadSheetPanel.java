@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
+import org.datavyu.controllers.CreateNewCellController;
 import org.datavyu.controllers.NewVariableController;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.event.component.FileDropEvent;
@@ -508,7 +509,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
             )) {
 
                 if(selectedColumn != null) {
-                    Cell c = selectedColumn.getVariable().createCell();
+                    CreateNewCellController controller = new CreateNewCellController();
+                    Cell c = controller.createCell(selectedColumn.getVariable());
+
                     CellValue v = c.getCellValue();
                     if(v instanceof MatrixCellValue) {
                         List<CellValue> vals = ((MatrixCellValue) v).getArguments();
