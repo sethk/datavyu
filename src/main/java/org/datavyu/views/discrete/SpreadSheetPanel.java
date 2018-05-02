@@ -18,11 +18,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
+import org.datavyu.controllers.CreateNewCellController;
 import org.datavyu.controllers.NewVariableController;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.event.component.FileDropEvent;
 import org.datavyu.event.component.FileDropEventListener;
 import org.datavyu.models.db.*;
+import org.datavyu.undoableedits.AddCellEdit;
 import org.datavyu.util.ArrayDirection;
 import org.datavyu.util.Constants;
 import org.datavyu.views.DataviewProgressBar;
@@ -54,6 +56,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import javax.swing.text.BadLocationException;
+import javax.swing.undo.UndoableEdit;
 
 
 /**
@@ -506,7 +509,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
             )) {
 
                 if(selectedColumn != null) {
-                    Cell c = selectedColumn.getVariable().createCell();
+                    CreateNewCellController controller = new CreateNewCellController();
+                    Cell c = controller.createCell(selectedColumn.getVariable());
+
                     CellValue v = c.getCellValue();
                     if(v instanceof MatrixCellValue) {
                         List<CellValue> vals = ((MatrixCellValue) v).getArguments();
@@ -516,6 +521,12 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                     }
                     c.setOnset(Datavyu.getVideoController().getCurrentTime());
                     c.setOffset(Datavyu.getVideoController().getCurrentTime());
+
+                    //Add the new cell to the Undo Support
+                    UndoableEdit edit = new AddCellEdit(selectedColumn.getVariable().getName(), c);
+                    Datavyu.getView().getComponent().revalidate();
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
+
                     Datavyu.getProjectController().getSpreadSheetPanel().redrawCells();
                     e.consume();
                     return true;
