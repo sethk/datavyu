@@ -552,7 +552,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      */
     public void showVariableList() {
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-        VariableListV listVarView = new VariableListV(mainFrame, true, projectController.getDataStore());
+        VariableListV listVarView = new VariableListV(mainFrame, false, projectController.getDataStore());
         listVarView.registerListeners();
         Datavyu.getApplication().show(listVarView);
     }
