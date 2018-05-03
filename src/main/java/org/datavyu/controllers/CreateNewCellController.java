@@ -104,8 +104,6 @@ public final class CreateNewCellController {
                 }
             }
         }
-
-        model.deselectAll();
     }
 
     /**
