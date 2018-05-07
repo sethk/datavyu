@@ -2135,7 +2135,10 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
                 logger.info("Menu Deselected - Selected Columns: " + Datavyu.getView().getSpreadsheetPanel().getDataStore().getSelectedVariables());
-                Datavyu.getView().getSpreadsheetPanel().requestFocus();
+                //We request the Focus only for the Windows version
+                if(Datavyu.getPlatform() == Platform.WINDOWS) {
+                    Datavyu.getView().getSpreadsheetPanel().requestFocus();
+                }
             }
 
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
