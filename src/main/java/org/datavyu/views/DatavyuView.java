@@ -38,6 +38,7 @@ import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.datavyu.util.FileFilters.*;
 import org.datavyu.util.FileSystemTreeModel;
 import org.datavyu.views.discrete.SpreadSheetPanel;
+import org.datavyu.views.discrete.SpreadsheetCell;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import org.jdesktop.application.Action;
@@ -52,6 +53,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -182,6 +184,9 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     private JTree favDrawer;
     // End of variables declaration//GEN-END:variables
     private TreeModel favTree;
+
+    /** A flag to differentiate between a Menu Mouse Event or a Hotkey call*/
+    private boolean menuMouseEventFlag = false;
 
     /**
      * Constructor.
@@ -1762,9 +1767,10 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      */
     @Action
     public void deleteColumn() {
-        DataStore ds = Datavyu.getProjectController().getDataStore();
-        List<Variable> selectedVariables = ds.getSelectedVariables();
+//        DataStore ds = Datavyu.getProjectController().getDataStore();
+//        List<Variable> selectedVariables = ds.getSelectedVariables();
 
+        List<Variable> selectedVariables = Datavyu.getProjectController().getLastSelectedVariables();
         // record the effect
         UndoableEdit edit = new RemoveVariableEdit(selectedVariables);
 
@@ -1782,12 +1788,10 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     public void hideColumn() {
         logger.info("Hidding columns");
         DataStore ds = Datavyu.getProjectController().getDataStore();
-
-        for (Variable var : ds.getSelectedVariables()) {
+        for (Variable var : Datavyu.getProjectController().getLastSelectedVariables()) {
             var.setHidden(true);
             var.setSelected(false);
         }
-
         getComponent().revalidate();
     }
 
@@ -1815,8 +1819,8 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     public void changeColumnName() {
         // Only one column should be selected, but just in case, we'll only
         // change the first column
-        Variable var = Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
-
+//        Variable var = Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
+        Variable var = Datavyu.getProjectController().getLastSelectedVariables().get(0);
         for (SpreadsheetColumn sCol : panel.getColumns()) {
             if (sCol.getVariable().equals(var)) {
                 sCol.showChangeVarNameDialog();
@@ -1831,13 +1835,19 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      */
     @Action
     public void deleteCells() {
-        List<Cell> selectedCells = Datavyu.getProjectController()
-                .getDataStore().getSelectedCells();
+        List<Cell> selectedCells = null;
+        if(menuMouseEventFlag) {
+            selectedCells = Datavyu.getProjectController().getLastSelectedCells();
+        }else{
+            selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
+        }
 
         // record the effect
         UndoableEdit edit = new RemoveCellEdit(selectedCells);
         // perform the operation
         new DeleteCellController(selectedCells);
+
+        menuMouseEventFlag = false;
 
         // notify the listeners
         Datavyu.getView().getUndoSupport().postEdit(edit);
@@ -1947,6 +1957,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         mainPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
+        menuBar.setFocusable(false);
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
         closeTabMenuItem = new javax.swing.JMenuItem();
@@ -2115,10 +2126,16 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         spreadsheetMenu.setName("spreadsheetMenu");
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
+                logger.info("Menu Selected - Selected Columns: " + Datavyu.getProjectController().getDataStore().getSelectedVariables());
+                Datavyu.getProjectController().setLastSelectedVariables(Datavyu.getProjectController().getDataStore().getSelectedVariables());
+                Datavyu.getProjectController().setLastSelectedCells(Datavyu.getProjectController().getDataStore().getSelectedCells());
                 spreadsheetMenuSelected(evt);
+                menuMouseEventFlag = true;
             }
 
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
+                logger.info("Menu Deselected - Selected Columns: " + Datavyu.getView().getSpreadsheetPanel().getDataStore().getSelectedVariables());
+                Datavyu.getView().getSpreadsheetPanel().requestFocus();
             }
 
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
@@ -2558,7 +2575,6 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      */
     private void spreadsheetMenuSelected(final MenuEvent evt) {
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(DatavyuView.class);
-
         int totalNumberOfColumns = Datavyu.getProjectController().getDataStore().getAllVariables().size();
 
         if (totalNumberOfColumns == 0) {
@@ -2645,8 +2661,14 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     }
 
     public void newCellLeft() {
-        List<Cell> selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
+        List<Cell> selectedCells = null;
+        if(menuMouseEventFlag) {
+            selectedCells = Datavyu.getProjectController().getLastSelectedCells();
+        }else{
+            selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
+        }
         new CreateNewCellController(selectedCells, ArrayDirection.LEFT);
+        menuMouseEventFlag = false;
     }
 
     /**
@@ -2660,8 +2682,14 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     }
 
     public void newCellRight() {
-        List<Cell> selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
+        List<Cell> selectedCells = null;
+        if(menuMouseEventFlag) {
+            selectedCells = Datavyu.getProjectController().getLastSelectedCells();
+        }else{
+            selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
+        }
         new CreateNewCellController(selectedCells, ArrayDirection.RIGHT);
+        menuMouseEventFlag = false;
     }
 
     /**
