@@ -1793,6 +1793,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
             var.setSelected(false);
         }
         getComponent().revalidate();
+        getSpreadsheetPanel().requestFocus();
     }
 
     /**
