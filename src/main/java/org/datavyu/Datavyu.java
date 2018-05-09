@@ -366,6 +366,52 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
                 default:
                     break;
             }
+
+            //Bypass the spreadsheet menu bar accelerator to handle new left and right cell shortcuts
+            if (modifiers == keyMask){
+
+                switch (getPlatform()){
+                    case WINDOWS:
+                        switch (WindowsOS.remapKeyChar(evt.getKeyChar())){
+                            case 'L':
+                                getView().newCellLeft();
+                                evt.consume();
+
+                                return true;
+
+                            case 'R':
+                                getView().newCellRight();
+                                evt.consume();
+
+                                return true;
+
+                            default:
+                                break;
+                        }
+
+                        break;
+
+                    default: {
+
+                        switch (evt.getKeyChar()) {
+                            case 'l':
+                                getView().newCellLeft();
+                                evt.consume();
+
+                                return true;
+
+                            case 'r':
+                                getView().newCellRight();
+                                evt.consume();
+
+                                return true;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
         }
 
         // BugzID:784 - Shift key is passed to Data Controller.
