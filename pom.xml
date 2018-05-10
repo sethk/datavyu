@@ -421,8 +421,8 @@
                         </executions>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>${basedir}/target/${project.build.finalName}.exe</outfile>
-                            <jar>${basedir}/target/${project.build.finalName}.jar</jar>
+                            <outfile>${basedir}/target/${project.build.finalName}-${os.detected.name}.exe</outfile>
+                            <jar>${basedir}/target/${project.build.finalName}-${os.detected.name}.jar</jar>
                             <stayAlive>true</stayAlive>
                             <icon>${basedir}/src/main/resources/icons/Datavyu.ico</icon>
                             <splash>
