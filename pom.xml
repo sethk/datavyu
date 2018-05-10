@@ -5,7 +5,7 @@
     <groupId>org.datavyu</groupId>
     <artifactId>datavyu</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.1</version>
+    <version>1.4.1-SNAPSHOT</version>
     <name>Datavyu</name>
     <url>http://datavyu.org</url>
 
@@ -243,12 +243,18 @@
         <url>http://github.com/databrary/datavyu</url>
     </scm>
 
-    <!-- The location for generating the website. -->
+    <!-- Datavyu Distribution Management Repositories -->
     <distributionManagement>
-        <site>
-            <id>website</id>
-            <url>scp://hudson@datavyu.org/var/www/datavyu/</url>
-        </site>
+        <repository>
+            <id>central</id>
+            <name>ip-10-0-0-114-releases</name>
+            <url>https://projects.databrary.org/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>ip-10-0-0-114-snapshots</name>
+            <url>https://projects.databrary.org/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <!-- External repositories - where to find third-party dependencies. -->
@@ -662,6 +668,7 @@
                             <!--<Class-Path>./</Class-Path>-->
                         </manifestEntries>
                     </archive>
+                    <classifier>${os.detected.name}</classifier>
                 </configuration>
             </plugin>
 
@@ -813,6 +820,15 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <!-- extension to add the os name to the jar file -->
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.0</version>
+            </extension>
+        </extensions>
     </build>
 
     <!--
