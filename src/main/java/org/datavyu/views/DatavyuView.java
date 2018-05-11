@@ -1521,33 +1521,25 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      * Action for editing vocabs.
      */
     @Action
-    public void showVocabEditor() {
-        vec.showView();
-    }
+    public void showVocabEditor() { vec.showView(); }
 
     /**
      * Action for showing the variable list.
      */
     @Action
-    public void showVariableList() {
-        Datavyu.getApplication().showVariableList();
-    }
+    public void showVariableList() { Datavyu.getApplication().showVariableList(); }
 
     /**
      * Action for showing the quicktime video controller.
      */
     @Action
-    public void showQTVideoController() {
-        Datavyu.getApplication().showDataController();
-    }
+    public void showQTVideoController() { Datavyu.getApplication().showDataController(); }
 
     /**
      * Action for showing the video converter dialog.
      */
     @Action
-    public void showVideoConverter() {
-        Datavyu.getApplication().showVideoConverter();
-    }
+    public void showVideoConverter() { Datavyu.getApplication().showVideoConverter(); }
 
     /**
      * Action for showing the about window.
@@ -2146,11 +2138,13 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
                 logger.info("Menu Deselected - Selected Columns: " + Datavyu.getView().getSpreadsheetPanel().getDataStore().getSelectedVariables());
                 //We request the Focus only for the Windows version
                 if(Datavyu.getPlatform() == Platform.WINDOWS) {
+                    menuMouseEventFlag = false;
                     Datavyu.getView().getSpreadsheetPanel().requestFocus();
                 }
             }
 
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
+                menuMouseEventFlag = false;
             }
         });
 
@@ -2587,7 +2581,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      */
     private void spreadsheetMenuSelected(final MenuEvent evt) {
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(DatavyuView.class);
-//        int totalNumberOfVisibleColumns = Datavyu.getProjectController().getDataStore().getAllVariables().size();
+
         int totalNumberOfVisibleColumns = Datavyu.getProjectController().getDataStore().getVisibleVariables().size();
 
         if (totalNumberOfVisibleColumns == 0) {
@@ -2601,7 +2595,6 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         }
 
         List<Variable> selectedCols = Datavyu.getProjectController().getDataStore().getSelectedVariables();
-//        List<Variable> selectedCols = Datavyu.getProjectController().getLastSelectedVariables();
 
         if (selectedCols.isEmpty()) {
             deleteColumnMenuItem.setEnabled(false);
@@ -2676,12 +2669,13 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
     public void newCellLeft() {
         List<Cell> selectedCells = null;
+
         if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag) {
-            selectedCells = Datavyu.getProjectController().getLastSelectedCells();
-            menuMouseEventFlag = false;
+                selectedCells = Datavyu.getProjectController().getLastSelectedCells();
         }else{
             selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
         }
+
         new CreateNewCellController(selectedCells, ArrayDirection.LEFT);
     }
 
@@ -2697,12 +2691,13 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
     public void newCellRight() {
         List<Cell> selectedCells = null;
+
         if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag) {
             selectedCells = Datavyu.getProjectController().getLastSelectedCells();
-            menuMouseEventFlag = false;
         }else{
             selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
         }
+
         new CreateNewCellController(selectedCells, ArrayDirection.RIGHT);
     }
 
