@@ -480,7 +480,7 @@ public final class ProjectController {
 
         // Show the data controller
         if (showController) {
-            Datavyu.getApplication().showDataController();
+            Datavyu.getApplication().showVideoController();
         }
 
     }

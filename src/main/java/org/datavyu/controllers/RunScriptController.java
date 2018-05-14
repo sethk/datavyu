@@ -68,12 +68,12 @@ public final class RunScriptController extends SwingWorker<Object, String> {
      *
      * @throws IOException If Unable to create the run script controller.
      */
-    public RunScriptController() throws IOException {
+    public RunScriptController(JFrame parent) throws IOException {
         DatavyuFileChooser fileChooser = new DatavyuFileChooser();
         fileChooser.addChoosableFileFilter(RbFilter.INSTANCE);
         fileChooser.setFileFilter(RbFilter.INSTANCE);
 
-        int result = fileChooser.showOpenDialog(Datavyu.getApplication().getMainFrame());
+        int result = fileChooser.showOpenDialog(parent);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             scriptFile = fileChooser.getSelectedFile();

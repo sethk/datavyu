@@ -144,7 +144,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     private javax.swing.JMenu openRecentFileMenu;
     private javax.swing.JMenuItem pullMenuItem;
     private javax.swing.JMenuItem pushMenuItem;
-    private javax.swing.JMenuItem qtControllerItem;
+    private javax.swing.JMenuItem videoControllerMenuItem;
     private javax.swing.JMenuItem videoConverterMenuItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem redoSpreadSheetMenuItem;
@@ -1531,8 +1531,8 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
      * Action for showing the quicktime video controller.
      */
     @Action
-    public void showQTVideoController() {
-        Datavyu.getApplication().showDataController();
+    public void showVideoController() {
+        Datavyu.getApplication().showVideoController();
     }
 
     /**
@@ -1687,7 +1687,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     @Action
     public void runScript() {
         try {
-            RunScriptController scriptC = new RunScriptController();
+            RunScriptController scriptC = new RunScriptController(Datavyu.getView().getFrame());
             // record the effect
             UndoableEdit edit = new RunScriptEdit(scriptC.getScriptFilePath());
             // notify the listeners
@@ -1991,7 +1991,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         pushMenuItem = new javax.swing.JMenuItem();
         pullMenuItem = new javax.swing.JMenuItem();
         controllerMenu = new javax.swing.JMenu();
-        qtControllerItem = new javax.swing.JMenuItem();
+        videoControllerMenuItem = new javax.swing.JMenuItem();
         videoConverterMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
@@ -2111,7 +2111,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
         menuBar.add(fileMenu);
 
-        spreadsheetMenu.setAction(actionMap.get("showQTVideoController"));
+        spreadsheetMenu.setAction(actionMap.get("showVideoController"));
         spreadsheetMenu.setName("spreadsheetMenu");
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
@@ -2304,9 +2304,9 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
         controllerMenu.setName("controllerMenu");
 
-        qtControllerItem.setAction(actionMap.get("showQTVideoController"));
-        qtControllerItem.setName("qtControllerItem");
-        controllerMenu.add(qtControllerItem);
+        videoControllerMenuItem.setAction(actionMap.get("showVideoController"));
+        videoControllerMenuItem.setName("videoControllerItem");
+        controllerMenu.add(videoControllerMenuItem);
 
         videoConverterMenuItem.setAction(actionMap.get("showVideoConverter"));
         videoConverterMenuItem.setName("videoConverterMenuItem");
