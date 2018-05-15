@@ -1537,8 +1537,6 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         Datavyu.getApplication().showVideoController();
     }
 
-    public void showQTVideoController() { Datavyu.getApplication().showDataController(); }
-
     /**
      * Action for showing the video converter dialog.
      */
