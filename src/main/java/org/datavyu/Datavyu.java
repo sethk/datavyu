@@ -580,7 +580,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
     /**
      * Action for showing the quicktime video controller.
      */
-    public void showDataController() {
+    public void showVideoController() {
         Datavyu.getApplication().show(videoController);
         videoController.setShouldBeVisible(true);
     }
@@ -597,8 +597,8 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the variable list.
      */
     public void showVariableList() {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-        VariableListV listVarView = new VariableListV(mainFrame, true, projectController.getDataStore());
+        JFrame mainFrame = Datavyu.getView().getFrame();
+        VariableListV listVarView = new VariableListV(mainFrame, false, projectController.getDataStore());
         listVarView.registerListeners();
         Datavyu.getApplication().show(listVarView);
     }
@@ -607,7 +607,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the Undo History.
      */
     public void showHistory() {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        JFrame mainFrame = Datavyu.getView().getFrame();
         SpreadsheetUndoManager undoManager = getView().getSpreadsheetUndoManager();
         UndoHistoryWindow history = new UndoHistoryWindow(mainFrame, false, undoManager);
         Datavyu.getApplication().show(history);
@@ -617,7 +617,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the about window.
      */
     public void showAboutWindow() {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        JFrame mainFrame = Datavyu.getView().getFrame();
         AboutV aboutWindow = new AboutV(mainFrame, false);
         Datavyu.getApplication().show(aboutWindow);
     }
@@ -650,7 +650,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the about window.
      */
     public void showUpdateWindow() {
-        Datavyu.getApplication().show(new UpdateVersion(Datavyu.getApplication().getMainFrame(), true));
+        Datavyu.getApplication().show(new UpdateVersion(Datavyu.getView().getFrame(), true));
     }
 
     /**
@@ -659,7 +659,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * @param s The message to present to the user.
      */
     public void showWarningDialog(final String s) {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        JFrame mainFrame = Datavyu.getView().getFrame();
         ResourceMap resourceMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(Datavyu.class);
         JOptionPane.showMessageDialog(mainFrame, s, resourceMap.getString("WarningDialog.title"),
                 JOptionPane.WARNING_MESSAGE);
