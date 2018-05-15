@@ -547,7 +547,8 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
          */
         if (datapanel.getCells().size() > 0) {
 //            datapanel.getCells().get(0).requestFocusInWindow();
-            datapanel.getSelectedCell().requestFocus();
+            SpreadsheetCell sc = datapanel.getSelectedCell();
+            if(sc != null) sc.requestFocus();
         } else {
             datapanel.requestFocusInWindow();
         }
