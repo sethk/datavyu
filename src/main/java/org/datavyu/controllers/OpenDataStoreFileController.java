@@ -22,10 +22,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.*;
-import org.datavyu.util.ConfigurationProperties;
+import org.datavyu.util.ConfigProperties;
 import org.datavyu.views.discrete.SpreadSheetPanel;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 
 import javax.swing.*;
 import java.io.*;
@@ -934,7 +932,7 @@ public final class OpenDataStoreFileController {
         }
         
         public void run() {
-            ConfigurationProperties config = ConfigurationProperties.getInstance();
+            ConfigProperties config = ConfigProperties.getInstance();
             if (config.getDoWarnOnIllegalColumnNames()) {
                 String message = "The following: \n" + names + " is/are no longer a valid column name(s)." +
                         "\nColumn names should begin with letter. Underscores are the only permitted special characters." +

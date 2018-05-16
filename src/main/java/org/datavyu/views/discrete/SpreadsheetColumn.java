@@ -20,7 +20,7 @@ import org.datavyu.Datavyu;
 import org.datavyu.models.db.*;
 import org.datavyu.undoableedits.ChangeNameVariableEdit;
 import org.datavyu.util.ClockTimer;
-import org.datavyu.util.ConfigurationProperties;
+import org.datavyu.util.ConfigProperties;
 import org.datavyu.util.Constants;
 import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.jdesktop.application.Action;
@@ -405,7 +405,7 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
         this.selected = isSelected;
 
         if (selected) {
-            setBackground(ConfigurationProperties.getInstance().getSpreadSheetSelectedColor());
+            setBackground(ConfigProperties.getInstance().getSpreadSheetSelectedColor());
         } else {
             setBackground(backColor);
         }
@@ -547,7 +547,8 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
          */
         if (datapanel.getCells().size() > 0) {
 //            datapanel.getCells().get(0).requestFocusInWindow();
-            datapanel.getSelectedCell().requestFocus();
+            SpreadsheetCell sc = datapanel.getSelectedCell();
+            if(sc != null) sc.requestFocus();
         } else {
             datapanel.requestFocusInWindow();
         }
@@ -750,7 +751,9 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
 
     @Override
     public void clockPeriodicSync(double clockTime) {
-        if(isSelected() && Datavyu.getVideoController().getCellHighlightAndFocus()) {
+        if(isSelected()
+            && Datavyu.getVideoController().getCellHighlightAndFocus()
+            && !Datavyu.getVideoController().getClockTimer().isStopped()) {
             focusNextCell();
         }
     }

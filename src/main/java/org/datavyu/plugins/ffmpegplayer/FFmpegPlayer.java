@@ -54,8 +54,9 @@ public class FFmpegPlayer extends JPanel {
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
 	 * and registering stream listeners for the video and audio. The stream
 	 * listener for the video will show the image in this JPanel.
+	 * @param fFmpegStreamViewer
 	 */
-	FFmpegPlayer() {
+	FFmpegPlayer(FFmpegStreamViewer fFmpegStreamViewer) {
 		setLayout(new BorderLayout());
 		movieStreamProvider = new MovieStreamProvider();
 
@@ -70,25 +71,24 @@ public class FFmpegPlayer extends JPanel {
 
 		addComponentListener(new ComponentListener() {
 
-            @Override
-            public void componentResized(ComponentEvent e) {
-                if (e.getID() == ComponentEvent.COMPONENT_RESIZED) {
-                    Rectangle rectangle = e.getComponent().getBounds();
-                    float scale = ((float) rectangle.height)/movieStreamProvider.getHeightOfView();
-                    displayStreamListener.setScale(scale);
-                    logger.info("Changed scale to %2.2f", scale);
-                }
-            }
+			@Override
+			public void componentResized(ComponentEvent e) {
+				if (e.getID() == ComponentEvent.COMPONENT_RESIZED) {
+					float scale = ((float) fFmpegStreamViewer.getHeight())/movieStreamProvider.getHeightOfView();
+					displayStreamListener.setScale(scale);
+					logger.info("Changed scale to %2.2f", scale);
+				}
+			}
 
-            @Override
-            public void componentMoved(ComponentEvent e) { }
+			@Override
+			public void componentMoved(ComponentEvent e) { }
 
-            @Override
-            public void componentShown(ComponentEvent e) { }
+			@Override
+			public void componentShown(ComponentEvent e) { }
 
-            @Override
-            public void componentHidden(ComponentEvent e) { }
-        });
+			@Override
+			public void componentHidden(ComponentEvent e) { }
+		});
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class FFmpegPlayer extends JPanel {
 			// Open the stream
 			DatavyuVersion localVersion = DatavyuVersion.getLocalVersion();
 	        movieStreamProvider.open(fileName, localVersion.getVersion(), reqColorSpace, input);
-	        
+
 	        // Load and display first frame.
 			movieStreamProvider.setCurrentTime(0);
             movieStreamProvider.startVideoListeners();

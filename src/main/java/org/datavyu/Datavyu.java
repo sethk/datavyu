@@ -366,6 +366,52 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
                 default:
                     break;
             }
+
+            //Bypass the spreadsheet menu bar accelerator to handle new left and right cell shortcuts
+            if (modifiers == keyMask){
+
+                switch (getPlatform()){
+                    case WINDOWS:
+                        switch (WindowsOS.remapKeyChar(evt.getKeyChar())){
+                            case 'L':
+                                getView().newCellLeft();
+                                evt.consume();
+
+                                return true;
+
+                            case 'R':
+                                getView().newCellRight();
+                                evt.consume();
+
+                                return true;
+
+                            default:
+                                break;
+                        }
+
+                        break;
+
+                    default: {
+
+                        switch (evt.getKeyChar()) {
+                            case 'l':
+                                getView().newCellLeft();
+                                evt.consume();
+
+                                return true;
+
+                            case 'r':
+                                getView().newCellRight();
+                                evt.consume();
+
+                                return true;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
         }
 
         // BugzID:784 - Shift key is passed to Data Controller.
@@ -534,7 +580,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
     /**
      * Action for showing the quicktime video controller.
      */
-    public void showDataController() {
+    public void showVideoController() {
         Datavyu.getApplication().show(videoController);
         videoController.setShouldBeVisible(true);
     }
@@ -551,8 +597,8 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the variable list.
      */
     public void showVariableList() {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-        VariableListV listVarView = new VariableListV(mainFrame, true, projectController.getDataStore());
+        JFrame mainFrame = Datavyu.getView().getFrame();
+        VariableListV listVarView = new VariableListV(mainFrame, false, projectController.getDataStore());
         listVarView.registerListeners();
         Datavyu.getApplication().show(listVarView);
     }
@@ -561,7 +607,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the Undo History.
      */
     public void showHistory() {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        JFrame mainFrame = Datavyu.getView().getFrame();
         SpreadsheetUndoManager undoManager = getView().getSpreadsheetUndoManager();
         UndoHistoryWindow history = new UndoHistoryWindow(mainFrame, false, undoManager);
         Datavyu.getApplication().show(history);
@@ -571,7 +617,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the about window.
      */
     public void showAboutWindow() {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        JFrame mainFrame = Datavyu.getView().getFrame();
         AboutV aboutWindow = new AboutV(mainFrame, false);
         Datavyu.getApplication().show(aboutWindow);
     }
@@ -580,7 +626,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for opening the support site
      */
     public void openSupportSite() {
-        String url = ConfigurationProperties.getInstance().getSupportSiteUrl();
+        String url = ConfigProperties.getInstance().getSupportSiteUrl();
         try {
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
         } catch (java.io.IOException e) {
@@ -592,7 +638,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for opening the guide site
      */
     public void openGuideSite() {
-        String url = ConfigurationProperties.getInstance().getUserGuideUrl();
+        String url = ConfigProperties.getInstance().getUserGuideUrl();
         try {
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
         } catch (java.io.IOException e) {
@@ -604,7 +650,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * Action for showing the about window.
      */
     public void showUpdateWindow() {
-        Datavyu.getApplication().show(new UpdateVersion(Datavyu.getApplication().getMainFrame(), true));
+        Datavyu.getApplication().show(new UpdateVersion(Datavyu.getView().getFrame(), true));
     }
 
     /**
@@ -613,7 +659,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
      * @param s The message to present to the user.
      */
     public void showWarningDialog(final String s) {
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        JFrame mainFrame = Datavyu.getView().getFrame();
         ResourceMap resourceMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(Datavyu.class);
         JOptionPane.showMessageDialog(mainFrame, s, resourceMap.getString("WarningDialog.title"),
                 JOptionPane.WARNING_MESSAGE);
@@ -852,7 +898,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
             MacOS.setOSXPressAndHoldValue(true);
         }
         logger.info("Saving configuration properties.");
-        ConfigurationProperties.save();
+        ConfigProperties.save();
         super.shutdown();
     }
 
