@@ -1595,7 +1595,7 @@ public final class VideoController extends DatavyuDialog
      * Force sync between streams up to a threshold
      */
     private void syncStreams() {
-        long clockTime = (long) clockTimer.getStreamTime();
+        long clockTime = (long) clockTimer.getClockTime();
         double frameRate = frameRateController.getFrameRate();
         long stepSize = (long)(MILLI_IN_SEC / frameRate);
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
