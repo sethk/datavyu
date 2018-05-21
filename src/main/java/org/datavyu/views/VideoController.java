@@ -1565,8 +1565,7 @@ public final class VideoController extends DatavyuDialog
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
-                    // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize) - stepSize, 0),
+                    long newTime = Math.min(Math.max(trackTime - stepSize, 0),
                             trackModel.getDuration());
 
                     logger.info("Jog back from " + trackTime + " milliseconds to " + newTime + " milliseconds");
@@ -1576,7 +1575,7 @@ public final class VideoController extends DatavyuDialog
                 // otherwise we can't step
             }
             // Update the clock timer with the new time
-            long newTime = clockTime - (clockTime % stepSize) - stepSize;
+            long newTime = clockTime - stepSize;
             clockTimer.setTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
@@ -1642,8 +1641,7 @@ public final class VideoController extends DatavyuDialog
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
-                    // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize) + stepSize, 0),
+                    long newTime = Math.min(Math.max(trackTime + stepSize, 0),
                             trackModel.getDuration());
 
                     logger.info("Jog forward from " + trackTime + " milliseconds to " + newTime + " milliseconds.");
@@ -1653,7 +1651,7 @@ public final class VideoController extends DatavyuDialog
                 // otherwise we can't step
             }
             // Update the clock timer with the new time
-            long newTime = clockTime - (clockTime % stepSize) + stepSize;
+            long newTime = clockTime + stepSize;
             clockTimer.setTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
