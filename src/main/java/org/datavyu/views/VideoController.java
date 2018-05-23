@@ -1552,7 +1552,7 @@ public final class VideoController extends DatavyuDialog
             syncStreams();
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
             double frameRate = frameRateController.getFrameRate();
-            long clockTime = (long) clockTimer.getStreamTime();
+            long clockTime = (long) clockTimer.getClockTime();
             long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
             for (StreamViewer streamViewer : streamViewers) {
                 // TODO: Tie offset & duration to stream viewer only and pull it in the track model
@@ -1595,7 +1595,7 @@ public final class VideoController extends DatavyuDialog
      * Force sync between streams up to a threshold
      */
     private void syncStreams() {
-        long clockTime = (long) clockTimer.getStreamTime();
+        long clockTime = (long) clockTimer.getClockTime();
         double frameRate = frameRateController.getFrameRate();
         long stepSize = (long)(MILLI_IN_SEC / frameRate);
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
@@ -1629,7 +1629,7 @@ public final class VideoController extends DatavyuDialog
         } else {
             syncStreams();
             double frameRate = frameRateController.getFrameRate();
-            long clockTime = (long) clockTimer.getStreamTime();
+            long clockTime = (long) clockTimer.getClockTime();
             long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
             for (StreamViewer streamViewer : streamViewers) {
