@@ -225,4 +225,6 @@ public class FFmpegPlayer extends JPanel {
 	boolean isPlaying() {
 	    return movieStreamProvider.isPlaying();
     }
+
+    public double getFPS() { return movieStreamProvider.getAverageFrameRate(); }
 }

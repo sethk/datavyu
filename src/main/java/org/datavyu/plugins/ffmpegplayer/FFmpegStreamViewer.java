@@ -105,9 +105,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    protected float getPlayerFramesPerSecond() {
-        return 30; // TODO: Get this frame rate from the native stream
-    }
+    protected float getPlayerFramesPerSecond() { return (float) player.getFPS(); }
 
     @Override
     public long getDuration() {
