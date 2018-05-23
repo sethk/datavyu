@@ -14,10 +14,8 @@ enum IF_TEMPLATE {
 }
 
 public class IfStatement extends CommandBlock {
-    List<Command> commands;
     String cell1;
     String cell2;
-    int nestLevel;
     IF_TEMPLATE template;
 
     Map<IF_TEMPLATE, String> ifTemplates;
@@ -76,5 +74,10 @@ public class IfStatement extends CommandBlock {
         }
         sb.append(indent + "end");
         return sb.toString();
+    }
+
+    @Override
+    public void modifyCommand(int position, String s) {
+
     }
 }

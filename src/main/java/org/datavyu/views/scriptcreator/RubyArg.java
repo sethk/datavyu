@@ -58,7 +58,11 @@ public class RubyArg {
     }
 
     public String getValue() {
-        return value;
+        if(value.length() > 0)
+            return value;
+        else if(defaultValue.length() > 0)
+            return defaultValue;
+        return name;
     }
 
     public void setValue(String value) {
@@ -103,13 +107,11 @@ public class RubyArg {
 
     @Override
     public String toString() {
-        System.out.println("TYPE");
-        System.out.println(type);
-        if(value.length() > 0) {
+        if(getValue().length() > 0) {
             if(type.equalsIgnoreCase("string")) {
-                return name + " = " + "\"" + value + "\"";
+                return "\"" + value + "\"";
             } else {
-                return name + " = " + value;
+                return value;
             }
         } else {
             if(type.equalsIgnoreCase("string")) {

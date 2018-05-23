@@ -176,6 +176,12 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         return params;
     }
 
+    public void updateFromCursor(int column, String text) {
+        String currentText = this.toString();
+        // Now figure out where in this string the cursor is wanting to edit
+//        if(column)
+    }
+
     public String getValue(int index) {
         return this.args.get(index).getValue();
     }
@@ -226,5 +232,37 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
 
     public void setReturnValue(RubyArg returnValue) {
         this.returnValue = returnValue;
+    }
+
+    @Override
+    public void modifyCommand(int position, String s) {
+        position = position - getNestLevel(); // We dont want to count the tabs
+        String cmdStr = toString();
+        int cmdName = cmdStr.indexOf("(");
+        System.out.println("MOD COMMAND");
+        if(position < cmdName) {
+            // Theyre modifying the name of the command... should we allow this?
+            if(getReturnValue() != null) {
+                // See if theyre trying to edit the return value name
+            }
+        } else if(position > cmdName) {
+            // Modifying an argument, figure out which one
+            position = position - (cmdName + 1);
+            String[] args = cmdStr.substring(cmdName+1, cmdStr.length()-1).split(",");
+            for(int i = 0; i < args.length; i++) {
+                String a = args[i];
+                if(position - a.length() <= 0) {
+                    // This is the argument we want to modify
+                    RubyArg arg = getArgs().get(i);
+                    String val = arg.getValue();
+                    val = val.substring(0, position) + s + val.substring(position, val.length());
+                    arg.setValue(val);
+                    System.out.println("Changing val " + val);
+                    System.out.println(toString());
+                } else {
+                    position = position - a.length();
+                }
+            }
+        }
     }
 }

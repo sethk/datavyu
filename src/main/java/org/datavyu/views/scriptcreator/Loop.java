@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Loop extends CommandBlock {
-    List<Command> commands;
     String variable;
     String cellName;
-    int nestLevel;
 
     public Loop(String variable) {
         this.variable = variable;
@@ -54,5 +52,10 @@ public class Loop extends CommandBlock {
         }
         s += indent + "end";
         return s;
+    }
+
+    @Override
+    public void modifyCommand(int position, String s) {
+
     }
 }

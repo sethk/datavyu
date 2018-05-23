@@ -7,7 +7,6 @@ import java.util.List;
 
 public class CommandBlock extends Command {
     List<Command> commands;
-    int nestLevel;
 
     public CommandBlock() {
         nestLevel = 1;
@@ -31,5 +30,18 @@ public class CommandBlock extends Command {
             sb.append(c.toString() + "\n");
         }
         return sb.toString();
+    }
+
+    public List<Command> getCommands() {
+        return commands;
+    }
+
+    public void setCommands(List<Command> commands) {
+        this.commands = commands;
+    }
+
+    @Override
+    public void modifyCommand(int position, String c) {
+        // Do nothing, we should only ever be modifying the things inside of a command block
     }
 }

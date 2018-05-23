@@ -35,4 +35,9 @@ public class Command  {
     public int countLines() {
         return toString().split("\r\n|\r|\n", -1).length;
     }
+
+    public void modifyCommand(int position, String c) {
+        position = position - getNestLevel();
+        command = command.substring(position) + c + command.substring(position, command.length()-1);
+    }
 }

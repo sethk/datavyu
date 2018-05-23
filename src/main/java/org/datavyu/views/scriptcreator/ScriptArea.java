@@ -1,6 +1,9 @@
 package org.datavyu.views.scriptcreator;
 
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyledTextArea;
@@ -13,6 +16,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static javafx.scene.input.KeyCode.F;
+import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
+import static javafx.scene.input.KeyCombination.SHIFT_DOWN;
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import org.fxmisc.wellbehaved.event.InputHandler;
+
 
 public class ScriptArea extends CodeArea {
     List<Command> commands;
@@ -58,6 +68,36 @@ public class ScriptArea extends CodeArea {
                     this.setStyleSpans(0, computeHighlighting(this.getText()));
                 });
         this.replaceText(0, 0, baseTextTop + "\n" + baseTextBottom);
+
+        EventHandler<KeyEvent> modifyCommand = e -> {
+            int pos = this.getCaretPosition();
+            // Now get the line that this position is on
+            String[] lines = this.getText().split("\n");
+            int curPos = 0;
+            String foundLine = "";
+            for(String l : lines) {
+                curPos += l.length();
+                if(curPos >= pos) {
+                    foundLine = l.trim();
+                    break;
+                }
+            }
+            for(Command c : getAllCommands()) {
+                System.out.println(c);
+            }
+            System.out.println(foundLine);
+            Command c = findBlock(foundLine);
+            System.out.println(c);
+
+            // Now we've found the command the user is trying to edit
+            // we should now figure out what about that command theyre modifying
+            c.modifyCommand(this.getCaretColumn(), e.getCharacter());
+            System.out.println("MODIFIED " + c.toString());
+            e.consume();
+            refreshDisplay();
+            this.moveTo(pos+1);
+        };
+        this.addEventFilter(KeyEvent.KEY_TYPED, modifyCommand);
     }
 
     public void addCommand(RubyClass method) {
@@ -79,23 +119,39 @@ public class ScriptArea extends CodeArea {
         System.out.println(displayStr);
     }
 
-    private Command findBlock(int lineNumber) {
-
+    private List<Command> getAllCommands() {
+        return getAllCommandsHelper(new ArrayList<>(), commands);
     }
 
-    private Command findBlockHelper(Command currentBlock, int lineNumber, int currentLine) {
-        int linesInBlock = currentBlock.countLines();
-        if(currentLine + linesInBlock > lineNumber) {
-            // See if one of the blocks in this block is a narrower target
-            CommandBlock cb = ((CommandBlock) currentBlock);
-            for(int i = 0; i < cb.commands.size(); i++) {
-                Command c = cb.commands.get(i);
-                if(c instanceof CommandBlock) {
-                    // We need to test this block to see if its better
-                    
+    private List<Command> getAllCommandsHelper(List<Command> foundCommands, List<Command> parentBlock) {
+        for(Command c : parentBlock) {
+            foundCommands.add(c);
+            if(c instanceof CommandBlock) {
+                CommandBlock cb = (CommandBlock) c;
+                foundCommands.addAll(getAllCommandsHelper(new ArrayList<>(), cb.getCommands()));
+            }
+        }
+        return foundCommands;
+    }
+
+    /*
+    Find the smallest block that contains this line
+     */
+    private Command findBlock(String line) {
+        int minCount = Integer.MAX_VALUE;
+        Command command = null;
+
+        List<Command> allCommands = getAllCommands();
+        for(Command c : allCommands) {
+            if(c.toString().contains(line)) {
+                int numLines = c.toString().split("\n").length;
+                if(minCount > numLines) {
+                    minCount = numLines;
+                    command = c;
                 }
             }
         }
+        return command;
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
