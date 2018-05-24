@@ -18,9 +18,13 @@ import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
+import org.datavyu.plugins.nativeosx.NativeOSXPlayer;
+import org.datavyu.util.FrameRate;
 import org.datavyu.views.VideoController;
 
+import java.awt.*;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class JfxApplication extends Application {
 
@@ -71,7 +75,7 @@ public class JfxApplication extends Application {
     }
 
     public float getFrameRate() {
-        return (float) 30;
+        return 30;
     }
 
     public long getDuration() {
