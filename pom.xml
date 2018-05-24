@@ -1090,6 +1090,13 @@
             <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>
         </dependency>
 
+        <!-- Using ByteDeco to get the FPS for the JavaFX plugin -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>
