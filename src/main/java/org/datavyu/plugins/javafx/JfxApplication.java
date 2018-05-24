@@ -75,7 +75,7 @@ public class JfxApplication extends Application {
     }
 
     public float getFrameRate() {
-        return 30;
+        return FrameRate.createDefaultFrameRate(dataFile).getFPS();
     }
 
     public long getDuration() {
