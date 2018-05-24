@@ -120,35 +120,35 @@ public final class CreateNewCellController {
         // BugzID:758 - Before creating a new cell and setting onset. We need
         // the last created cell and need to set the previous cells offset...
         // But only if it is not 0.
-        Cell lastCreatedCell = Datavyu.getProjectController().getLastCreatedCell();
+        Cell lastSelectedCell = Datavyu.getProjectController().getLastSelectedCell();
 
         //To set the previous offset -- NOTE THAT THIS IS NOT UNDOABLE
-        if (setPrevOffset && lastCreatedCell != null) {
+        if (setPrevOffset && lastSelectedCell != null) {
             // BugzID:1285 - Only update the last created cell if it is in
             // the same column as the newly created cell.
             for (Variable var : model.getSelectedVariables()) {
-                if (var.contains(lastCreatedCell)) {
-                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
+                if (var.contains(lastSelectedCell)) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(lastSelectedCell, lastSelectedCell.getOffset(),
                         milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
                     Datavyu.getView().getUndoSupport().postEdit(edit);
-                    lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
+                    lastSelectedCell.setOffset(Math.max(0, (milliseconds - 1)));
                 }
             }
 
             Variable lastCreated = Datavyu.getProjectController().getLastCreatedVariable();
             if (model.getSelectedVariables().isEmpty() && lastCreated != null) {
-                if (lastCreated.contains(lastCreatedCell)) {
-                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
+                if (lastCreated.contains(lastSelectedCell)) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(lastSelectedCell, lastSelectedCell.getOffset(),
                         milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
                     Datavyu.getView().getUndoSupport().postEdit(edit);
-                    lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
+                    lastSelectedCell.setOffset(Math.max(0, (milliseconds - 1)));
                 }
             }
         }
 
         //If there is no last created cell, use time to determine appopriate cell in
         //FIRST selected variable or the variable belonging to the FIRST selected cell
-        if (setPrevOffset && lastCreatedCell == null){
+        if (setPrevOffset && lastSelectedCell == null){
               Variable v = null;
               if(!Datavyu.getProjectController().getDataStore().getSelectedVariables().isEmpty()){
                   Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
