@@ -38,9 +38,6 @@ public final class CreateNewCellController {
     /** The logger instance for this class */
     private static Logger logger = LogManager.getLogger(CreateNewCellController.class);
 
-    /** The view (the spreadsheet) for this controller */
-    private SpreadSheetPanel view; // TODO: Check if we can remove 'view' from here?
-
     /** The model (the database) for this controller */
     private DataStore model;
 
@@ -48,8 +45,6 @@ public final class CreateNewCellController {
      * Default constructor.
      */
     public CreateNewCellController() {
-        // The spreadsheet is the view for this controller.
-        view = (SpreadSheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDataStore();
     }
 
@@ -64,7 +59,6 @@ public final class CreateNewCellController {
      */
     public CreateNewCellController(final List<Cell> sourceCells,
                                    final ArrayDirection direction) {
-        view = (SpreadSheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDataStore();
 
         Cell newCell = null;
@@ -113,8 +107,6 @@ public final class CreateNewCellController {
      * @param setPrevOffset Determine whether or not to set previous offset to milliseconds-1
      */
     public CreateNewCellController(final long milliseconds, boolean setPrevOffset) {
-        // The spreadsheet is the view for this controller.
-        view = (SpreadSheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDataStore();
 
         // BugzID:758 - Before creating a new cell and setting onset. We need
