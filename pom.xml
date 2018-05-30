@@ -1068,16 +1068,25 @@
             <version>2.9.4</version>
         </dependency>
 
+        <!-- FFmpeg 4.0 -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>ffmpeg-libs</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>ffmpeg-plugin</artifactId>
             <version>0.16</version>
+        </dependency>
+        -->
+
+        <dependency>
+            <groupId>datavyu</groupId>
+            <artifactId>ffmpeg-plugin</artifactId>
+            <version>0.17-20180530.214910-9</version>
         </dependency>
 
         <!-- Updates with JRE from java version >= 1.7 -->

@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 public class FFmpegPlayer extends JPanel {
@@ -48,7 +50,7 @@ public class FFmpegPlayer extends JPanel {
 	/** This is the audio sound stream listener */
 	private AudioSoundStreamListener audioSoundStreamListener;
 
-	private VideoDisplayStreamListener displayStreamListener;
+	private VideoStreamListenerContainer displayStreamListener;
 
 	/**
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
@@ -61,12 +63,12 @@ public class FFmpegPlayer extends JPanel {
 		movieStreamProvider = new MovieStreamProvider();
 
 		// Add the audio sound listener
-        audioSoundStreamListener = new AudioSoundStreamListener(movieStreamProvider);
+		audioSoundStreamListener = new AudioSoundStreamListener(movieStreamProvider);
 		movieStreamProvider.addAudioStreamListener(audioSoundStreamListener);
 
 		// Add video display
-        displayStreamListener = new VideoDisplayStreamListener(movieStreamProvider, this, BorderLayout.CENTER,
-                reqColorSpace);
+		displayStreamListener = new VideoStreamListenerContainer(movieStreamProvider, this, BorderLayout.CENTER,
+				reqColorSpace);
 		movieStreamProvider.addVideoStreamListener(displayStreamListener);
 
 		addComponentListener(new ComponentListener() {
@@ -75,7 +77,7 @@ public class FFmpegPlayer extends JPanel {
 			public void componentResized(ComponentEvent e) {
 				if (e.getID() == ComponentEvent.COMPONENT_RESIZED) {
 					float scale = ((float) fFmpegStreamViewer.getHeight())/movieStreamProvider.getHeightOfView();
-					displayStreamListener.setScale(scale);
+//					displayStreamListener.setScale(scale);
 					logger.info("Changed scale to %2.2f", scale);
 				}
 			}
@@ -197,7 +199,7 @@ public class FFmpegPlayer extends JPanel {
 	}
 
 	public void setScale(float scale) {
-	    displayStreamListener.setScale(scale);
+//	    displayStreamListener.setScale(scale);
     }
 
 	/**
