@@ -116,10 +116,12 @@ public final class CreateNewCellController {
             if(model.getSelectedVariables().size() == 1){
                 //We know that we have only one selected column
                 Cell cellToEdit = findClosestCell(model.getSelectedVariables().get(0),milliseconds);
-                UndoableEdit edit = new ChangeOffsetCellEdit(cellToEdit, cellToEdit.getOffset(),
-                        milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
-                Datavyu.getView().getUndoSupport().postEdit(edit);
-                cellToEdit.setOffset(Math.max(0, (milliseconds - 1)));
+                if(cellToEdit != null) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(cellToEdit, cellToEdit.getOffset(),
+                            milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
+                    cellToEdit.setOffset(Math.max(0, (milliseconds - 1)));
+                }
             }else{
                 //There is more than one selected column; we parse the column of the selected cell
                 if(Datavyu.getProjectController().getLastSelectedCell() != null){
@@ -137,7 +139,9 @@ public final class CreateNewCellController {
     }
 
     //need to refactor this
-    private Cell findClosestCell(final Variable column,final long timeInMillis){
+    private Cell findClosestCell(final Variable column,final long timeInMillis) {
+        if (column.getCells().size() == 0) return null;
+
         //find the closest onset to the current time of the VideoController
         List<Cell> cells = new ArrayList<>();
         List<Cell> cellsToEdit = new ArrayList<>();
