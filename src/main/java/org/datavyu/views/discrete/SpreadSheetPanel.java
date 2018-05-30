@@ -494,7 +494,11 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
             // User is attempting to move to the column to the left.
             if ((e.getKeyCode() == KeyEvent.VK_LEFT)
                     && platformCellMovementMask(e)) {
-                selectColumn(selectedColumn,-1);
+                if(selectedColumn == null) {
+                    selectColumn(Datavyu.getView().getSpreadsheetPanel().getVisibleColumns().get(-1), 0); // select last visible column
+                } else{
+                    selectColumn(selectedColumn, -1);
+                }
                 e.consume();
                 
                 return true;
@@ -502,7 +506,12 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                 // User is attempting to move to the column to the right.
             } else if ((e.getKeyCode() == KeyEvent.VK_RIGHT)
                     && platformCellMovementMask(e)) {
-                selectColumn(selectedColumn,+1);
+
+                if(selectedColumn == null){
+                    selectColumn(Datavyu.getView().getSpreadsheetPanel().getVisibleColumns().get(0), 0); // select first visible column
+                } else{
+                    selectColumn(selectedColumn,+1);
+                }
                 e.consume();
                 
                 return true;
