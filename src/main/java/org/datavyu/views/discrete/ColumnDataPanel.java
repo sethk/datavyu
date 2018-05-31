@@ -322,13 +322,15 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                         selectedCell.getCell().setHighlighted(false);
                         selectedCell.getCell().setSelected(false);
+                        int pos = selectedCell.getDataView().getEdTracker().indexOfCurrentEditor();
                         requestFocus();
 
                         SpreadsheetCell cellUP = getCellsTemporally().get(cellId - 1);
 
                         cellUP.getCell().setHighlighted(true);
-                        cellUP.requestFocus();
                         cellUP.getCell().setSelected(true);
+                        cellUP.getDataView().getEdTracker().setEditor(cellUP.getDataView().getEdTracker().getEditorAtIndex(pos));
+                        cellUP.requestFocus();
 
                         e.consume();
 
@@ -341,13 +343,15 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                         selectedCell.getCell().setHighlighted(false);
                         selectedCell.getCell().setSelected(false);
+                        int pos = selectedCell.getDataView().getEdTracker().indexOfCurrentEditor();
                         requestFocus();
 
                         SpreadsheetCell cellDOWN = getCellsTemporally().get(cellId + 1);
 
                         cellDOWN.getCell().setHighlighted(true);
-                        cellDOWN.requestFocus();
                         cellDOWN.getCell().setSelected(true);
+                        cellDOWN.getDataView().getEdTracker().setEditor(cellDOWN.getDataView().getEdTracker().getEditorAtIndex(pos));
+                        cellDOWN.requestFocus();
 
                         e.consume();
 

@@ -27,6 +27,7 @@ import org.datavyu.util.ArrayDirection;
 import org.datavyu.views.discrete.SpreadSheetPanel;
 
 import javax.swing.undo.UndoableEdit;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,9 +39,6 @@ public final class CreateNewCellController {
     /** The logger instance for this class */
     private static Logger logger = LogManager.getLogger(CreateNewCellController.class);
 
-    /** The view (the spreadsheet) for this controller */
-    private SpreadSheetPanel view; // TODO: Check if we can remove 'view' from here?
-
     /** The model (the database) for this controller */
     private DataStore model;
 
@@ -48,8 +46,6 @@ public final class CreateNewCellController {
      * Default constructor.
      */
     public CreateNewCellController() {
-        // The spreadsheet is the view for this controller.
-        view = (SpreadSheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDataStore();
     }
 
@@ -64,7 +60,6 @@ public final class CreateNewCellController {
      */
     public CreateNewCellController(final List<Cell> sourceCells,
                                    final ArrayDirection direction) {
-        view = (SpreadSheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDataStore();
 
         Cell newCell = null;
@@ -113,77 +108,73 @@ public final class CreateNewCellController {
      * @param setPrevOffset Determine whether or not to set previous offset to milliseconds-1
      */
     public CreateNewCellController(final long milliseconds, boolean setPrevOffset) {
-        // The spreadsheet is the view for this controller.
-        view = (SpreadSheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDataStore();
 
-        // BugzID:758 - Before creating a new cell and setting onset. We need
-        // the last created cell and need to set the previous cells offset...
-        // But only if it is not 0.
-        Cell lastCreatedCell = Datavyu.getProjectController().getLastCreatedCell();
-
-        //To set the previous offset -- NOTE THAT THIS IS NOT UNDOABLE
-        if (setPrevOffset && lastCreatedCell != null) {
-            // BugzID:1285 - Only update the last created cell if it is in
-            // the same column as the newly created cell.
-            for (Variable var : model.getSelectedVariables()) {
-                if (var.contains(lastCreatedCell)) {
-                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
-                        milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
-                    Datavyu.getView().getUndoSupport().postEdit(edit);
-                    lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
-                }
-            }
-
-            Variable lastCreated = Datavyu.getProjectController().getLastCreatedVariable();
-            if (model.getSelectedVariables().isEmpty() && lastCreated != null) {
-                if (lastCreated.contains(lastCreatedCell)) {
-                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
-                        milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
-                    Datavyu.getView().getUndoSupport().postEdit(edit);
-                    lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
-                }
-            }
-        }
-
-        //If there is no last created cell, use time to determine appopriate cell in
-        //FIRST selected variable or the variable belonging to the FIRST selected cell
-        if (setPrevOffset && lastCreatedCell == null){
-              Variable v = null;
-              if(!Datavyu.getProjectController().getDataStore().getSelectedVariables().isEmpty()){
-                  Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
-              }
-              else{
-                  if(!Datavyu.getProjectController().getDataStore().getSelectedCells().isEmpty()){
-                          Cell selectedC = Datavyu.getProjectController().getDataStore().getSelectedCells().get(0);
-                          for(Variable v1 : Datavyu.getProjectController().getDataStore().getVisibleVariables()){
-                                  if(v1.contains(selectedC)){
-                                      v = v1;
-                                      break;
-                                  }
-                          }
-                  }
-              }
-
-              if(v != null){
-                    Cell oneBefore = null;
-                    for(Cell c : v.getCellsTemporally()){
-                          if(c.getOnset() > milliseconds){
-                              break;
-                          }
-                          oneBefore = c;
-                    }
-                    if (oneBefore != null){
-                        UndoableEdit edit = new ChangeOffsetCellEdit(oneBefore, oneBefore.getOffset(),
+        //We see if setPrevOffset is true
+        if(setPrevOffset){
+            //To avoid conflict when having multiple column selected, we use the Column of the selected cell
+            if(model.getSelectedVariables().size() == 1){
+                //We know that we have only one selected column
+                Cell cellToEdit = findClosestCell(model.getSelectedVariables().get(0),milliseconds);
+                if(cellToEdit != null) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(cellToEdit, cellToEdit.getOffset(),
                             milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
-                        Datavyu.getView().getUndoSupport().postEdit(edit);
-                        oneBefore.setOffset(Math.max(0, (milliseconds - 1)));
-                    }
-              }
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
+                    cellToEdit.setOffset(Math.max(0, (milliseconds - 1)));
+                }
+            }else{
+                //There is more than one selected column; we parse the column of the selected cell
+                if(Datavyu.getProjectController().getLastSelectedCell() != null){
+                    Variable columnToParse = model.getVariable(Datavyu.getProjectController().getLastSelectedCell());
+                    Cell cellToEdit = findClosestCell(columnToParse, milliseconds);
+                    UndoableEdit edit = new ChangeOffsetCellEdit(cellToEdit, cellToEdit.getOffset(),
+                            milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
+                    cellToEdit.setOffset(Math.max(0, (milliseconds - 1)));
+                }
+            }
         }
-
         // Create the new cell.
         createNewCell(milliseconds);
+    }
+
+    //need to refactor this
+    private Cell findClosestCell(final Variable column,final long timeInMillis) {
+        if (column.getCells().size() == 0) return null;
+
+        //find the closest onset to the current time of the VideoController
+        List<Cell> cells = new ArrayList<>();
+        List<Cell> cellsToEdit = new ArrayList<>();
+        //Go through the cells temporally and add them to a list of cell
+        for (Cell cell : column.getCellsTemporally() ){
+            if(cell.getOnset() <= timeInMillis){
+                cells.add(cell);
+            }
+        }
+
+        //Go backward through the list of cells and get the last cells with the same onset
+        long lastOnSet = cells.get(cells.size()-1).getOnset();
+        for(int i = cells.size()-1; i >= 0; i--){
+            if(cells.get(i).getOnset() == lastOnSet){
+                cellsToEdit.add(cells.get(i));
+            }
+        }
+
+        //If there is more than one cell with the same onset and close to the current time
+        //and if one of the cell is selected, we will use the selected cell
+        //if none of the closest cell is selected
+        if(cellsToEdit.size() == 1){
+            return cellsToEdit.get(0);
+        } else if (cellsToEdit.size() > 1) {
+            //find the selected cell if there is any
+            for(Cell cell : cellsToEdit){
+                if(cell.equals(Datavyu.getProjectController().getLastSelectedCell())){
+                    return cell;
+                }
+            }
+        }
+
+        return Datavyu.getProjectController().getLastSelectedCell();
     }
 
     /**
