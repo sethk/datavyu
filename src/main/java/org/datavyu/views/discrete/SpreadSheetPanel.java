@@ -492,6 +492,16 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                 || (e.getKeyCode() == KeyEvent.VK_RIGHT))) {
 
             List<SpreadsheetColumn> visibleColumns = Datavyu.getView().getSpreadsheetPanel().getVisibleColumns();
+
+            // No visible columns: do nothing and consume event.
+            // One visible: select it and consume event
+            if(visibleColumns.size()==0) return true; // do nothing with no visible columns
+            if(visibleColumns.size()==1){                                          // select the single column
+                visibleColumns.get(0).setSelected(true);
+                visibleColumns.get(0).requestFocus();
+                return true;
+            }
+
             // User is attempting to move to the column to the left.
             if ((e.getKeyCode() == KeyEvent.VK_LEFT)
                     && platformCellMovementMask(e)) {
