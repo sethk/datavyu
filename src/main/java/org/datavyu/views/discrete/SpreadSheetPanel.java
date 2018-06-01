@@ -497,6 +497,7 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                     && platformCellMovementMask(e)) {
                 if(selectedColumn == null) {
                     visibleColumns.get(visibleColumns.size()-1).setSelected(true); // select last visible column
+                    visibleColumns.get(visibleColumns.size()-1).requestFocus();
                 } else{
                     selectColumn(selectedColumn, -1);
                 }
@@ -510,6 +511,7 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
 
                 if(selectedColumn == null){
                     visibleColumns.get(0).setSelected(true); // select first visible column
+                    visibleColumns.get(0).requestFocus();
                 } else{
                     selectColumn(selectedColumn,+1);
                 }
