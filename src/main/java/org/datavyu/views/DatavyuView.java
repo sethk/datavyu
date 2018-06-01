@@ -1785,6 +1785,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         List<Variable> selectedVariables = null;
         if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag){
             selectedVariables = Datavyu.getProjectController().getLastSelectedVariables();
+            menuMouseEventFlag = false;
         }else{
             selectedVariables = Datavyu.getProjectController().getDataStore().getSelectedVariables();
         }
@@ -2140,7 +2141,6 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
                 logger.info("Menu Deselected - Selected Columns: " + Datavyu.getView().getSpreadsheetPanel().getDataStore().getSelectedVariables());
                 //We request the Focus only for the Windows version
                 if(Datavyu.getPlatform() == Platform.WINDOWS) {
-                    menuMouseEventFlag = false;
                     Datavyu.getView().getSpreadsheetPanel().requestFocus();
                 }
             }
@@ -2673,7 +2673,8 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         List<Cell> selectedCells = null;
 
         if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag) {
-                selectedCells = Datavyu.getProjectController().getLastSelectedCells();
+            selectedCells = Datavyu.getProjectController().getLastSelectedCells();
+            menuMouseEventFlag = false;
         }else{
             selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
         }
@@ -2696,6 +2697,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
         if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag) {
             selectedCells = Datavyu.getProjectController().getLastSelectedCells();
+            menuMouseEventFlag = false;
         }else{
             selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
         }
