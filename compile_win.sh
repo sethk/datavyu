@@ -31,7 +31,11 @@ curl http://www.datavyu.org/docs/user-guide.pdf > packaged_docs/user-guide.pdf
 # Removed jar:jar goal because package already includes that goal and it was run TWICE!
 # See: https://stackoverflow.com/questions/40964500/maven-jar-plugin-3-0-2-error-you-have-to-use-a-classifier-to-attach-supplementa
 #mvn -Prelease,win-package -Dmaven.test.skip=true clean package assembly:assembly jfx:native
-mvn -Prelease,win-package -Dmaven.test.skip=true clean jfx:native
+# Older version until 1.4.0
+# mvn -Prelease,win-package -Dmaven.test.skip=true clean jfx:native
+# version 1.4.1
+mvn -Prelease,win-package -Djavacpp.platform=windows-x86_64 -Dmaven.test.skip=true clean jfx:native
+
 # The jfx:native will use the application and bundle it into installers (.exe and .msi)
 # These installers are output to the folder ./target/jfx/native/
 #
