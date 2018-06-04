@@ -1103,9 +1103,9 @@
 
         <!-- Using ByteDeco to get the FPS for the JavaFX plugin -->
         <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv-platform</artifactId>
-            <version>1.4.1</version>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>ffmpeg-platform</artifactId>
+            <version>3.4.2-1.4.1</version>
         </dependency>
 
     </dependencies>
