@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-mvn clean -Dmaven.test.skip=true jfx:native
+mvn clean -Djavacpp.platform=macosx-x86_64 -Dmaven.test.skip=true jfx:native
 
 mkdir target/jfx/native/Datavyu
 cp -r target/jfx/native/datavyu.app target/jfx/native/Datavyu/
