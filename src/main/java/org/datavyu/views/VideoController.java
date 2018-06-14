@@ -458,6 +458,7 @@ public final class VideoController extends DatavyuDialog
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
                 if (trackModel != null) {
                     streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
+                    logger.info("Clock Seek Playback is seeking stream " + streamViewer.getIdentifier() + " to time: " + (clockTime - trackModel.getOffset()));
                 }
             }
         }
