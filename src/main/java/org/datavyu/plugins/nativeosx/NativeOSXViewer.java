@@ -231,6 +231,6 @@ public final class NativeOSXViewer extends StreamViewerDialog {
 
     @Override
     public boolean isSeekPlaybackEnabled() {
-        return playBackRate > 2F || playBackRate < 0F;
+        return playBackRate > 2F || playBackRate < -2F;
     }
 }
