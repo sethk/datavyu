@@ -29,9 +29,12 @@ public class AddCommandV {
         box.setEditable(true);
         for(RubyArg var : variablesList) {
             System.out.println(var.getType() + "\t" + arg.getType());
-            if (arg.getType().equalsIgnoreCase(var.getType())) {
+            if (arg.getType().toLowerCase().contains(var.getType().toLowerCase())) {
                 box.getItems().add(var.getName());
-            } else if (arg.getType().equalsIgnoreCase("String")) {
+            }
+            if (arg.getType().toLowerCase().contains("string")
+                    && !arg.getType().toLowerCase().contains("<string")
+                    && !arg.getType().toLowerCase().contains("string>")) {
                 box.getItems().add("\"" + var.getName() + "\"");
             }
         }
@@ -70,7 +73,7 @@ public class AddCommandV {
         buttonBar.getButtons().addAll(okButton, cancelButton);
         dialogVbox.getChildren().add(buttonBar);
 
-        Scene dialogScene = new Scene(dialogVbox, 300, 200);
+        Scene dialogScene = new Scene(dialogVbox);
         dialog.setScene(dialogScene);
         dialog.showAndWait();
     }

@@ -2,7 +2,6 @@ package org.datavyu.views.scriptcreator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,16 +9,13 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -311,7 +307,7 @@ public class PrintCreatorV {
                     RubyClass g = new RubyClass(getCmd);
                     g.setValue(0, v.getName());
                     RubyArg ret = new RubyArg(v.getName(), v.getName(), false, true);
-                    g.setReturnValue(ret);
+                    g.addReturnValue(ret);
                     block.addCommand(g);
                 }
                 variablesToNest.remove(0);
@@ -345,7 +341,7 @@ public class PrintCreatorV {
                 RubyClass p = new RubyClass(printCmd);
                 p.setValue(0, v.getName() + "_cell");
                 p.setAppendReturnValue(true);
-                p.setReturnValue(returnValue);
+                p.addReturnValue(returnValue);
                 block.addCommand(p);
             }
             Command joinString = new Command("output_str = arglist.join(\",\")");

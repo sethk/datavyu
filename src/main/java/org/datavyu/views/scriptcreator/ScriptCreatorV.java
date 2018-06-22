@@ -132,7 +132,7 @@ public class ScriptCreatorV extends Application {
         System.out.println(Arrays.toString(lv.toArray()));
 
         addButton.setOnMouseClicked(event -> {
-            RubyClass method = list.getSelectionModel().getSelectedItem();
+            RubyClass method = new RubyClass(list.getSelectionModel().getSelectedItem());
             AddCommandV acv = new AddCommandV(method, primaryStage, variables);
             acv.show();
             if(acv.isReturnValue()) {

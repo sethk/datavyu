@@ -1,22 +1,22 @@
 package org.datavyu.views.scriptcreator;
 
 public class RubyArg {
-    String name;
-    String defaultValue;
-    String value;
-    boolean optional;
-    boolean returnValue;
-    String type;
-    String description;
+    private String name;
+    private String defaultValue;
+    private String value;
+    private boolean optional;
+    private boolean returnValue;
+    private String type;
+    private String description;
 
     public RubyArg(RubyArg a) {
         this.name = a.getName();
         this.defaultValue = a.getDefaultValue();
         this.value = a.getValue();
         this.optional = a.getOptional();
-        this.returnValue = a.returnValue;
-        this.type = a.type;
-        this.description = a.description;
+        this.returnValue = a.isReturnValue();
+        this.type = a.getType();
+        this.description = a.getDescription();
     }
 
     public RubyArg(String name) {

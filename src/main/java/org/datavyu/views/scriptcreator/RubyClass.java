@@ -3,22 +3,21 @@ package org.datavyu.views.scriptcreator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RubyClass extends Command implements Comparable<RubyClass> {
-    String header;
-    String name;
-    String description;
+    private String header;
+    private String name;
+    private String description;
 
-    List<RubyArg> args;
-    List<String> docStrings;
+    private List<RubyArg> args;
+    private List<String> docStrings;
 
-    RubyArg returnValue;
-    boolean appendReturnValue;
+    private List<RubyArg> returnValues;
+    private boolean appendReturnValue;
 
     public RubyClass(RubyClass r) {
         this.header = r.header;
@@ -29,10 +28,13 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
             this.args.add(new RubyArg(a));
         }
         this.docStrings = r.docStrings;
-        if(r.returnValue != null) {
-            this.returnValue = new RubyArg(r.returnValue);
+        if(r.returnValues != null && r.returnValues.size() > 0) {
+            this.returnValues = new ArrayList<>();
+            for(RubyArg ret : r.returnValues) {
+                this.returnValues.add(new RubyArg(ret));
+            }
         } else {
-            this.returnValue = null;
+            this.returnValues = null;
         }
         this.appendReturnValue = r.appendReturnValue;
     }
@@ -47,7 +49,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         this.appendReturnValue = false;
         this.nestLevel = 1;
 
-        this.returnValue = null;
+        this.returnValues = new ArrayList<>();
 
         // Now parse the header and the docStrings to get name, description, and args
         // def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
@@ -100,34 +102,33 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
                     Matcher m = p.matcher(line);
                     m.find();
                     String type = m.group(1);
-                    String lineNoType = line.split("\\[")[0].trim() + " " + line.split("\\]")[1].trim();
-//                    if(lineNoType.)
-//                    String argDescription = lineNoType.split(" ", 3)[2];
-//                    arg.setDescription(argDescription);
-
                     arg.setType(type);
-                } else {
-                    String argDescription = line.split(" ", 3)[1];
-                    arg.setDescription(argDescription);
                 }
+                System.out.println(arg.getName() + "\t" + arg.getType());
+                String argDescription = line.split(" ", 3)[1];
+                arg.setDescription(argDescription);
+                paramCount += 1;
             }
 
             // Parse the line for information
             if(line.contains("@return")) {
-                this.returnValue = new RubyArg("returnValue", "return_value", true, true);
-                this.getArgs().add(this.returnValue);
+                RubyArg retVal = new RubyArg("returnValue", "return_value", true, true);
+                if(line.contains("[")) {
+                    Matcher m = p.matcher(line);
+                    m.find();
+                    String type = m.group(1);
+                    retVal.setType(type);
+                }
+                this.returnValues.add(retVal);
             }
         }
+        this.getArgs().addAll(this.returnValues);
         this.description = doc;
-
-
 
         System.out.println(name);
         for(int i = 0; i < args.length; i++) {
             System.out.println(args[i] + ScriptArea.INDENT + this.args.get(i));
         }
-
-
     }
 
     public boolean isAppendReturnValue() {
@@ -141,13 +142,20 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
     public String toString() {
         String indent = StringUtils.repeat(ScriptArea.INDENT, nestLevel);
         String joinedParams = this.getParamsList().stream().collect(Collectors.joining(", "));
-        RubyArg lastArg = this.returnValue;
+        RubyArg lastArg = null;
+        if(getReturnValues().size() > 0) {
+            lastArg = this.getReturnValues().get(getReturnValues().size() - 1);
+        }
         String cmd = this.name + "(" + joinedParams + ")";
         if(lastArg != null) {
             if(appendReturnValue) {
                 return indent + lastArg.getValue() + " += " + cmd;
             } else {
-                return indent + lastArg.getValue() + " = " + cmd;
+                List<String> retVals = new ArrayList<>();
+                for(RubyArg r : getReturnValues()) {
+                    retVals.add(r.getValue());
+                }
+                return indent + String.join(",", retVals) + " = " + cmd;
             }
         } else {
             return indent + cmd;
@@ -169,7 +177,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
     public List<String> getParamsList() {
         List<String> params = new ArrayList<>();
         for(int i = 0; i < this.args.size(); i++) {
-            if(!this.getArgs().get(i).returnValue) {
+            if(!this.getArgs().get(i).isReturnValue()) {
                 params.add(this.args.get(i).toString());
             }
         }
@@ -226,12 +234,16 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         this.docStrings = docStrings;
     }
 
-    public RubyArg getReturnValue() {
-        return returnValue;
+    public List<RubyArg> getReturnValues() {
+        return returnValues;
     }
 
-    public void setReturnValue(RubyArg returnValue) {
-        this.returnValue = returnValue;
+    public void setReturnValues(List<RubyArg> returnValues) {
+        this.returnValues = returnValues;
+    }
+
+    public void addReturnValue(RubyArg retVal) {
+        this.returnValues.add(retVal);
     }
 
     @Override
@@ -242,7 +254,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         System.out.println("MOD COMMAND");
         if(position < cmdName) {
             // Theyre modifying the name of the command... should we allow this?
-            if(getReturnValue() != null) {
+            if(getReturnValues() != null) {
                 // See if theyre trying to edit the return value name
             }
         } else if(position > cmdName) {
