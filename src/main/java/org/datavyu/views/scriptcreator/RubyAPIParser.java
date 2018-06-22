@@ -28,7 +28,9 @@ public class RubyAPIParser {
                     // We have a function definition, add it and its docstring
                     functionDef = line;
                     RubyClass rc = new RubyClass(functionDef, docStrings);
-                    rubyClasses.add(rc);
+                    if(!rc.isHidden()) {
+                        rubyClasses.add(rc);
+                    }
                 } else {
                     // We have something else, clear the docstring and function def
                     docStrings.clear();

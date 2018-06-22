@@ -18,6 +18,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
 
     private List<RubyArg> returnValues;
     private boolean appendReturnValue;
+    private boolean hidden;
 
     public RubyClass(RubyClass r) {
         this.header = r.header;
@@ -37,6 +38,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
             this.returnValues = null;
         }
         this.appendReturnValue = r.appendReturnValue;
+        this.hidden = r.hidden;
     }
 
     public RubyClass(String classHeader, List<String> docStrings) {
@@ -48,6 +50,7 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         this.args = new ArrayList<>();
         this.appendReturnValue = false;
         this.nestLevel = 1;
+        this.hidden = false;
 
         this.returnValues = new ArrayList<>();
 
@@ -121,6 +124,10 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
                 }
                 this.returnValues.add(retVal);
             }
+
+            if(line.contains("@!visibility private")) {
+                hidden = true;
+            }
         }
         this.getArgs().addAll(this.returnValues);
         this.description = doc;
@@ -160,6 +167,10 @@ public class RubyClass extends Command implements Comparable<RubyClass> {
         } else {
             return indent + cmd;
         }
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 
     public int compareTo(RubyClass oc) {
