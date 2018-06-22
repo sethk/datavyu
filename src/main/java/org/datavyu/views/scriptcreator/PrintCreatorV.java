@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PrintCreatorV {
-    List<String> variablesList;
+    List<RubyArg> variablesList;
     Map<String, Command> classMap;
     ScriptArea scriptArea;
 
@@ -35,7 +35,7 @@ public class PrintCreatorV {
         OFFSET
     }
 
-    public PrintCreatorV(List<String> variablesList, ScriptArea scriptArea, Map<String, Command> classMap) {
+    public PrintCreatorV(List<RubyArg> variablesList, ScriptArea scriptArea, Map<String, Command> classMap) {
         this.variablesList = variablesList;
         this.scriptArea = scriptArea;
         this.classMap = classMap;
@@ -99,21 +99,21 @@ public class PrintCreatorV {
         HBox.setHgrow(overlapRadioBox, Priority.ALWAYS);
         HBox.setHgrow(outputButtonBox, Priority.ALWAYS);
 
-        ListView<String> selectedVariables = new ListView<>();
+        ListView<RubyArg> selectedVariables = new ListView<>();
         selectedVariables.setEditable(true);
-        ListView<String> availableVariables = new ListView<>();
+        ListView<RubyArg> availableVariables = new ListView<>();
         availableVariables.setEditable(true);
 
-        ObservableList<String> availableVarList = FXCollections.observableArrayList(variablesList);
+        ObservableList<RubyArg> availableVarList = FXCollections.observableArrayList(variablesList);
         availableVariables.setItems(availableVarList.sorted());
 
         moveLeftButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if(availableVariables.getSelectionModel().getSelectedItem() != null) {
-                    String varName = availableVariables.getSelectionModel().getSelectedItem();
-                    availableVarList.remove(varName);
-                    selectedVariables.getItems().add(varName);
+                    RubyArg var = availableVariables.getSelectionModel().getSelectedItem();
+                    availableVarList.remove(var);
+                    selectedVariables.getItems().add(var);
                 }
             }
         });
@@ -122,9 +122,9 @@ public class PrintCreatorV {
             @Override
             public void handle(MouseEvent event) {
                 if(selectedVariables.getSelectionModel().getSelectedItem() != null) {
-                    String varName = selectedVariables.getSelectionModel().getSelectedItem();
-                    availableVarList.add(varName);
-                    selectedVariables.getItems().remove(varName);
+                    RubyArg var = selectedVariables.getSelectionModel().getSelectedItem();
+                    availableVarList.add(var);
+                    selectedVariables.getItems().remove(var);
                 }
             }
         });
@@ -135,9 +135,9 @@ public class PrintCreatorV {
                 if(selectedVariables.getSelectionModel().getSelectedItem() != null) {
                     int selectedIdx = selectedVariables.getSelectionModel().getSelectedIndex();
                     if(selectedIdx > 0) {
-                        String varName = selectedVariables.getSelectionModel().getSelectedItem();
-                        selectedVariables.getItems().remove(varName);
-                        selectedVariables.getItems().add(selectedIdx-1, varName);
+                        RubyArg var = selectedVariables.getSelectionModel().getSelectedItem();
+                        selectedVariables.getItems().remove(var);
+                        selectedVariables.getItems().add(selectedIdx-1, var);
                     }
                 }
             }
@@ -149,9 +149,9 @@ public class PrintCreatorV {
                 if(selectedVariables.getSelectionModel().getSelectedItem() != null) {
                     int selectedIdx = selectedVariables.getSelectionModel().getSelectedIndex();
                     if(selectedIdx < selectedVariables.getItems().size() - 1) {
-                        String varName = selectedVariables.getSelectionModel().getSelectedItem();
-                        selectedVariables.getItems().remove(varName);
-                        selectedVariables.getItems().add(selectedIdx+1, varName);
+                        RubyArg var = selectedVariables.getSelectionModel().getSelectedItem();
+                        selectedVariables.getItems().remove(var);
+                        selectedVariables.getItems().add(selectedIdx+1, var);
                     }
                 }
             }
@@ -234,7 +234,7 @@ public class PrintCreatorV {
         printWindow.show();
     }
 
-    private void generateDirectoryPrintScript(ListView<String> selectedVariables, ScriptArea scriptArea,
+    private void generateDirectoryPrintScript(ListView<RubyArg> selectedVariables, ScriptArea scriptArea,
                                      CELL_OVERLAP overlap, boolean trim, String savePath, String dirPath) {
         // We will be adding all commands to the commands already in the scriptArea
         List<Command> commands = scriptArea.getCommands();
@@ -263,7 +263,7 @@ public class PrintCreatorV {
             saveCmd = new Command("puts output_str");
         }
 
-        List<String> parentCells = new ArrayList<>();
+        List<RubyArg> parentCells = new ArrayList<>();
 
         block.addCommand(dirFiles);
         block.addCommand(dirLoop);
@@ -274,12 +274,12 @@ public class PrintCreatorV {
         scriptArea.setCommands(commands);
     }
 
-    private void generatePrintScript(ListView<String> selectedVariables, ScriptArea scriptArea,
+    private void generatePrintScript(ListView<RubyArg> selectedVariables, ScriptArea scriptArea,
                                      CELL_OVERLAP overlap, boolean trim, String savePath) {
         // We will be adding all commands to the commands already in the scriptArea
         List<Command> commands = scriptArea.getCommands();
 
-        List<String> parentCells = new ArrayList<>();
+        List<RubyArg> parentCells = new ArrayList<>();
 
         CommandBlock block = new CommandBlock(1);
 
@@ -298,38 +298,38 @@ public class PrintCreatorV {
         scriptArea.setCommands(commands);
     }
 
-    private Command nestVariable(int nestLevel, List<String> parentVars, List<String> variablesToNest,
+    private Command nestVariable(int nestLevel, List<RubyArg> parentVars, List<RubyArg> variablesToNest,
                                  CELL_OVERLAP overlap, boolean trim, Command saveCmd) {
 
         if(variablesToNest.size() > 0) {
-            String var = variablesToNest.get(0);
+            RubyArg var = variablesToNest.get(0);
 
             if(parentVars.size() == 0) {
                 CommandBlock block = new CommandBlock(nestLevel);
                 RubyClass getCmd = (RubyClass)classMap.get("get_column");
-                for(String v : variablesToNest) {
+                for(RubyArg v : variablesToNest) {
                     RubyClass g = new RubyClass(getCmd);
-                    g.setValue(0, v);
-                    RubyArg ret = new RubyArg(v, v, false, true);
+                    g.setValue(0, v.getName());
+                    RubyArg ret = new RubyArg(v.getName(), v.getName(), false, true);
                     g.setReturnValue(ret);
                     block.addCommand(g);
                 }
                 variablesToNest.remove(0);
                 parentVars.add(var);
-                Loop loop = new Loop(var, nestLevel);
+                Loop loop = new Loop(var.getName(), nestLevel);
                 loop.addCommand(nestVariable(nestLevel, parentVars, variablesToNest, overlap, trim, saveCmd));
                 block.addCommand(loop);
                 return block;
             }
             variablesToNest.remove(0);
-            String parentVar = parentVars.get(parentVars.size()-1);
+            RubyArg parentVar = parentVars.get(parentVars.size()-1);
             parentVars.add(var);
 
 
             if(overlap == CELL_OVERLAP.NEST) {
-                IfStatement ifStatement = new IfStatement(var, parentVar, IF_TEMPLATE.NEST, nestLevel+2);
+                IfStatement ifStatement = new IfStatement(var.getName() + "_cell", parentVar.getName() + "_cell", IF_TEMPLATE.NEST, nestLevel+2);
                 ifStatement.addCommand(nestVariable(nestLevel+2, parentVars, variablesToNest, overlap, trim, saveCmd));
-                Loop loop = new Loop(var, nestLevel+1);
+                Loop loop = new Loop(var.getName(), nestLevel+1);
                 loop.addCommand(ifStatement);
                 return loop;
             } else {
@@ -341,9 +341,9 @@ public class PrintCreatorV {
             Command stringInit = new Command("arg_list = []");
             block.addCommand(stringInit);
             RubyArg returnValue = new RubyArg("arg_list", "arg_list", false, true);
-            for(String v : parentVars) {
+            for(RubyArg v : parentVars) {
                 RubyClass p = new RubyClass(printCmd);
-                p.setValue(0, v);
+                p.setValue(0, v.getName() + "_cell");
                 p.setAppendReturnValue(true);
                 p.setReturnValue(returnValue);
                 block.addCommand(p);

@@ -19,6 +19,16 @@ public class RubyArg {
         this.description = a.description;
     }
 
+    public RubyArg(String name) {
+        this.name = name;
+        this.defaultValue = "";
+        this.optional = false;
+        this.returnValue = false;
+        this.value = (defaultValue.length() > 0) ? defaultValue : "";
+        this.type = "";
+        this.description = "";
+    }
+
     public RubyArg(String name, String defaultValue, boolean optional) {
         this.name = name;
         this.defaultValue = defaultValue;
@@ -60,9 +70,8 @@ public class RubyArg {
     public String getValue() {
         if(value.length() > 0)
             return value;
-        else if(defaultValue.length() > 0)
-            return defaultValue;
-        return name;
+        else
+            return getDefaultValue();
     }
 
     public void setValue(String value) {
@@ -105,20 +114,23 @@ public class RubyArg {
         this.description = description;
     }
 
+    public String displayWithName() {
+        if(getValue().length() == 0) {
+            return getName();
+        }
+        return getName() + " = " + getValue();
+    }
+
+    public String display() {
+        return getValue();
+    }
+
     @Override
     public String toString() {
         if(getValue().length() > 0) {
-            if(type.equalsIgnoreCase("string")) {
-                return "\"" + value + "\"";
-            } else {
-                return value;
-            }
+            return displayWithName();
         } else {
-            if(type.equalsIgnoreCase("string")) {
-                return "\"" + name + "\"";
-            } else {
-                return name;
-            }
+            return displayWithName();
         }
     }
 }
