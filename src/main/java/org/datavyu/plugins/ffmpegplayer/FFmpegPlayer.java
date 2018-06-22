@@ -9,10 +9,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 public class FFmpegPlayer extends JPanel {
