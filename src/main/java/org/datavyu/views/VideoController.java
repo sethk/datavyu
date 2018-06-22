@@ -1578,7 +1578,8 @@ public final class VideoController extends DatavyuDialog
             }
             // Update the clock timer with the new time
             long newTime = clockTime - (clockTime % stepSize) - stepSize;
-            clockTimer.setTime(newTime);
+            //Force the time in order to update the cell highlighting
+            clockTimer.setForceTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }
@@ -1655,7 +1656,8 @@ public final class VideoController extends DatavyuDialog
             }
             // Update the clock timer with the new time
             long newTime = clockTime - (clockTime % stepSize) + stepSize;
-            clockTimer.setTime(newTime);
+            //Force the time in order to update the cell highlighting
+            clockTimer.setForceTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }
