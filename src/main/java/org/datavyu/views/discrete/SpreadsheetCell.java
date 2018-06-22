@@ -688,7 +688,9 @@ public class SpreadsheetCell extends JPanel
     }
 
     @Override
-    public void clockForceSync(double clockTime) {}
+    public void clockForceSync(double clockTime) {
+        updateSelectionDisplay();
+    }
 
     @Override
     public void clockPeriodicSync(double clockTime) {
