@@ -28,7 +28,6 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
         player = new FFmpegPlayer(this);
         player.openFile(sourceFile.getAbsolutePath());
-        this.add(player, BorderLayout.CENTER);
         setSourceFile(sourceFile);
     }
 

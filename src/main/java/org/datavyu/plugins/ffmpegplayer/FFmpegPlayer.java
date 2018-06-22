@@ -56,9 +56,9 @@ public class FFmpegPlayer extends JPanel {
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
 	 * and registering stream listeners for the video and audio. The stream
 	 * listener for the video will show the image in this JPanel.
-	 * @param fFmpegStreamViewer
+	 * @param viewer
 	 */
-	FFmpegPlayer(FFmpegStreamViewer fFmpegStreamViewer) {
+	FFmpegPlayer(FFmpegStreamViewer viewer) {
 		setLayout(new BorderLayout());
 		movieStreamProvider = new MovieStreamProvider();
 
@@ -67,30 +67,9 @@ public class FFmpegPlayer extends JPanel {
 		movieStreamProvider.addAudioStreamListener(audioSoundStreamListener);
 
 		// Add video display
-		displayStreamListener = new VideoStreamListenerContainer(movieStreamProvider, this, BorderLayout.CENTER,
+		displayStreamListener = new VideoStreamListenerContainer(movieStreamProvider, viewer, BorderLayout.CENTER,
 				reqColorSpace);
 		movieStreamProvider.addVideoStreamListener(displayStreamListener);
-
-		addComponentListener(new ComponentListener() {
-
-			@Override
-			public void componentResized(ComponentEvent e) {
-				if (e.getID() == ComponentEvent.COMPONENT_RESIZED) {
-					float scale = ((float) fFmpegStreamViewer.getHeight())/movieStreamProvider.getHeightOfView();
-//					displayStreamListener.setScale(scale);
-					logger.info("Changed scale to %2.2f", scale);
-				}
-			}
-
-			@Override
-			public void componentMoved(ComponentEvent e) { }
-
-			@Override
-			public void componentShown(ComponentEvent e) { }
-
-			@Override
-			public void componentHidden(ComponentEvent e) { }
-		});
 	}
 
 	/**
