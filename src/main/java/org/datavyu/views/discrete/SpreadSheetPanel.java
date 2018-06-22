@@ -491,18 +491,40 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                 && ((e.getKeyCode() == KeyEvent.VK_LEFT)
                 || (e.getKeyCode() == KeyEvent.VK_RIGHT))) {
 
+            List<SpreadsheetColumn> visibleColumns = Datavyu.getView().getSpreadsheetPanel().getVisibleColumns();
+
+            // No visible columns: do nothing and consume event.
+            // One visible: select it and consume event
+            if(visibleColumns.size()==0) return true; // do nothing with no visible columns
+            if(visibleColumns.size()==1){                                          // select the single column
+                visibleColumns.get(0).setSelected(true);
+                visibleColumns.get(0).requestFocus();
+                return true;
+            }
+
             // User is attempting to move to the column to the left.
             if ((e.getKeyCode() == KeyEvent.VK_LEFT)
                     && platformCellMovementMask(e)) {
-                selectColumn(selectedColumn,-1);
+                if(selectedColumn == null) {
+                    visibleColumns.get(visibleColumns.size()-1).setSelected(true); // select last visible column
+                    visibleColumns.get(visibleColumns.size()-1).requestFocus();
+                } else{
+                    selectColumn(selectedColumn, -1);
+                }
                 e.consume();
-                
+
                 return true;
 
                 // User is attempting to move to the column to the right.
             } else if ((e.getKeyCode() == KeyEvent.VK_RIGHT)
                     && platformCellMovementMask(e)) {
-                selectColumn(selectedColumn,+1);
+
+                if(selectedColumn == null){
+                    visibleColumns.get(0).setSelected(true); // select first visible column
+                    visibleColumns.get(0).requestFocus();
+                } else{
+                    selectColumn(selectedColumn,+1);
+                }
                 e.consume();
                 
                 return true;
@@ -986,9 +1008,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
         List<SpreadsheetColumn> visibleColumns = Datavyu.getView().getSpreadsheetPanel().getVisibleColumns();
         SpreadsheetCell sc = lastSelectedCell;
         int vcIndex = visibleColumns.indexOf(selectedColumn);
-
-        if(0 <= vcIndex+shift
-                && vcIndex+shift < visibleColumns.size()) {
+        int newIndex = Math.floorMod(vcIndex+shift, visibleColumns.size()); // wrap around visible columns
+        if(0 <= newIndex
+                && newIndex < visibleColumns.size()) {
 
             sc = selectedColumn.getDataPanel().getSelectedCell();
 
@@ -996,10 +1018,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
             clearColumnSelection();
             requestFocus();
 
-            SpreadsheetColumn newColumn = visibleColumns.get(vcIndex+shift);
+            SpreadsheetColumn newColumn = visibleColumns.get(newIndex);
             SpreadsheetCell newCell = null;
-
-            if(newColumn != null && !newColumn.getCells().isEmpty()) {
+            if(!newColumn.getCells().isEmpty()) {
                 if (sc != null) {
                     if (Datavyu.getView().getSheetLayout() == SheetLayoutType.WeakTemporal) {
                         newCell = newColumn.getNearestCellTemporally(sc);
@@ -1023,12 +1044,11 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                 newCell.getCell().setSelected(true);
 
                 newColumn.requestFocus();
-            }else if (newColumn != null){
-                sc.getCell().setHighlighted(false);
+            }else{
+                if(sc != null) sc.getCell().setHighlighted(false);
+
                 selectedColumn.setSelected(false);
-
                 newColumn.setSelected(true);
-
                 newColumn.requestFocus();
             }
         }

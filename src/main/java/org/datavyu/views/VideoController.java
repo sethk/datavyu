@@ -458,6 +458,7 @@ public final class VideoController extends DatavyuDialog
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
                 if (trackModel != null) {
                     streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
+                    logger.info("Clock Seek Playback is seeking stream " + streamViewer.getIdentifier() + " to time: " + (clockTime - trackModel.getOffset()));
                 }
             }
         }
@@ -1577,7 +1578,8 @@ public final class VideoController extends DatavyuDialog
             }
             // Update the clock timer with the new time
             long newTime = clockTime - (clockTime % stepSize) - stepSize;
-            clockTimer.setTime(newTime);
+            //Force the time in order to update the cell highlighting
+            clockTimer.setForceTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }
@@ -1654,7 +1656,8 @@ public final class VideoController extends DatavyuDialog
             }
             // Update the clock timer with the new time
             long newTime = clockTime - (clockTime % stepSize) + stepSize;
-            clockTimer.setTime(newTime);
+            //Force the time in order to update the cell highlighting
+            clockTimer.setForceTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }

@@ -418,6 +418,7 @@ public final class EditorTracker
                 break;
             case KeyEvent.VK_TAB:
                 if (editors.size() > 1) {
+                    currentEditor.selectAll();
                     if (currentEditor.getSelectionEnd() - currentEditor.getSelectionStart() != currentEditor.getText().length()) {
                         setEditor(nextEditor());
                     } else if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
