@@ -131,13 +131,11 @@ public class ScriptCreatorV extends Application {
         List<String> lv = ri.getLocalVariables();
         System.out.println(Arrays.toString(lv.toArray()));
 
-        addButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                RubyClass method = list.getSelectionModel().getSelectedItem();
-                AddCommandV acv = new AddCommandV(method, primaryStage, variables);
-                acv.show();
-                System.out.println("Adding " + method);
+        addButton.setOnMouseClicked(event -> {
+            RubyClass method = list.getSelectionModel().getSelectedItem();
+            AddCommandV acv = new AddCommandV(method, primaryStage, variables);
+            acv.show();
+            if(acv.isReturnValue()) {
                 scriptArea.addCommand(method);
                 scriptArea.refreshDisplay();
                 String output = ri.runScript();
@@ -150,12 +148,7 @@ public class ScriptCreatorV extends Application {
         buttonBar.getButtons().add(printButton);
         PrintCreatorV printCreator = new PrintCreatorV(getColumns(), scriptArea, classMap);
 
-        printButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                printCreator.show();
-            }
-        });
+        printButton.setOnMouseClicked(event -> printCreator.show());
 
         root.getChildren().add(topRoot);
         root.getChildren().add(buttonBar);
