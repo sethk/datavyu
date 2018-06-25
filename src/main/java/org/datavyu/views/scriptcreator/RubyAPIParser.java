@@ -11,9 +11,6 @@ public class RubyAPIParser {
         String apiPath = "Datavyu_API.rb";
         List<RubyClass> rubyClasses = new ArrayList<>();
 
-
-
-
         try {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(apiPath);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
