@@ -1,3 +1,36 @@
+# Datavyu 1.4.1 Release Notes
+## 06/28/2018
+
+### New features
+* FFMPEG plugin for Windows.
+    * Upgraded to FFmpeg 4.0 version.
+    * Added Support for 720p Resolution.
+    * Plugin still under development, expect performance issues with high-resolution videos.
+* Enabled cells editing when highlight and focus is enabled and video is stopped.
+* Changed JavaFX plugin icon.
+* Improved Cell highlighting while seeking.
+* Added Undo feature for cells created using Quick Key mode.
+
+### Bug fixes
+* Fixed flickering issues when clicking on Hidden Columns.
+* Fixed `CMD+L` and `CMD+R` bug for corner cases.
+* Fixed add cell to left/right columns not working.
+* Fixed Video Controller back button not working for corner cases.
+* Fixed unresponsive Spreadsheet when using the Menu on Windows.
+* Keep track of code position when moving through cells within a column.
+* Fixed choppy backward playback with Native OSX Plugin.
+* Fixed cycling through codes in a cell bug. 
+* Fixed FFmpeg plugin Windows not resizing on Windows.
+* Fixed FFmpeg seek issue.
+* Display the correct Frame Rate per Second (FPS) for the javaFX plugin. 
+* Fixed Dialog windows appearing behind the video.
+### Known Issues
+* #### When using the ffmpeg plugin:
+    * sound only plays back when playing at 1x.
+    * jumping to random locations within the stream may take 1-2sec
+    * the sound after a stop/jump and playback may be a bit distorted when opening multiple streams and the ffmpeg as 2nd, 3rd it might get stuck after playing for some time
+    * Inconsistent frame reporting between plugins. We suggest using the same plugin when coding to maintain consistency.
+
 # Datavyu 1.4.0 Release Notes
 ## 04/26/2018
 
