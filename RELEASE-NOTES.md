@@ -19,17 +19,22 @@
 * Fixed unresponsive Spreadsheet when using the Menu on Windows.
 * Keep track of code position when moving through cells within a column.
 * Fixed choppy backward playback with Native OSX Plugin.
-* Fixed cycling through codes in a cell bug. 
+* Fixed cycling through codes in a cell bug.
 * Fixed FFmpeg plugin Windows not resizing on Windows.
 * Fixed FFmpeg seek issue.
-* Display the correct Frame Rate per Second (FPS) for the javaFX plugin. 
+* Display the correct Frame Rate per Second (FPS) for the javaFX plugin.
 * Fixed Dialog windows appearing behind the video.
+
 ### Known Issues
 * #### When using the ffmpeg plugin:
     * sound only plays back when playing at 1x.
     * jumping to random locations within the stream may take 1-2sec
     * the sound after a stop/jump and playback may be a bit distorted when opening multiple streams and the ffmpeg as 2nd, 3rd it might get stuck after playing for some time
     * Inconsistent frame reporting between plugins. We suggest using the same plugin when coding to maintain consistency.
+
+*  #### Delete column menubar function does not work. Use the Code Editor to delete columns.
+
+---
 
 # Datavyu 1.4.0 Release Notes
 ## 04/26/2018
@@ -68,7 +73,7 @@
 * #### Ruby API
   * Scripts may crash unexpectedly with error reported in `getAllVariables` functions. We suggest re-running the script and if the problem persists, re-opening Datavyu.
 
-
+---
 
 # Datavyu 1.3.7 Release Notes
 ## 07/18/2017
@@ -86,6 +91,7 @@
   As a workaround, use the sample script [SaveFile](https://github.com/databrary/Datavyu-Example-Scripts/blob/master/Misc/SaveFile.rb)
   to save files when encountering this issue.
 
+---
 
 # Datavyu 1.3.6 Release Notes
 ## 4/3/2017
@@ -147,6 +153,8 @@ console instead of three lines
   * load_macshapa_db sanitizes code names and substitutes '#' with 'number'
 and '&' with 'and'
 
+---
+
 # Datavyu 1.3.3 Pre-Release Notes
 ## 07/14/2015
 
@@ -161,6 +169,8 @@ and '&' with 'and'
 
 ### Known Issues
 * Dragging and dropping a file onto the application on PC's creates a new Datavyu window
+
+---
 
 # Datavyu 1.3 Pre-Release Notes
 ## 3/16/2015
@@ -191,6 +201,7 @@ and '&' with 'and'
 
 * Can't seem to hold down jog while navigating your video? All you have to do is go to your Terminal (found in your Hard       Drive/Applications/Utilities folder) and enter the following: defaults write -g ApplePressAndHoldEnabled -bool false
 
+---
 
 # Datavyu 1.2.2 Pre-release Notes
 ## 9/25/14
@@ -212,7 +223,7 @@ and '&' with 'and'
 * Adding and closing multiple spreadsheets in datavyu sometimes makes you save an extra time
 * Temporal alignment sometimes aligns cells that are a few milliseconds off
 
-
+---
 
 # Datavyu 1.2 Release Notes
 ## 06/30/2014
@@ -243,6 +254,7 @@ and '&' with 'and'
 * You can drag a code name within a cell but it does not influence the code itself and it does not save. Please save your file and reopen it.
 * Scripting output sometimes does not give you the proper output. You can cross check your scripts in OpenSHAPA.
 
+---
 
 # Datavyu 1.1 Release Notes
 ## 03/10/2014
