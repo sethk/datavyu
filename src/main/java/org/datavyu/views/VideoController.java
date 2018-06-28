@@ -458,6 +458,7 @@ public final class VideoController extends DatavyuDialog
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
                 if (trackModel != null) {
                     streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
+                    logger.info("Clock Seek Playback is seeking stream " + streamViewer.getIdentifier() + " to time: " + (clockTime - trackModel.getOffset()));
                 }
             }
         }
@@ -1552,7 +1553,7 @@ public final class VideoController extends DatavyuDialog
             syncStreams();
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
             double frameRate = frameRateController.getFrameRate();
-            long clockTime = (long) clockTimer.getStreamTime();
+            long clockTime = (long) clockTimer.getClockTime();
             long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
             for (StreamViewer streamViewer : streamViewers) {
                 // TODO: Tie offset & duration to stream viewer only and pull it in the track model
@@ -1577,7 +1578,8 @@ public final class VideoController extends DatavyuDialog
             }
             // Update the clock timer with the new time
             long newTime = clockTime - (clockTime % stepSize) - stepSize;
-            clockTimer.setTime(newTime);
+            //Force the time in order to update the cell highlighting
+            clockTimer.setForceTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }
@@ -1595,7 +1597,7 @@ public final class VideoController extends DatavyuDialog
      * Force sync between streams up to a threshold
      */
     private void syncStreams() {
-        long clockTime = (long) clockTimer.getStreamTime();
+        long clockTime = (long) clockTimer.getClockTime();
         double frameRate = frameRateController.getFrameRate();
         long stepSize = (long)(MILLI_IN_SEC / frameRate);
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
@@ -1629,7 +1631,7 @@ public final class VideoController extends DatavyuDialog
         } else {
             syncStreams();
             double frameRate = frameRateController.getFrameRate();
-            long clockTime = (long) clockTimer.getStreamTime();
+            long clockTime = (long) clockTimer.getClockTime();
             long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
             for (StreamViewer streamViewer : streamViewers) {
@@ -1654,7 +1656,8 @@ public final class VideoController extends DatavyuDialog
             }
             // Update the clock timer with the new time
             long newTime = clockTime - (clockTime % stepSize) + stepSize;
-            clockTimer.setTime(newTime);
+            //Force the time in order to update the cell highlighting
+            clockTimer.setForceTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }

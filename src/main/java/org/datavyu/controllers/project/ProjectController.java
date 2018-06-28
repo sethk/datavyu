@@ -41,6 +41,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,6 +65,12 @@ public final class ProjectController {
 
     /** The last cell that was created */
     private Cell lastCreatedCell;
+
+    /** The last list of cells that was selected */
+    private List<Cell> lastSelectedCells;
+
+    /** The last list of variables that was selected */
+    private List<Variable> lastSelectedVariables;
 
     /** The last cell that was selected */
     private Cell lastSelectedCell;
@@ -96,6 +103,8 @@ public final class ProjectController {
         lastCreatedCell = null;
         lastSelectedCell = null;
         lastCreatedVariable = null;
+        lastSelectedVariables = new ArrayList<>();
+        lastSelectedCells = new ArrayList<>();
         dataStore.setTitleNotifier(Datavyu.getApplication());
     }
 
@@ -174,6 +183,13 @@ public final class ProjectController {
     }
 
     /**
+     * Return a list of last selected cells.
+     *
+     * @return The last selected cells.
+     */
+    public List<Cell> getLastSelectedCells() { return lastSelectedCells; }
+
+    /**
      * Sets the last selected cell to the specified cell.
      *
      * @param newCell The newly selected cell.
@@ -183,10 +199,39 @@ public final class ProjectController {
     }
 
     /**
+     * Sets the last selected cells, this setter is used to persist the selected cells
+     * before performing actions on the Menu.
+     *
+     * @param lastSelectedCells The newly selected cell.
+     */
+    public void setLastSelectedCells(List<Cell> lastSelectedCells) {
+        this.lastSelectedCells = lastSelectedCells;
+    }
+
+    /**
      * @return The last variable created for the datastore.
      */
     public Variable getLastCreatedVariable() {
         return lastCreatedVariable;
+    }
+
+    /**
+     * Return a list of last selected variables.
+     *
+     * @return The last selected cells.
+     */
+    public List<Variable> getLastSelectedVariables() {
+        return lastSelectedVariables;
+    }
+
+    /**
+     * Sets the last selected variables, this setter is used to persist the selected cells
+     * before performing actions on the Menu.
+     *
+     * @param lastSelectedVariables The newly selected cell.
+     */
+    public void setLastSelectedVariables(List<Variable> lastSelectedVariables) {
+        this.lastSelectedVariables = lastSelectedVariables;
     }
 
     /**
@@ -480,7 +525,7 @@ public final class ProjectController {
 
         // Show the data controller
         if (showController) {
-            Datavyu.getApplication().showDataController();
+            Datavyu.getApplication().showVideoController();
         }
 
     }

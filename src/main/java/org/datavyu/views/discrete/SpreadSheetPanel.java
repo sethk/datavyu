@@ -18,11 +18,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
+import org.datavyu.controllers.CreateNewCellController;
 import org.datavyu.controllers.NewVariableController;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.event.component.FileDropEvent;
 import org.datavyu.event.component.FileDropEventListener;
 import org.datavyu.models.db.*;
+import org.datavyu.undoableedits.AddCellEdit;
 import org.datavyu.util.ArrayDirection;
 import org.datavyu.util.Constants;
 import org.datavyu.views.DataviewProgressBar;
@@ -54,6 +56,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import javax.swing.text.BadLocationException;
+import javax.swing.undo.UndoableEdit;
 
 
 /**
@@ -114,6 +117,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
 
     /** Current layout */
     private SheetLayoutType currentLayoutType;
+
+    /** Drop down menu for hidden columns */
+    private JPopupMenu dropdown = new JPopupMenu();
 
     public SpreadSheetPanel(final ProjectController projectController, DataviewProgressBar progressBar) {
         setName(this.getClass().getSimpleName());
@@ -177,6 +183,11 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
 
         hiddenVariablesButton = makeHiddenVarsButton();
         updateHiddenVars();
+        hiddenVariablesButton.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                dropdown.show(e.getComponent(), e.getX(), e.getY());
+            }
+        });
         headerView.add(hiddenVariablesButton);
         hiddenVariablesSpacerLabel.setForeground(hiddenVariablesSpacerLabel.getBackground());
         mainView.add(hiddenVariablesSpacerLabel);
@@ -212,7 +223,7 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
     private void updateHiddenVars() {
         List<Variable> allVars = dataStore.getAllVariables();
         List<Variable> hiddensOnly = new ArrayList<Variable>();
-        final JPopupMenu dropdown = new JPopupMenu();
+        dropdown.removeAll();
         for(final Variable v: allVars)
         {
             if(v.isHidden()) 
@@ -234,11 +245,7 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
         hiddenVariablesButton.setText(hiddenVariablesButton.getText() + "  "); //cheating: easier than resizing the button
         
         hiddenVariablesButton.setEnabled(hiddensOnly.size() != 0);
-        hiddenVariablesButton.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                dropdown.show(e.getComponent(), e.getX(), e.getY());
-            }
-        });
+
         hiddenVariablesSpacerLabel.setText(hiddenVariablesButton.getText());
     }
 
@@ -484,18 +491,40 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                 && ((e.getKeyCode() == KeyEvent.VK_LEFT)
                 || (e.getKeyCode() == KeyEvent.VK_RIGHT))) {
 
+            List<SpreadsheetColumn> visibleColumns = Datavyu.getView().getSpreadsheetPanel().getVisibleColumns();
+
+            // No visible columns: do nothing and consume event.
+            // One visible: select it and consume event
+            if(visibleColumns.size()==0) return true; // do nothing with no visible columns
+            if(visibleColumns.size()==1){                                          // select the single column
+                visibleColumns.get(0).setSelected(true);
+                visibleColumns.get(0).requestFocus();
+                return true;
+            }
+
             // User is attempting to move to the column to the left.
             if ((e.getKeyCode() == KeyEvent.VK_LEFT)
                     && platformCellMovementMask(e)) {
-                selectColumn(selectedColumn,-1);
+                if(selectedColumn == null) {
+                    visibleColumns.get(visibleColumns.size()-1).setSelected(true); // select last visible column
+                    visibleColumns.get(visibleColumns.size()-1).requestFocus();
+                } else{
+                    selectColumn(selectedColumn, -1);
+                }
                 e.consume();
-                
+
                 return true;
 
                 // User is attempting to move to the column to the right.
             } else if ((e.getKeyCode() == KeyEvent.VK_RIGHT)
                     && platformCellMovementMask(e)) {
-                selectColumn(selectedColumn,+1);
+
+                if(selectedColumn == null){
+                    visibleColumns.get(0).setSelected(true); // select first visible column
+                    visibleColumns.get(0).requestFocus();
+                } else{
+                    selectColumn(selectedColumn,+1);
+                }
                 e.consume();
                 
                 return true;
@@ -506,7 +535,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
             )) {
 
                 if(selectedColumn != null) {
-                    Cell c = selectedColumn.getVariable().createCell();
+                    CreateNewCellController controller = new CreateNewCellController();
+                    Cell c = controller.createCell(selectedColumn.getVariable());
+
                     CellValue v = c.getCellValue();
                     if(v instanceof MatrixCellValue) {
                         List<CellValue> vals = ((MatrixCellValue) v).getArguments();
@@ -516,6 +547,12 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                     }
                     c.setOnset(Datavyu.getVideoController().getCurrentTime());
                     c.setOffset(Datavyu.getVideoController().getCurrentTime());
+
+                    //Add the new cell to the Undo Support
+                    UndoableEdit edit = new AddCellEdit(selectedColumn.getVariable().getName(), c);
+                    Datavyu.getView().getComponent().revalidate();
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
+
                     Datavyu.getProjectController().getSpreadSheetPanel().redrawCells();
                     e.consume();
                     return true;
@@ -971,9 +1008,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
         List<SpreadsheetColumn> visibleColumns = Datavyu.getView().getSpreadsheetPanel().getVisibleColumns();
         SpreadsheetCell sc = lastSelectedCell;
         int vcIndex = visibleColumns.indexOf(selectedColumn);
-
-        if(0 <= vcIndex+shift
-                && vcIndex+shift < visibleColumns.size()) {
+        int newIndex = Math.floorMod(vcIndex+shift, visibleColumns.size()); // wrap around visible columns
+        if(0 <= newIndex
+                && newIndex < visibleColumns.size()) {
 
             sc = selectedColumn.getDataPanel().getSelectedCell();
 
@@ -981,10 +1018,9 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
             clearColumnSelection();
             requestFocus();
 
-            SpreadsheetColumn newColumn = visibleColumns.get(vcIndex+shift);
+            SpreadsheetColumn newColumn = visibleColumns.get(newIndex);
             SpreadsheetCell newCell = null;
-
-            if(newColumn != null && !newColumn.getCells().isEmpty()) {
+            if(!newColumn.getCells().isEmpty()) {
                 if (sc != null) {
                     if (Datavyu.getView().getSheetLayout() == SheetLayoutType.WeakTemporal) {
                         newCell = newColumn.getNearestCellTemporally(sc);
@@ -1008,12 +1044,11 @@ public final class SpreadSheetPanel extends JPanel implements DataStoreListener,
                 newCell.getCell().setSelected(true);
 
                 newColumn.requestFocus();
-            }else if (newColumn != null){
-                sc.getCell().setHighlighted(false);
+            }else{
+                if(sc != null) sc.getCell().setHighlighted(false);
+
                 selectedColumn.setSelected(false);
-
                 newColumn.setSelected(true);
-
                 newColumn.requestFocus();
             }
         }

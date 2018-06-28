@@ -254,10 +254,6 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
     @Override
     public void validate() {
-        // BugzID:753 - Locks the window to the videos aspect ratio.
-        int newHeight = getHeight();
-        int newWidth = (int) (getVideoHeight() * getAspectRatio()) + getInsets().left + getInsets().right;
-        setSize(newWidth, newHeight);
         super.validate();
     }
 

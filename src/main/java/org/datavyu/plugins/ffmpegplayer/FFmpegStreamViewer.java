@@ -26,9 +26,8 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     FFmpegStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
-        player = new FFmpegPlayer();
+        player = new FFmpegPlayer(this);
         player.openFile(sourceFile.getAbsolutePath());
-        this.add(player, BorderLayout.CENTER);
         setSourceFile(sourceFile);
     }
 
@@ -105,9 +104,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    protected float getPlayerFramesPerSecond() {
-        return 30; // TODO: Get this frame rate from the native stream
-    }
+    protected float getPlayerFramesPerSecond() { return (float) player.getFPS(); }
 
     @Override
     public long getDuration() {

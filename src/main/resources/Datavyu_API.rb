@@ -122,7 +122,7 @@ class RCell
       when 'ordinal'
         self.ordinal
       else
-        @arglist.include?(cname)? self.get_arg(cname) : raise("Cell does not have code #{cname}")
+        @arglist.include?(cname)? self.get_arg(cname) : raise("Failed to get the following code from cell #{self.ordinal} in column #{self.parent}: #{cname}")
       end
     end
 

@@ -547,7 +547,8 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
          */
         if (datapanel.getCells().size() > 0) {
 //            datapanel.getCells().get(0).requestFocusInWindow();
-            datapanel.getSelectedCell().requestFocus();
+            SpreadsheetCell sc = datapanel.getSelectedCell();
+            if(sc != null) sc.requestFocus();
         } else {
             datapanel.requestFocusInWindow();
         }
@@ -750,7 +751,9 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
 
     @Override
     public void clockPeriodicSync(double clockTime) {
-        if(isSelected() && Datavyu.getVideoController().getCellHighlightAndFocus()) {
+        if(isSelected()
+            && Datavyu.getVideoController().getCellHighlightAndFocus()
+            && !Datavyu.getVideoController().getClockTimer().isStopped()) {
             focusNextCell();
         }
     }

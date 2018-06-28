@@ -9,8 +9,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.io.IOException;
 
 public class FFmpegPlayer extends JPanel {
@@ -21,15 +19,15 @@ public class FFmpegPlayer extends JPanel {
     /** The logger for this class */
     private static Logger logger = LogManager.getFormatterLogger(FFmpegPlayer.class);
 
-    /** Load the native library that interfaces to ffmpeg */
+    /** Load the native library that interfaces to ffmpeg 4.0 */
     static {
         try {
             logger.info("Extracting libraries for ffmpeg.");
-            NativeLibraryLoader.extract("avutil-55");
-            NativeLibraryLoader.extract("swscale-4");
-            NativeLibraryLoader.extract("swresample-2");
-            NativeLibraryLoader.extract("avcodec-57");
-            NativeLibraryLoader.extract("avformat-57");
+            NativeLibraryLoader.extract("avutil-56");
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
             NativeLibraryLoader.extract("MovieStream");
         } catch (Exception e) {
             logger.error("Failed loading libraries. Error: ", e);
@@ -48,47 +46,26 @@ public class FFmpegPlayer extends JPanel {
 	/** This is the audio sound stream listener */
 	private AudioSoundStreamListener audioSoundStreamListener;
 
-	private VideoDisplayStreamListener displayStreamListener;
+	private VideoStreamListenerContainer displayStreamListener;
 
 	/**
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
 	 * and registering stream listeners for the video and audio. The stream
 	 * listener for the video will show the image in this JPanel.
+	 * @param viewer
 	 */
-	FFmpegPlayer() {
+	FFmpegPlayer(FFmpegStreamViewer viewer) {
 		setLayout(new BorderLayout());
 		movieStreamProvider = new MovieStreamProvider();
 
 		// Add the audio sound listener
-        audioSoundStreamListener = new AudioSoundStreamListener(movieStreamProvider);
+		audioSoundStreamListener = new AudioSoundStreamListener(movieStreamProvider);
 		movieStreamProvider.addAudioStreamListener(audioSoundStreamListener);
 
 		// Add video display
-        displayStreamListener = new VideoDisplayStreamListener(movieStreamProvider, this, BorderLayout.CENTER,
-                reqColorSpace);
+		displayStreamListener = new VideoStreamListenerContainer(movieStreamProvider, viewer, BorderLayout.CENTER,
+				reqColorSpace);
 		movieStreamProvider.addVideoStreamListener(displayStreamListener);
-
-		addComponentListener(new ComponentListener() {
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                if (e.getID() == ComponentEvent.COMPONENT_RESIZED) {
-                    Rectangle rectangle = e.getComponent().getBounds();
-                    float scale = ((float) rectangle.height)/movieStreamProvider.getHeightOfView();
-                    displayStreamListener.setScale(scale);
-                    logger.info("Changed scale to %2.2f", scale);
-                }
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) { }
-
-            @Override
-            public void componentShown(ComponentEvent e) { }
-
-            @Override
-            public void componentHidden(ComponentEvent e) { }
-        });
 	}
 
 	/**
@@ -112,7 +89,7 @@ public class FFmpegPlayer extends JPanel {
 			// Open the stream
 			DatavyuVersion localVersion = DatavyuVersion.getLocalVersion();
 	        movieStreamProvider.open(fileName, localVersion.getVersion(), reqColorSpace, input);
-	        
+
 	        // Load and display first frame.
 			movieStreamProvider.setCurrentTime(0);
             movieStreamProvider.startVideoListeners();
@@ -197,7 +174,7 @@ public class FFmpegPlayer extends JPanel {
 	}
 
 	public void setScale(float scale) {
-	    displayStreamListener.setScale(scale);
+//	    displayStreamListener.setScale(scale);
     }
 
 	/**
@@ -225,4 +202,6 @@ public class FFmpegPlayer extends JPanel {
 	boolean isPlaying() {
 	    return movieStreamProvider.isPlaying();
     }
+
+    public double getFPS() { return movieStreamProvider.getAverageFrameRate(); }
 }
