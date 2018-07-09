@@ -1826,7 +1826,14 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         // Only one column should be selected, but just in case, we'll only
         // change the first column
 //        Variable var = Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
-        Variable var = Datavyu.getProjectController().getLastSelectedVariables().get(0);
+        Variable var = null;
+        if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag) {
+            var = Datavyu.getProjectController().getLastSelectedVariables().get(0);
+            menuMouseEventFlag = false;
+        }else{
+            var = Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
+        }
+
         for (SpreadsheetColumn sCol : panel.getColumns()) {
             if (sCol.getVariable().equals(var)) {
                 sCol.showChangeVarNameDialog();
