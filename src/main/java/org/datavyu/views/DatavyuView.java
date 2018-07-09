@@ -38,7 +38,6 @@ import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.datavyu.util.FileFilters.*;
 import org.datavyu.util.FileSystemTreeModel;
 import org.datavyu.views.discrete.SpreadSheetPanel;
-import org.datavyu.views.discrete.SpreadsheetCell;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import org.jdesktop.application.Action;
@@ -53,7 +52,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -1765,7 +1763,13 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 //        DataStore ds = Datavyu.getProjectController().getDataStore();
 //        List<Variable> selectedVariables = ds.getSelectedVariables();
 
-        List<Variable> selectedVariables = Datavyu.getProjectController().getLastSelectedVariables();
+        List<Variable> selectedVariables = null;
+        if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag){
+            selectedVariables = Datavyu.getProjectController().getLastSelectedVariables();
+            menuMouseEventFlag = false;
+        }else{
+            selectedVariables = Datavyu.getProjectController().getDataStore().getSelectedVariables();
+        }
         // record the effect
         UndoableEdit edit = new RemoveVariableEdit(selectedVariables);
 
