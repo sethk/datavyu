@@ -310,18 +310,41 @@ public final class VideoController extends DatavyuDialog
         final Plugin plugin = chooser.getSelectedPlugin();
         final File selectedFile = chooser.getSelectedFile();
 
+        openVideo(selectedFile, plugin);
+    }
+
+    /* Open a video using specified file path and plugin.
+        @param filepath Name of video file
+        @param plugin Name of plugin to use (currently short names: jfx, ffmpeg, nativeosx
+     */
+    public void openVideo(final String filepath, final String pluginStr){
+        File videoFile = new File(filepath);
+        Plugin plugin = PluginManager.getInstance().getPluginFromShortName(pluginStr);
+        if(plugin == null ){
+            logger.error("Cannot find plugin: " + pluginStr);
+            return;
+        }
+
+        openVideo(videoFile, plugin);
+    }
+
+    /** Open video file using given plugin.
+     * @param videoFile Video file.
+     * @param plugin Plugin to open with.
+     */
+    public void openVideo(final File videoFile, final Plugin plugin){
         new Thread(() -> {
             if (plugin != null) {
                 try {
                     StreamViewer streamViewer = plugin.getNewStreamViewer(
                             Identifier.generateIdentifier(),
-                            selectedFile,
+                            videoFile,
                             Datavyu.getApplication().getMainFrame(),
                             false);
                     addStream(plugin.getTypeIcon(), streamViewer);
                     mixerController.bindTrackActions(streamViewer.getIdentifier(), streamViewer.getCustomActions());
                     streamViewer.addViewerStateListener(mixerController.getTracksEditorController()
-                                    .getViewerStateListener(streamViewer.getIdentifier()));
+                            .getViewerStateListener(streamViewer.getIdentifier()));
                 } catch (Throwable t) {
                     logger.error(t);
 
@@ -373,7 +396,6 @@ public final class VideoController extends DatavyuDialog
             }
         }).start();
     }
-
     /**
      * Tells the Data Controller if shift is being held or not.
      *
