@@ -366,7 +366,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         logger.info("Frames per second: " + framesPerSecond);
 
         // Display the first frame
-//        setCurrentTime(0L);
+        setCurrentTime(0L);
     }
 
     /**

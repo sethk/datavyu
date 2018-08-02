@@ -39,10 +39,10 @@ public class FFmpegPlayer extends JPanel {
             logger.error("Failed loading libraries. Error: ", e);
         }
     }
-	
+
 	/** The requested color space */
 	private final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-	
+
 	/** The requested audio format */
 	private final AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
 	
@@ -58,21 +58,11 @@ public class FFmpegPlayer extends JPanel {
 	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
 		try {
-			mediaPlayer = new FfmpegMediaPlayer(sourceFile.toURI());
+			mediaPlayer = new FfmpegMediaPlayer(sourceFile.toURI(), new JFrame());
 			mediaPlayer.init(reqAudioFormat, reqColorSpace);
 		}catch (Exception e) {
-			logger.error("Cannot initiate ffmpeg player",e);
+			logger.error("Cannot initialize ffmpeg player",e);
 		}
-
-	}
-
-	/**
-	 * Open a file with the fileName.
-	 *
-	 * @param sourceFile The filename.
-	 */
-	void openFile(File sourceFile) {
-		// Assign a new movie file.
 
 	}
 
@@ -82,10 +72,7 @@ public class FFmpegPlayer extends JPanel {
 	 * @return Duration of the opened stream.
 	 */
 	public double getDuration() {
-		if(mediaPlayer.getState() == PlayerStateEvent.PlayerState.READY)
-			return mediaPlayer.getDuration();
-		else
-			return 0.0;
+		return mediaPlayer.getDuration();
 	}
 
 	/**
@@ -94,11 +81,8 @@ public class FFmpegPlayer extends JPanel {
 	 * @return Original stream size: width, height.
 	 */
 	public Dimension getOriginalVideoSize() {
-		if(mediaPlayer.getState() == PlayerStateEvent.PlayerState.READY)
-			return new Dimension(((FfmpegMediaPlayer)mediaPlayer).getImageWidth(),
+		return new Dimension(((FfmpegMediaPlayer)mediaPlayer).getImageWidth(),
 								((FfmpegMediaPlayer)mediaPlayer).getImageHeight());
-		else
-			return new Dimension(0,0);
 	}
 
 	/**
@@ -168,13 +152,12 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void stepForward() {
 	    logger.info("Step forward.");
-	    //TODO(Reda): Implement step forward already coded in the native side, require hooks
-//		mediaPlayer.stepForward();
+		mediaPlayer.stepForward();
 	}
 
 	public void stepBackward() {
 		logger.info("Step backward.");
-		//TODO(Reda): Implement step forward not coded in the native side.
+		//TODO(Reda): Implement step forward, not coded in the native side.
 //		mediaPlayer.stepBackward();
 	}
 
@@ -184,7 +167,7 @@ public class FFmpegPlayer extends JPanel {
 	 * @param volume New volume to set.
 	 */
 	public void setVolume(float volume) {
-		mediaPlayer.setVolume(volume);
+//		mediaPlayer.setVolume(volume);
 	}
 
 	boolean isPlaying() {
@@ -194,8 +177,6 @@ public class FFmpegPlayer extends JPanel {
     }
 
     public double getFPS() {
-		//TODO(Reda): Implement getFPS function in FfmpegMediaPlayer
-		return 30.0;
-//    return mediaPlayer.getAverageFrameRate();
+    return mediaPlayer.getFps();
 	}
 }
