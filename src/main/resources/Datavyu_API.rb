@@ -2778,7 +2778,7 @@ def new_video(filepath, plugin, onset=0, timeout=5)
 
   success = false
   # Attempt to set track offset until timeout
-  tracks = Datavyu.getVideoController().getMixerController().getTracksEditorController()
+  tracks = Datavyu.getVideoController.getMixerController.getTracksEditorController
   t = Time.now
   while (Time.now - t).to_f < timeout
     success = tracks.setTrackOffset(id, onset)
