@@ -2,14 +2,16 @@ package org.datavyu.plugins.ffmpegplayer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.util.DatavyuVersion;
+import org.datavyu.plugins.ffmpeg.*;
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.util.NativeLibraryLoader;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.io.IOException;
+import java.io.File;
+import java.net.URI;
 
 public class FFmpegPlayer extends JPanel {
 
@@ -28,7 +30,11 @@ public class FFmpegPlayer extends JPanel {
             NativeLibraryLoader.extract("swresample-3");
             NativeLibraryLoader.extract("avcodec-58");
             NativeLibraryLoader.extract("avformat-58");
-            NativeLibraryLoader.extract("MovieStream");
+            NativeLibraryLoader.extract("avfilter-7");
+            NativeLibraryLoader.extract("avdevice-58");
+            NativeLibraryLoader.extract("postproc-55");
+            NativeLibraryLoader.extract("SDL2");
+            NativeLibraryLoader.extract("FfmpegMediaPlayer");
         } catch (Exception e) {
             logger.error("Failed loading libraries. Error: ", e);
         }
@@ -41,12 +47,7 @@ public class FFmpegPlayer extends JPanel {
 	private final AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
 	
 	/** The movie stream for this movie player */
-	private MovieStreamProvider movieStreamProvider;
-
-	/** This is the audio sound stream listener */
-	private AudioSoundStreamListener audioSoundStreamListener;
-
-	private VideoStreamListenerContainer displayStreamListener;
+	private MediaPlayer mediaPlayer;
 
 	/**
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
@@ -54,50 +55,25 @@ public class FFmpegPlayer extends JPanel {
 	 * listener for the video will show the image in this JPanel.
 	 * @param viewer
 	 */
-	FFmpegPlayer(FFmpegStreamViewer viewer) {
+	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
-		movieStreamProvider = new MovieStreamProvider();
+		try {
+			mediaPlayer = new FfmpegMediaPlayer(sourceFile.toURI());
+			mediaPlayer.init(reqAudioFormat, reqColorSpace);
+		}catch (Exception e) {
+			logger.error("Cannot initiate ffmpeg player",e);
+		}
 
-		// Add the audio sound listener
-		audioSoundStreamListener = new AudioSoundStreamListener(movieStreamProvider);
-		movieStreamProvider.addAudioStreamListener(audioSoundStreamListener);
-
-		// Add video display
-		displayStreamListener = new VideoStreamListenerContainer(movieStreamProvider, viewer, BorderLayout.CENTER,
-				reqColorSpace);
-		movieStreamProvider.addVideoStreamListener(displayStreamListener);
 	}
 
 	/**
 	 * Open a file with the fileName.
 	 *
-	 * @param fileName The filename.
+	 * @param sourceFile The filename.
 	 */
-	void openFile(String fileName) {
-		movieStreamProvider.stop();
+	void openFile(File sourceFile) {
 		// Assign a new movie file.
-		try {
-			// The input audio format will be manipulated by the open method!
-			AudioFormat input = new AudioFormat(reqAudioFormat.getEncoding(),
-                                                reqAudioFormat.getSampleRate(),
-                                                reqAudioFormat.getSampleSizeInBits(),
-                                                reqAudioFormat.getChannels(),
-                                                reqAudioFormat.getFrameSize(),
-                                                reqAudioFormat.getFrameRate(),
-                                                reqAudioFormat.isBigEndian());
-			
-			// Open the stream
-			DatavyuVersion localVersion = DatavyuVersion.getLocalVersion();
-	        movieStreamProvider.open(fileName, localVersion.getVersion(), reqColorSpace, input);
 
-	        // Load and display first frame.
-			movieStreamProvider.setCurrentTime(0);
-            movieStreamProvider.startVideoListeners();
-	        movieStreamProvider.nextImageFrame();
-	        //movieStreamProvider.stopVideoListeners();
-		} catch (IOException io) {
-			logger.info("Unable to open movie. Error: ", io);
-		}
 	}
 
 	/**
@@ -106,7 +82,10 @@ public class FFmpegPlayer extends JPanel {
 	 * @return Duration of the opened stream.
 	 */
 	public double getDuration() {
-		return movieStreamProvider.getDuration();
+		if(mediaPlayer.getState() == PlayerStateEvent.PlayerState.READY)
+			return mediaPlayer.getDuration();
+		else
+			return 0.0;
 	}
 
 	/**
@@ -115,7 +94,11 @@ public class FFmpegPlayer extends JPanel {
 	 * @return Original stream size: width, height.
 	 */
 	public Dimension getOriginalVideoSize() {
-		return new Dimension(movieStreamProvider.getWidthOfStream(), movieStreamProvider.getHeightOfStream());
+		if(mediaPlayer.getState() == PlayerStateEvent.PlayerState.READY)
+			return new Dimension(((FfmpegMediaPlayer)mediaPlayer).getImageWidth(),
+								((FfmpegMediaPlayer)mediaPlayer).getImageHeight());
+		else
+			return new Dimension(0,0);
 	}
 
 	/**
@@ -124,7 +107,7 @@ public class FFmpegPlayer extends JPanel {
 	 * @return Current time in seconds.
 	 */
 	public double getCurrentTime() {
-		return movieStreamProvider.getCurrentTime();
+		return mediaPlayer.getPresentationTime();
 	}
 
 	/**
@@ -134,9 +117,11 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void setCurrentTime(double position) {
         logger.info("Seeking position: " + position);
-        movieStreamProvider.setCurrentTime(position);
-        movieStreamProvider.startVideoListeners();
-        movieStreamProvider.nextImageFrame();
+		double currentTime, nextTime, incr;
+		currentTime = mediaPlayer.getPresentationTime();
+		incr =  position - currentTime;
+		nextTime = currentTime + incr;
+		mediaPlayer.seek(nextTime);
     }
 
 	/**
@@ -144,7 +129,7 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void cleanUp() {
 	    logger.info("Closing stream.");
-		movieStreamProvider.stop();
+		mediaPlayer.dispose();
 	}
 
 	/**
@@ -154,7 +139,8 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void setPlaybackSpeed(float playbackSpeed) {
 		logger.info("Setting start back speed: " + playbackSpeed);
-		movieStreamProvider.setSpeed(playbackSpeed);
+		// Not implemented yet, we are using the fake playback
+//		mediaPlayer.setRate(playbackSpeed);
 	}
 
 	/**
@@ -162,7 +148,7 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void play() {
 		logger.info("Starting isPlaying video");
-		movieStreamProvider.start();
+		mediaPlayer.play();
 	}
 
 	/**
@@ -170,7 +156,7 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void stop() {
 		logger.info("Stopping the video.");
-		movieStreamProvider.stop();
+		mediaPlayer.stop();
 	}
 
 	public void setScale(float scale) {
@@ -182,12 +168,14 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void stepForward() {
 	    logger.info("Step forward.");
-	    movieStreamProvider.stepForward();
+	    //TODO(Reda): Implement step forward already coded in the native side, require hooks
+//		mediaPlayer.stepForward();
 	}
 
 	public void stepBackward() {
 		logger.info("Step backward.");
-		movieStreamProvider.stepBackward();
+		//TODO(Reda): Implement step forward not coded in the native side.
+//		mediaPlayer.stepBackward();
 	}
 
 	/**
@@ -196,12 +184,18 @@ public class FFmpegPlayer extends JPanel {
 	 * @param volume New volume to set.
 	 */
 	public void setVolume(float volume) {
-		audioSoundStreamListener.setVolume(volume);
+		mediaPlayer.setVolume(volume);
 	}
 
 	boolean isPlaying() {
-	    return movieStreamProvider.isPlaying();
+		//TODO(Reda): Implement isPlaying function in FfmpegMediaPlayer
+	    return false;
+//		return mediaPlayer.isPlaying();
     }
 
-    public double getFPS() { return movieStreamProvider.getAverageFrameRate(); }
+    public double getFPS() {
+		//TODO(Reda): Implement getFPS function in FfmpegMediaPlayer
+		return 30.0;
+//    return mediaPlayer.getAverageFrameRate();
+	}
 }
