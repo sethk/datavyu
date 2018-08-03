@@ -9,7 +9,7 @@ You can find binaries of Datavyu available for Windows and OSX on [the Datavyu.o
 
 To get started with Datavyu development, you will need to download and install a few development tools. Datavyu is primarily written in Java, along with a little Ruby (via JRuby) for additional scripting tasks. So the list of toys you will need to download:
 
-* [Java JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) 
+* [Java JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) u162 or later.
 * [Maven 3.0.5](http://maven.apache.org/)
 * [Git](http://git-scm.com/)
 
