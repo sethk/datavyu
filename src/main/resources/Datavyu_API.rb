@@ -2764,3 +2764,27 @@ def show_columns(*names)
   valid_names = names & get_column_list
   valid_names.each{ |x| $db.getVariable(x).setHidden(false) }
 end
+
+# Add a video to the current spreadsheet/controller.
+# @param filepath [String] path to the file
+# @param plugin [String] short name of plugin to load video with; currently supprots jfx, nativeosx, ffmpeg
+# @param onset [Integer] start point of video in milliseconds
+# @param timeout [Integer] seconds to wait for the video to load up
+# @return [True, False] true if filepath and plugin are valid, false otherwise
+# @since 1.4.2
+def new_video(filepath, plugin, onset=0, timeout=5)
+  id = Datavyu.getVideoController.openVideo(filepath, plugin)
+  return false if id.nil?
+
+  success = false
+  # Attempt to set track offset until timeout
+  tracks = Datavyu.getVideoController.getMixerController.getTracksEditorController
+  t = Time.now
+  while (Time.now - t).to_f < timeout
+    success = tracks.setTrackOffset(id, onset)
+    break if success
+    sleep(0.5)
+  end
+
+  return success
+end
