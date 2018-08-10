@@ -5,7 +5,7 @@
     <groupId>org.datavyu</groupId>
     <artifactId>datavyu</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.1</version>
+    <version>1.4.2-RC1</version>
     <name>Datavyu</name>
     <url>http://datavyu.org</url>
 
@@ -1072,14 +1072,14 @@
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>ffmpeg-libs</artifactId>
-            <version>0.4</version>
+            <version>0.5-20180801.160616-1</version>
         </dependency>
 
         <!-- This is a beta version of the FFmpeg plugin 0.17-SNAPSHOT -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>ffmpeg-plugin</artifactId>
-            <version>0.17</version>
+            <version>0.18-20180810.003541-26</version>
         </dependency>
 
         <!-- Updates with JRE from java version >= 1.7 -->
