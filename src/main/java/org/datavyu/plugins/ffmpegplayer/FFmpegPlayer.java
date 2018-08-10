@@ -58,7 +58,7 @@ public class FFmpegPlayer extends JPanel {
 	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
 		try {
-			mediaPlayer = new FfmpegMediaPlayer(sourceFile.toURI(), new JFrame());
+			mediaPlayer = new FfmpegMediaPlayer(sourceFile, viewer);
 			mediaPlayer.init(reqAudioFormat, reqColorSpace);
 		}catch (Exception e) {
 			logger.error("Cannot initialize ffmpeg player",e);
@@ -171,9 +171,7 @@ public class FFmpegPlayer extends JPanel {
 	}
 
 	boolean isPlaying() {
-		//TODO(Reda): Implement isPlaying function in FfmpegMediaPlayer
-	    return false;
-//		return mediaPlayer.isPlaying();
+	    return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING ? true : false;
     }
 
     public double getFPS() {
