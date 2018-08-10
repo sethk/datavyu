@@ -320,7 +320,11 @@ public final class VocabEditorV extends DatavyuDialog {
             Variable varToSwap = getVocabElements().get(idx-1).getVariable();
             sp.moveColumn(var, varToSwap);
             makeElements();
-            v.requestFocus();
+            for(VocabElementV vev : getVocabElements()) {
+                if(vev.getVariable() == var) {
+                    vev.requestFocus();
+                }
+            }
         }
     }
 
@@ -338,7 +342,11 @@ public final class VocabEditorV extends DatavyuDialog {
             Variable varToSwap = getVocabElements().get(idx+1).getVariable();
             sp.moveColumn(var, varToSwap);
             makeElements();
-            v.requestFocus();
+            for(VocabElementV vev : getVocabElements()) {
+                if(vev.getVariable() == var) {
+                    vev.requestFocus();
+                }
+            }
         }
     }
 
@@ -810,6 +818,8 @@ public final class VocabEditorV extends DatavyuDialog {
         addCodeButton.addMouseListener(ma);
         moveCodeLeftButton.addMouseListener(ma);
         moveCodeRightButton.addMouseListener(ma);
+        moveVariableDownButton.addMouseListener(ma);
+        moveVariableUpButton.addMouseListener(ma);
 
     }
 
