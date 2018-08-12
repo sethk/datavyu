@@ -36,7 +36,7 @@ public class FFmpegPlayer extends JPanel {
             NativeLibraryLoader.extract("SDL2");
             NativeLibraryLoader.extract("FfmpegMediaPlayer");
         } catch (Exception e) {
-            logger.error("Failed loading libraries. Error: ", e);
+            logger.error("Failed loading ffmpeg libraries due to error: ", e);
         }
     }
 
@@ -47,13 +47,15 @@ public class FFmpegPlayer extends JPanel {
 	private final AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
 	
 	/** The movie stream for this movie player */
-	private MediaPlayer mediaPlayer;
+	private MediaPlayerData mediaPlayer;
 
 	/**
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
 	 * and registering stream listeners for the video and audio. The stream
 	 * listener for the video will show the image in this JPanel.
-	 * @param viewer
+	 *
+	 * @param viewer The ffmpeg viewer
+     * @param sourceFile The source file
 	 */
 	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
@@ -61,9 +63,8 @@ public class FFmpegPlayer extends JPanel {
 			mediaPlayer = new FfmpegMediaPlayer(sourceFile, viewer);
 			mediaPlayer.init(reqAudioFormat, reqColorSpace);
 		}catch (Exception e) {
-			logger.error("Cannot initialize ffmpeg player",e);
+			logger.error("Cannot initialize ffmpeg player due to error: ", e);
 		}
-
 	}
 
 	/**
@@ -81,8 +82,7 @@ public class FFmpegPlayer extends JPanel {
 	 * @return Original stream size: width, height.
 	 */
 	public Dimension getOriginalVideoSize() {
-		return new Dimension(((FfmpegMediaPlayer)mediaPlayer).getImageWidth(),
-								((FfmpegMediaPlayer)mediaPlayer).getImageHeight());
+		return new Dimension(mediaPlayer.getImageWidth(), mediaPlayer.getImageHeight());
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class FFmpegPlayer extends JPanel {
 	}
 
 	boolean isPlaying() {
-	    return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING ? true : false;
+	    return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING;
     }
 
     public double getFPS() {
