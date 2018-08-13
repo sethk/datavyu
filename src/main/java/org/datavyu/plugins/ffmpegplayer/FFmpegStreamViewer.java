@@ -26,8 +26,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     FFmpegStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
-        player = new FFmpegPlayer(this);
-        player.openFile(sourceFile.getAbsolutePath());
+        player = new FFmpegPlayer(this,sourceFile);
         setSourceFile(sourceFile);
     }
 
@@ -154,7 +153,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isSeekPlaybackEnabled() {
-        return false;
-    }
+    public boolean isSeekPlaybackEnabled() { return playBackRate > 1F
+                                                    || playBackRate < 0
+                                                    || (playBackRate < 1F && playBackRate > 0); }
 }
