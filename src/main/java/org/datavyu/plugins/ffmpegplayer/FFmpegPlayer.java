@@ -101,11 +101,7 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void setCurrentTime(double position) {
         logger.info("Seeking position: " + position);
-		double currentTime, nextTime, incr;
-		currentTime = mediaPlayer.getPresentationTime();
-		incr =  position - currentTime;
-		nextTime = currentTime + incr;
-		mediaPlayer.seek(nextTime);
+		mediaPlayer.seek(position);
     }
 
 	/**
@@ -143,6 +139,7 @@ public class FFmpegPlayer extends JPanel {
 		mediaPlayer.stop();
 	}
 
+	@Deprecated
 	public void setScale(float scale) {
 //	    displayStreamListener.setScale(scale);
     }
@@ -157,7 +154,7 @@ public class FFmpegPlayer extends JPanel {
 
 	public void stepBackward() {
 		logger.info("Step backward.");
-		//TODO(Reda): Implement step forward, not coded in the native side.
+		//TODO(Reda): Implement step backward, not coded in the native side.
 //		mediaPlayer.stepBackward();
 	}
 
@@ -167,6 +164,7 @@ public class FFmpegPlayer extends JPanel {
 	 * @param volume New volume to set.
 	 */
 	public void setVolume(float volume) {
+		//TODO(Reda) hook this when the volume will be implemented
 //		mediaPlayer.setVolume(volume);
 	}
 
