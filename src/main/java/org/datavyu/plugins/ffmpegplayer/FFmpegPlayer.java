@@ -165,7 +165,7 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void setVolume(float volume) {
 		//TODO(Reda) hook this when the volume will be implemented
-//		mediaPlayer.setVolume(volume);
+		mediaPlayer.setVolume(volume);
 	}
 
 	boolean isPlaying() {
