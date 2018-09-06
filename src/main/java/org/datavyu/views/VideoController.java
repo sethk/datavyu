@@ -57,6 +57,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 
 /**
@@ -454,6 +455,8 @@ public final class VideoController extends DatavyuDialog
 
     @Override
     public void clockBoundaryCheck(double clockTime) {
+        boolean stopClockTimer = false;
+
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         for (StreamViewer streamViewer : streamViewers) {
             TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
@@ -474,9 +477,16 @@ public final class VideoController extends DatavyuDialog
                         && streamViewer.isPlaying()) {
                     logger.info("Clock Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
                     streamViewer.stop();
+                    stopClockTimer = true;
                 }
             }
         }
+        //Check Status of streamViewers to update The Master Clock
+        if(stopClockTimer) {
+            clockTimer.stop();
+            labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
+        }
+
         // Updates the position of the needle and label
         // Check for visible to remove Java Null pointer exception for non-initialised Needle Model
         if (visible) {
