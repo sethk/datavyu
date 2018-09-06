@@ -471,8 +471,7 @@ public final class VideoController extends DatavyuDialog
                         || clockTime >= trackModel.getOffset() + trackModel.getDuration()
                         || clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd()
                         || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
-                        && (streamViewer.isPlaying()
-                            || streamViewer.isSeekPlaybackEnabled())) {
+                        && streamViewer.isPlaying()) {
                     logger.info("Clock Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
                     streamViewer.stop();
                 }
@@ -489,7 +488,8 @@ public final class VideoController extends DatavyuDialog
     public void clockSeekPlayback(double clockTime) {
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         for (StreamViewer streamViewer : streamViewers) {
-            if (streamViewer.isSeekPlaybackEnabled()) {
+            if (streamViewer.isSeekPlaybackEnabled()
+                && streamViewer.isPlaying()) {
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
                 if (trackModel != null) {
                     streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
