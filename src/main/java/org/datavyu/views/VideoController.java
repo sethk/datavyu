@@ -460,15 +460,19 @@ public final class VideoController extends DatavyuDialog
             if (trackModel != null && !clockTimer.isStopped()) {
                 // Only if in range and not already playing and not in seek playback
                 if (clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
+                        && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()
                         && clockTime >= trackModel.getOffset()
-                        && !streamViewer.isPlaying() && !streamViewer.isSeekPlaybackEnabled()) {
+                        && !streamViewer.isPlaying()
+                        && !streamViewer.isSeekPlaybackEnabled()) {
                     logger.info("Clock Boundary Starting track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
-                     streamViewer.start();
+                    streamViewer.start();
                 }
                 if ((clockTime < trackModel.getOffset()
                         || clockTime >= trackModel.getOffset() + trackModel.getDuration()
-                        || clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd())
-                        && streamViewer.isPlaying()) {
+                        || clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd()
+                        || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
+                        && (streamViewer.isPlaying()
+                            || streamViewer.isSeekPlaybackEnabled())) {
                     logger.info("Clock Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
                     streamViewer.stop();
                 }
