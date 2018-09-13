@@ -2727,8 +2727,9 @@ alias :getDatavyuVersion :get_datavyu_version
 # Pass in list, show only those columns, in that order
 # List can be of vars or strings
 # @param column_list [Array(String)] The list of columns that we want to show, in the order we want them shown.
-def set_column_order(column_list)
-  if column_list.instance_of?(Array) and column_list.length > 0
+def set_column_order(*column_list)
+  column_list.flatten!
+  if column_list.length > 0
     for col in column_list.reverse
       i = column_list.index(col)
       if !col.instance_of?(String)
@@ -2749,9 +2750,9 @@ def set_column_order(column_list)
   vars = $sp.get_spreadsheet_panel().get_columns()
   for v in vars
     if column_list.include?(v.get_column_name())
-      v.set_visible(true)
+      show_columns([v.get_column_name()])
     else
-      v.set_visible(false)
+      hide_columns([v.get_column_name()])
     end
   end
 end
