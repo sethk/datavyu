@@ -255,6 +255,8 @@ public final class ClockTimer {
             updateElapsedTime();
             isStopped = true;
             notifyStop();
+            // Force sync after a stop
+            notifyForceSync();
         }
     }
 

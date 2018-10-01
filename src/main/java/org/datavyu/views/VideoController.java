@@ -425,7 +425,9 @@ public final class VideoController extends DatavyuDialog
             TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
             // TODO: Ensure that there is a return value by tying offset/duration directly to the object
             if (trackModel != null) {
-                if (clockTime >= trackModel.getOffset()) {
+                if (clockTime >= trackModel.getOffset()
+                        && clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
+                        && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()) {
                     logger.info("Clock Start Starts track: " + trackModel.getIdentifier() + " at time: " + clockTime);
                     streamViewer.start();
                 }
@@ -459,7 +461,8 @@ public final class VideoController extends DatavyuDialog
                 || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
                 && !clockTimer.isStopped()){
             logger.info("Clock Boundary Stopping Master Clock at " + clockTime );
-            clockTimer.setRate(0f);
+            clockTimer.stop();
+            labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
         }
 
         // Updates the position of the needle and label
