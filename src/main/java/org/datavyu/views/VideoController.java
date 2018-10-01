@@ -1713,10 +1713,13 @@ public final class VideoController extends DatavyuDialog
      * @param shuttleJump The required rate and direction of the shuttle.
      */
     private void shuttle(int shuttleJump) {
-        float currentRate = clockTimer.getRate();
-        float nextRate = shuttleRates.nextRate(currentRate, shuttleJump);
-        clockTimer.setRate(nextRate);
-        logger.info("Changed rate from " + currentRate + " to " + nextRate + " for " + shuttleJump + " jumps.");
+        if (clockTimer.getClockTime() > mixerController.getRegionController().getModel().getRegion().getRegionStart()
+                && clockTimer.getClockTime() < mixerController.getRegionController().getModel().getRegion().getRegionEnd()) {
+            float currentRate = clockTimer.getRate();
+            float nextRate = shuttleRates.nextRate(currentRate, shuttleJump);
+            clockTimer.setRate(nextRate);
+            logger.info("Changed rate from " + currentRate + " to " + nextRate + " for " + shuttleJump + " jumps.");
+        }
     }
 
     /**
