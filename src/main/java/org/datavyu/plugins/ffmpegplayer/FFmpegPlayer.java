@@ -60,8 +60,8 @@ public class FFmpegPlayer extends JPanel {
 	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
 		try {
-			mediaPlayer = new FfmpegMediaPlayer(sourceFile, viewer);
-			mediaPlayer.init(reqAudioFormat, reqColorSpace);
+			mediaPlayer = new FfmpegJavaMediaPlayer(sourceFile.toURI(), viewer);
+			mediaPlayer.init();
 		}catch (Exception e) {
 			logger.error("Cannot initialize ffmpeg player due to error: ", e);
 		}

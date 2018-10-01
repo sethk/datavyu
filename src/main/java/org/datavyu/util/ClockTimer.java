@@ -86,11 +86,19 @@ public final class ClockTimer {
             }
         }, CLOCK_SYNC_DELAY, CLOCK_SYNC_INTERVAL);
 
-        // Boundary checker at higher frequency
+        // Clock Boundary checker at higher frequency
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                checkBoundary();
+                checkClockBoundary();
+            }
+        }, CHECK_BOUNDARY_DELAY, CHECK_BOUNDARY_INTERVAL);
+
+        // Streams Boundary checker at higher frequency
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                checkStreamsBoundary();
             }
         }, CHECK_BOUNDARY_DELAY, CHECK_BOUNDARY_INTERVAL);
 
@@ -284,9 +292,14 @@ public final class ClockTimer {
         notifyPeriodicSync();
     }
 
-    private synchronized void checkBoundary() {
+    private synchronized void checkClockBoundary() {
         updateElapsedTime();
-        notifyCheckBoundary();
+        notifyCheckClockBoundary();
+    }
+
+    private synchronized void checkStreamsBoundary() {
+        updateElapsedTime();
+        notifyCheckStreamsBoundary();
     }
 
     private void notifySeekPlayback() {
@@ -298,9 +311,15 @@ public final class ClockTimer {
         }
     }
 
-    private void notifyCheckBoundary() {
+    private void notifyCheckClockBoundary() {
         for (ClockListener clockListener : clockListeners) {
             clockListener.clockBoundaryCheck(clockTime);
+        }
+    }
+
+    private void notifyCheckStreamsBoundary() {
+        for (ClockListener clockListener : clockListeners) {
+            clockListener.streamsBoundaryCheck(clockTime);
         }
     }
 
@@ -362,6 +381,11 @@ public final class ClockTimer {
          * @param clockTime Current time in milliseconds
          */
         void clockBoundaryCheck(double clockTime);
+
+        /**
+         * @param clockTime Current time in milliseconds
+         */
+        void streamsBoundaryCheck(double clockTime);
 
         /**
          * @param clockTime Current time in milliseconds

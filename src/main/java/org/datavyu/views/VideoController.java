@@ -455,42 +455,41 @@ public final class VideoController extends DatavyuDialog
 
     @Override
     public void clockBoundaryCheck(double clockTime) {
-        boolean stopClockTimer = false;
-
-        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-        for (StreamViewer streamViewer : streamViewers) {
-            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-            if (trackModel != null && !clockTimer.isStopped()) {
-                // Only if in range and not already playing and not in seek playback
-                if (clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
-                        && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()
-                        && clockTime >= trackModel.getOffset()
-                        && !streamViewer.isPlaying()
-                        && !streamViewer.isSeekPlaybackEnabled()) {
-                    logger.info("Clock Boundary Starting track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
-                    streamViewer.start();
-                }
-                if ((clockTime < trackModel.getOffset()
-                        || clockTime >= trackModel.getOffset() + trackModel.getDuration()
-                        || clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd()
-                        || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
-                        && streamViewer.isPlaying()) {
-                    logger.info("Clock Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
-                    streamViewer.stop();
-                    stopClockTimer = true;
-                }
-            }
-        }
-        //Check Status of streamViewers to update The Master Clock
-        if(stopClockTimer) {
-            clockTimer.stop();
-            labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
+        if((clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd()
+                || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
+                && !clockTimer.isStopped()){
+            logger.info("Clock Boundary Stopping Master Clock at " + clockTime );
+            clockTimer.setRate(0f);
         }
 
         // Updates the position of the needle and label
         // Check for visible to remove Java Null pointer exception for non-initialised Needle Model
         if (visible) {
             updateCurrentTimeLabelAndNeedle((long) clockTime);
+        }
+    }
+
+    @Override
+    public void streamsBoundaryCheck(double clockTime) {
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        for (StreamViewer streamViewer : streamViewers) {
+            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
+            if (trackModel != null && !clockTimer.isStopped()) {
+                // Only if in range and not already playing and not in seek playback
+                if ( clockTime >= trackModel.getOffset()
+                        && clockTime <= trackModel.getOffset() + trackModel.getDuration()
+                        && !streamViewer.isPlaying()
+                        && !streamViewer.isSeekPlaybackEnabled()) {
+                    logger.info("Stream Boundary Starting track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
+                    streamViewer.start();
+                }
+                if ((clockTime < trackModel.getOffset()
+                        || clockTime >= trackModel.getOffset() + trackModel.getDuration())
+                        && streamViewer.isPlaying()) {
+                    logger.info("Stream Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
+                    streamViewer.stop();
+                }
+            }
         }
     }
 
