@@ -363,7 +363,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
         // BugzID:679 + 2407: Need to make the window visible before we know the
         // dimensions because of a QTJava bug
-        setViewerVisible(true);
+//        setViewerVisible(true);
 
         originalVideoSize = getOriginalVideoSize();
         logger.info("Setting video size to:" + originalVideoSize);
