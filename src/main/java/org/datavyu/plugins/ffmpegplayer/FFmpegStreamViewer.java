@@ -89,6 +89,11 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     public void setRate(float speed) {
         launch(() -> {
             playBackRate = speed;
+            if(isSeekPlaybackEnabled()){
+                player.setMute(true);
+            }else{
+                player.setMute(false);
+            }
             if (speed == 0) {
                 player.stop();
             } else {
@@ -148,5 +153,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return playBackRate < 0.5F && playBackRate != 0F; }
+    public boolean isSeekPlaybackEnabled() { return playBackRate > 1F
+                                                || playBackRate < 0F
+                                                || (playBackRate > 0F && playBackRate < 1F); }
 }
