@@ -202,14 +202,14 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         /**
          * Listener to maintain aspect ratio of the video.
          */
-        this.getRootPane().addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                int newWidth = (int) (getHeight() * getAspectRatio()) + getInsets().left + getInsets().right;
-                setSize(newWidth, getHeight());
-            }
-        });
+//        this.getRootPane().addComponentListener(new ComponentAdapter() {
+//            @Override
+//            public void componentResized(ComponentEvent e) {
+//                super.componentResized(e);
+//                int newWidth = (int) (getHeight() * getAspectRatio()) + getInsets().left + getInsets().right;
+//                setSize(newWidth, getHeight());
+//            }
+//        });
 
         initComponents();
     }
