@@ -126,7 +126,6 @@ public class MpvPlayer extends JPanel {
 
 	@Deprecated
 	public void setScale(float scale) {
-
     }
 
 	/**
