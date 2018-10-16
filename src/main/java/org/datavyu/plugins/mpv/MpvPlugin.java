@@ -58,7 +58,7 @@ public class MpvPlugin implements Plugin {
 
     @Override
     public ImageIcon getTypeIcon() {
-        return new ImageIcon(getClass().getResource("/icons/ffmpeg.png"));
+        return new ImageIcon(getClass().getResource("/icons/mpv_icon.png"));
     }
 
     @Override
