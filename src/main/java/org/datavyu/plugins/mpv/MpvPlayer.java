@@ -126,7 +126,11 @@ public class MpvPlayer extends JPanel {
 
 	@Deprecated
 	public void setScale(float scale) {
+<<<<<<< HEAD
 
+=======
+//	    displayStreamListener.setScale(scale);
+>>>>>>> origin/DV_mpv_test
     }
 
 	/**
