@@ -1111,6 +1111,12 @@
             <version>0.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>datavyu</groupId>
+            <artifactId>mpv-libs</artifactId>
+            <version>0.1</version>
+        </dependency>
+
         <!-- This is a beta version of the FFmpeg plugin 0.18-SNAPSHOT -->
         <dependency>
             <groupId>datavyu</groupId>
