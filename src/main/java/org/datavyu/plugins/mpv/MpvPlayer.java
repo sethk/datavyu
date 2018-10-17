@@ -25,6 +25,7 @@ public class MpvPlayer extends JPanel {
     static {
         try {
             logger.info("Extracting libraries for MPV .");
+            NativeLibraryLoader.extract("mpv-1");
             NativeLibraryLoader.extract("MpvMediaPlayer");
         } catch (Exception e) {
             logger.error("Failed loading MPV libraries due to error: ", e);
