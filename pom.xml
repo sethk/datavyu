@@ -1111,11 +1111,17 @@
             <version>0.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>datavyu</groupId>
+            <artifactId>mpv-libs</artifactId>
+            <version>0.1</version>
+        </dependency>
+
         <!-- This is a beta version of the FFmpeg plugin 0.18-SNAPSHOT -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>ffmpeg-plugin</artifactId>
-            <version>0.18-20180824.203202-44</version>
+            <version>0.18</version>
         </dependency>
 
         <!-- Updates with JRE from java version >= 1.7 -->
