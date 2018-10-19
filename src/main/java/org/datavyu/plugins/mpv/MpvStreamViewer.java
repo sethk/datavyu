@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpegplayer;
+package org.datavyu.plugins.mpv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,21 +9,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-public class FFmpegStreamViewer extends StreamViewerDialog {
+public class MpvStreamViewer extends StreamViewerDialog {
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(FFmpegStreamViewer.class);
+    private static Logger logger = LogManager.getFormatterLogger(MpvStreamViewer.class);
 
     /** The player this viewer is displaying */
-    private FFmpegPlayer player;
+    private MpvPlayer player;
 
     /** Currently is seeking */
     private boolean isSeeking = false;
 
-    FFmpegStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
+    MpvStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
-        player = new FFmpegPlayer(this, sourceFile);
+        player = new MpvPlayer(this, sourceFile);
         setSourceFile(sourceFile);
     }
 
@@ -153,5 +153,5 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return playBackRate > 8F || playBackRate < 0F; }
+    public boolean isSeekPlaybackEnabled() { return playBackRate < 0F || playBackRate > 32F; }
 }
