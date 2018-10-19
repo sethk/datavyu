@@ -153,5 +153,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return playBackRate > 8F || playBackRate < 0F; }
+    public boolean isSeekPlaybackEnabled() { return playBackRate > 1F
+                                                || playBackRate < 0F
+                                                || (playBackRate > 0F && playBackRate < 1F); }
 }
