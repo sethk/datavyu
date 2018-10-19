@@ -199,6 +199,18 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         menuForResize.add(menuItemDouble);
         menuForResize.setName("menuForResize");
 
+        /**
+         * Listener to maintain aspect ratio of the video.
+         */
+//        this.getRootPane().addComponentListener(new ComponentAdapter() {
+//            @Override
+//            public void componentResized(ComponentEvent e) {
+//                super.componentResized(e);
+//                int newWidth = (int) (getHeight() * getAspectRatio()) + getInsets().left + getInsets().right;
+//                setSize(newWidth, getHeight());
+//            }
+//        });
+
         initComponents();
     }
 
@@ -351,7 +363,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
         // BugzID:679 + 2407: Need to make the window visible before we know the
         // dimensions because of a QTJava bug
-        setViewerVisible(true);
+//        setViewerVisible(true);
 
         originalVideoSize = getOriginalVideoSize();
         logger.info("Setting video size to:" + originalVideoSize);
