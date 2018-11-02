@@ -1244,7 +1244,6 @@ public final class VideoController extends DatavyuDialog
         logger.info("Change time to " + e.getTime() + " milliseconds and toggle: " + e.getToggleStartStop());
 
         // Set the time
-//        clockTimer.setTime(e.getTime());
         clockTimer.setForceTime(e.getTime());
 
         // Toggle
@@ -1302,14 +1301,18 @@ public final class VideoController extends DatavyuDialog
     }
 
     private void handleNeedleChange(final NeedleState needle) {
-        // Nothing to do here, since we update the needle based on the clock timer and not vice versa
-        // Notice, that dragging on the needle is handled through "handleTimescaleEvent"
+        // Set the time only if the needle was moved by a region, if the needle was dragged;
+        // "handleTimescaleEvent" will handle the event
+        if(!needle.wasDragged()) {
+            logger.info("Change time to " + needle.getCurrentTime());
+            clockTimer.setForceTime(needle.getCurrentTime());
+        }
     }
 
     private void handleRegionChange(final RegionState region) {
         final long start = region.getRegionStart();
         final long end = region.getRegionEnd();
-        logger.info("Set Region with start " + start + " ane end " + end );
+        logger.info("Set Region with start " + start + " ane end " + end + " CLock " + clockTimer.getClockTime());
         clockTimer.setMinTime(start);
         clockTimer.setMaxTime(end);
     }
