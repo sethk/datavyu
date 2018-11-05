@@ -34,7 +34,7 @@ public class FFmpegPlayer extends JPanel {
             NativeLibraryLoader.extract("avdevice-58");
             NativeLibraryLoader.extract("postproc-55");
             NativeLibraryLoader.extract("SDL2");
-            NativeLibraryLoader.extract("FfmpegMediaPlayer");
+            NativeLibraryLoader.extract("FfmpegJavaMediaPlayer");
         } catch (Exception e) {
             logger.error("Failed loading ffmpeg libraries due to error: ", e);
         }
