@@ -1661,8 +1661,6 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         return pc; //return value not used
     }
 
-    ;
-
     //no usages as of 5/5/2014
     public ProjectController createNewSpreadsheet(DataStore ds) {
         ProjectController pc = new ProjectController();
