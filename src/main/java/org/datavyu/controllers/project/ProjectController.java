@@ -553,7 +553,7 @@ public final class ProjectController {
             assert p.getNamespace() != null;
             assert !"".equals(p.getNamespace());
 
-            viewerSetting.setPluginUUID(p.getPluginUUID());
+            viewerSetting.setPluginNameAndUUID(p.getPluginUUID());
 
             viewerSetting.setPluginClassifier(p.getNamespace());
 

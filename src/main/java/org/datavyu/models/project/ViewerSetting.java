@@ -138,7 +138,7 @@ public final class ViewerSetting {
         if(pluginUUID == null){
             for(Plugin p : PluginManager.getInstance().getPlugins()){
                 if(pluginName.equals(p.getViewerClass().getName())){
-                    setPluginUUID(p.getPluginUUID());
+                    setPluginNameAndUUID(p.getPluginUUID());
                     break;
                 }
             }
@@ -147,11 +147,17 @@ public final class ViewerSetting {
 
     public UUID getPluginUUID() { return pluginUUID;}
 
-    public void setPluginUUID(final UUID pluginUUID) {
+    /**
+     * The method will find the plugin name associated with
+     * the pluginUUID
+     *
+     * @param pluginUUID plugin UUID
+     */
+    public void setPluginNameAndUUID(final UUID pluginUUID) {
         this.pluginUUID =  pluginUUID;
         if(pluginName == null){
             for(Plugin p : PluginManager.getInstance().getPlugins()){
-                if(pluginUUID.equals(pluginUUID)){
+                if(pluginUUID.equals(p.getPluginUUID())){
                     setPluginName(p.getViewerClass().getName());
                     break;
                 }

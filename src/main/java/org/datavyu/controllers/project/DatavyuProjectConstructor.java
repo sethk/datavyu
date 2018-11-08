@@ -87,11 +87,13 @@ public class DatavyuProjectConstructor extends Constructor {
             Map values = constructMapping(mnode);
             ViewerSetting vs = new ViewerSetting();
             vs.setFilePath((String) values.get("feed"));
-//            vs.setPluginName((String) values.get("plugin"));
             try {
-                vs.setPluginUUID(UUID.fromString((String) values.get("plugin"))); // Look for an UUID
+                // Look for an UUID
+                vs.setPluginNameAndUUID(UUID.fromString((String) values.get("plugin")));
             }catch (IllegalArgumentException e){
-                vs.setPluginName((String) values.get("plugin")); //if not an UUID try regular plugin name
+                // Don't remove ! used for backward compatibility
+                // if not an UUID try regular plugin name
+                vs.setPluginName((String) values.get("plugin"));
             }
 
             // WARNING: SnakeYAML refuses to parse this as a Long.
