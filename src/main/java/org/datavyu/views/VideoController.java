@@ -1301,12 +1301,8 @@ public final class VideoController extends DatavyuDialog
     }
 
     private void handleNeedleChange(final NeedleState needle) {
-        // Set the time only if the needle was moved by a region, if the needle was dragged;
-        // "handleTimescaleEvent" will handle the event
-        if(!needle.wasDragged()) {
-            logger.info("Change time to " + needle.getCurrentTime());
-            clockTimer.setForceTime(needle.getCurrentTime());
-        }
+        // Nothing to do here, since we update the needle based on the clock timer and not vice versa
+        // Notice, that dragging on the needle is handled through "handleTimescaleEvent"
     }
 
     private void handleRegionChange(final RegionState region) {
@@ -1315,6 +1311,13 @@ public final class VideoController extends DatavyuDialog
         logger.info("Set Region with start " + start + " ane end " + end + " CLock " + clockTimer.getClockTime());
         clockTimer.setMinTime(start);
         clockTimer.setMaxTime(end);
+
+        // setRegionOfInterest method will change the values of the RegionModel
+        // and NeedleModel and trigger two property changes. The clock timer will
+        // not force a sync if the needle time is not in the snapped region
+        // Note: make sure that we changed the clock timer min and max before
+        // we simulate a find press.
+        pressFind();
     }
 
     private void handleViewportChange(final ViewportState viewport) {
