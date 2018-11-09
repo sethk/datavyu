@@ -2,16 +2,14 @@ package org.datavyu.plugins.ffmpegplayer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.ffmpeg.*;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer;
+import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
+import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 import org.datavyu.util.NativeLibraryLoader;
 
-import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.io.File;
-import java.net.URI;
 
 public class FFmpegPlayer extends JPanel {
 
@@ -39,12 +37,6 @@ public class FFmpegPlayer extends JPanel {
             logger.error("Failed loading ffmpeg libraries due to error: ", e);
         }
     }
-
-	/** The requested color space */
-	private final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-
-	/** The requested audio format */
-	private final AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
 	
 	/** The movie stream for this movie player */
 	private MediaPlayerData mediaPlayer;
@@ -118,9 +110,8 @@ public class FFmpegPlayer extends JPanel {
 	 * @param playbackSpeed The start back speed.
 	 */
 	public void setPlaybackSpeed(float playbackSpeed) {
-		logger.info("Setting start back speed: " + playbackSpeed);
-		// Not implemented yet, we are using the fake playback
-//		mediaPlayer.setRate(playbackSpeed);
+		logger.info("Setting playback speed to: " + playbackSpeed);
+		mediaPlayer.setRate(playbackSpeed);
 	}
 
 	/**
@@ -141,21 +132,20 @@ public class FFmpegPlayer extends JPanel {
 
 	@Deprecated
 	public void setScale(float scale) {
-//	    displayStreamListener.setScale(scale);
+		// TODO(fraudies): Implement me
     }
 
 	/**
 	 * Instead of isPlaying a sequence of frames just step by one frame.
 	 */
 	public void stepForward() {
-	    logger.info("Step forward.");
-//		mediaPlayer.stepForward();
+	    logger.info("Step forward");
+	    mediaPlayer.stepForward();
 	}
 
 	public void stepBackward() {
-		logger.info("Step backward.");
-		//TODO(Reda): Implement step backward, not coded in the native side.
-//		mediaPlayer.stepBackward();
+		logger.info("Step backward");
+		mediaPlayer.stepBackward();
 	}
 
 	/**
