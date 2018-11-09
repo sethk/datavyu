@@ -144,7 +144,7 @@ public class MpvStreamViewer extends StreamViewerDialog {
 
     @Override
     public boolean isStepEnabled() {
-        return false;
+        return true;
     }
 
     @Override
