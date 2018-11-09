@@ -1244,7 +1244,6 @@ public final class VideoController extends DatavyuDialog
         logger.info("Change time to " + e.getTime() + " milliseconds and toggle: " + e.getToggleStartStop());
 
         // Set the time
-//        clockTimer.setTime(e.getTime());
         clockTimer.setForceTime(e.getTime());
 
         // Toggle
@@ -1309,9 +1308,16 @@ public final class VideoController extends DatavyuDialog
     private void handleRegionChange(final RegionState region) {
         final long start = region.getRegionStart();
         final long end = region.getRegionEnd();
-        logger.info("Set Region with start " + start + " ane end " + end );
+        logger.info("Set Region with start " + start + " ane end " + end + " CLock " + clockTimer.getClockTime());
         clockTimer.setMinTime(start);
         clockTimer.setMaxTime(end);
+
+        // setRegionOfInterest method will change the values of the RegionModel
+        // and NeedleModel and trigger two property changes. The clock timer will
+        // not force a sync if the needle time is not in the snapped region
+        // Note: make sure that we changed the clock timer min and max before
+        // we simulate a find press.
+        pressFind();
     }
 
     private void handleViewportChange(final ViewportState viewport) {
