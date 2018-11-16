@@ -53,13 +53,11 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     public void setCurrentTime(long time) {
         launch(() -> {
             try {
-                logger.info("Set time to: " + time + " milliseconds.");
                 if (!isSeeking) {
-                    EventQueue.invokeLater(() -> {
-                        isSeeking = true;
-                        player.setCurrentTime(time / 1000.0);
-                        isSeeking = false;
-                    });
+                    isSeeking = true;
+                    logger.info("Set time to: " + time + " milliseconds.");
+                    player.setCurrentTime(time / 1000.0);
+                    isSeeking = false;
                 }
             } catch (Exception e) {
                 logger.error("Unable to set time to " + time + " milliseconds, due to error: ", e);
@@ -153,5 +151,5 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return playBackRate > 8F || playBackRate < 0F; }
+    public boolean isSeekPlaybackEnabled() { return playBackRate < 0F; }
 }

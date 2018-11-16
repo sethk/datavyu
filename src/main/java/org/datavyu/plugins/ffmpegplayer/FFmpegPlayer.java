@@ -127,7 +127,7 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void stop() {
 		logger.info("Stopping the video.");
-		mediaPlayer.stop();
+		mediaPlayer.setRate(0);
 	}
 
 	@Deprecated

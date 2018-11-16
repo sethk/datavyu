@@ -5,13 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
 import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
-import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 import org.datavyu.util.NativeLibraryLoader;
 
-import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.io.File;
 
 public class MpvPlayer extends JPanel {
