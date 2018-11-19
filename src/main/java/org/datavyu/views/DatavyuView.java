@@ -38,7 +38,6 @@ import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.datavyu.util.FileFilters.*;
 import org.datavyu.util.FileSystemTreeModel;
 import org.datavyu.views.discrete.SpreadSheetPanel;
-import org.datavyu.views.discrete.SpreadsheetCell;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import org.jdesktop.application.Action;
@@ -1662,8 +1661,6 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         return pc; //return value not used
     }
 
-    ;
-
     //no usages as of 5/5/2014
     public ProjectController createNewSpreadsheet(DataStore ds) {
         ProjectController pc = new ProjectController();
@@ -1765,7 +1762,13 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 //        DataStore ds = Datavyu.getProjectController().getDataStore();
 //        List<Variable> selectedVariables = ds.getSelectedVariables();
 
-        List<Variable> selectedVariables = Datavyu.getProjectController().getLastSelectedVariables();
+        List<Variable> selectedVariables = null;
+        if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag){
+            selectedVariables = Datavyu.getProjectController().getLastSelectedVariables();
+            menuMouseEventFlag = false;
+        }else{
+            selectedVariables = Datavyu.getProjectController().getDataStore().getSelectedVariables();
+        }
         // record the effect
         UndoableEdit edit = new RemoveVariableEdit(selectedVariables);
 
@@ -1822,7 +1825,14 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         // Only one column should be selected, but just in case, we'll only
         // change the first column
 //        Variable var = Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
-        Variable var = Datavyu.getProjectController().getLastSelectedVariables().get(0);
+        Variable var = null;
+        if(Datavyu.getPlatform() == Platform.WINDOWS && menuMouseEventFlag) {
+            var = Datavyu.getProjectController().getLastSelectedVariables().get(0);
+            menuMouseEventFlag = false;
+        }else{
+            var = Datavyu.getProjectController().getDataStore().getSelectedVariables().get(0);
+        }
+
         for (SpreadsheetColumn sCol : panel.getColumns()) {
             if (sCol.getVariable().equals(var)) {
                 sCol.showChangeVarNameDialog();

@@ -186,7 +186,7 @@ public final class NativeOSXViewer extends StreamViewerDialog {
                             if (isPlaying()) {
                                 nativeOSXPlayer.stop(nativeOSXPlayer.id);
                             }
-                            if (prevRate >= 0 && prevRate <= 8) {
+                            if (!wasPlaying || prevRate >= 0 && prevRate <= 8) {
                                 nativeOSXPlayer.setTimePrecise(time, nativeOSXPlayer.id);
                             } else if (prevRate < 0  && prevRate > -8) {
                                 nativeOSXPlayer.setTimeModerate(time, nativeOSXPlayer.id);

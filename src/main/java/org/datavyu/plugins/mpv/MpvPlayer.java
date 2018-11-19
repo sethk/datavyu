@@ -1,42 +1,42 @@
-package org.datavyu.plugins.ffmpegplayer;
+package org.datavyu.plugins.mpv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer;
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
 import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
-import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 import org.datavyu.util.NativeLibraryLoader;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-public class FFmpegPlayer extends JPanel {
+public class MpvPlayer extends JPanel {
 
     /** Identifier for object serialization */
     private static final long serialVersionUID = 5109839668203738974L;
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(FFmpegPlayer.class);
+    private static Logger logger = LogManager.getFormatterLogger(MpvPlayer.class);
 	
 	/** The movie stream for this movie player */
-	private MediaPlayerData mediaPlayer;
+	private MediaPlayer mediaPlayer;
 
 	/**
-	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
+	 * Construct an MpvPlayer by creating the underlying movie stream provider
 	 * and registering stream listeners for the video and audio. The stream
 	 * listener for the video will show the image in this JPanel.
 	 *
 	 * @param viewer The ffmpeg viewer
      * @param sourceFile The source file
 	 */
-	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
+	MpvPlayer(MpvStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
 		try {
-			mediaPlayer = new FfmpegJavaMediaPlayer(sourceFile.toURI(), viewer);
+			mediaPlayer = new MpvMediaPlayer(sourceFile.toURI(), viewer);
 			mediaPlayer.init();
 		}catch (Exception e) {
-			logger.error("Cannot initialize ffmpeg player due to error: ", e);
+			logger.error("Cannot initialize MPV player due to error: ", e);
 		}
 	}
 
@@ -91,7 +91,8 @@ public class FFmpegPlayer extends JPanel {
 	 * @param playbackSpeed The start back speed.
 	 */
 	public void setPlaybackSpeed(float playbackSpeed) {
-		logger.info("Setting playback speed to: " + playbackSpeed);
+		logger.info("Setting start back speed: " + playbackSpeed);
+		// Not implemented yet, we are using the fake playback
 		mediaPlayer.setRate(playbackSpeed);
 	}
 
@@ -99,7 +100,7 @@ public class FFmpegPlayer extends JPanel {
 	 * Play the video/audio.
 	 */
 	public void play() {
-		logger.info("Starting isPlaying video");
+		logger.info("Starting the video");
 		mediaPlayer.play();
 	}
 
@@ -108,24 +109,23 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void stop() {
 		logger.info("Stopping the video.");
-		mediaPlayer.setRate(0);
+		mediaPlayer.stop();
 	}
 
 	@Deprecated
 	public void setScale(float scale) {
-		// TODO(fraudies): Implement me
     }
 
 	/**
 	 * Instead of isPlaying a sequence of frames just step by one frame.
 	 */
 	public void stepForward() {
-	    logger.info("Step forward");
-	    mediaPlayer.stepForward();
+	    logger.info("Step forward.");
+		mediaPlayer.stepForward();
 	}
 
 	public void stepBackward() {
-		logger.info("Step backward");
+		logger.info("Step backward.");
 		mediaPlayer.stepBackward();
 	}
 

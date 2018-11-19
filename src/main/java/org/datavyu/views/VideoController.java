@@ -50,12 +50,14 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 
 /**
@@ -141,7 +143,7 @@ public final class VideoController extends DatavyuDialog
     private boolean shiftMask = false;
 
     /** The set of streamViewers associated with this controller */
-    private Set<StreamViewer> streamViewers = new LinkedHashSet<>();
+    private LinkedHashSet<StreamViewer> streamViewers = new LinkedHashSet<>();
 
     /** Clock timer */
     private final ClockTimer clockTimer = new ClockTimer();
@@ -306,22 +308,51 @@ public final class VideoController extends DatavyuDialog
      *
      * @param chooser The plugin chooser used to open the data source.
      */
-    private void openVideo(final PluginChooser chooser) {
+    private Identifier openVideo(final PluginChooser chooser) {
         final Plugin plugin = chooser.getSelectedPlugin();
         final File selectedFile = chooser.getSelectedFile();
 
+        return openVideo(selectedFile, plugin);
+    }
+
+    /* Open a video using specified file path and plugin.
+        @param filepath Name of video file
+        @param plugin Name of plugin to use (currently short names: jfx, ffmpeg, nativeosx
+     */
+    public Identifier openVideo(final String filepath, final String pluginStr) throws FileNotFoundException {
+        File videoFile = new File(filepath);
+        if(!videoFile.exists()){
+            logger.error("Cannot find file: " + filepath);
+            return null;
+        }
+
+        Plugin plugin = PluginManager.getInstance().getPluginFromShortName(pluginStr);
+        if(plugin == null ){
+            logger.error("Cannot find plugin: " + pluginStr);
+            return null;
+        }
+
+        return openVideo(videoFile, plugin);
+    }
+
+    /** Open video file using given plugin.
+     * @param videoFile Video file.
+     * @param plugin Plugin to open with.
+     */
+    public Identifier openVideo(final File videoFile, final Plugin plugin){
+        Identifier id = Identifier.generateIdentifier();
         new Thread(() -> {
             if (plugin != null) {
                 try {
                     StreamViewer streamViewer = plugin.getNewStreamViewer(
-                            Identifier.generateIdentifier(),
-                            selectedFile,
+                            id,
+                            videoFile,
                             Datavyu.getApplication().getMainFrame(),
                             false);
                     addStream(plugin.getTypeIcon(), streamViewer);
                     mixerController.bindTrackActions(streamViewer.getIdentifier(), streamViewer.getCustomActions());
                     streamViewer.addViewerStateListener(mixerController.getTracksEditorController()
-                                    .getViewerStateListener(streamViewer.getIdentifier()));
+                            .getViewerStateListener(streamViewer.getIdentifier()));
                 } catch (Throwable t) {
                     logger.error(t);
 
@@ -372,8 +403,9 @@ public final class VideoController extends DatavyuDialog
                 }
             }
         }).start();
-    }
 
+        return id;
+    }
     /**
      * Tells the Data Controller if shift is being held or not.
      *
@@ -393,7 +425,9 @@ public final class VideoController extends DatavyuDialog
             TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
             // TODO: Ensure that there is a return value by tying offset/duration directly to the object
             if (trackModel != null) {
-                if (clockTime >= trackModel.getOffset()) {
+                if (clockTime >= trackModel.getOffset()
+                        && clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
+                        && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()) {
                     logger.info("Clock Start Starts track: " + trackModel.getIdentifier() + " at time: " + clockTime);
                     streamViewer.start();
                 }
@@ -423,26 +457,14 @@ public final class VideoController extends DatavyuDialog
 
     @Override
     public void clockBoundaryCheck(double clockTime) {
-        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-        for (StreamViewer streamViewer : streamViewers) {
-            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-            if (trackModel != null && !clockTimer.isStopped()) {
-                // Only if in range and not already playing and not in seek playback
-                if (clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
-                        && clockTime >= trackModel.getOffset()
-                        && !streamViewer.isPlaying() && !streamViewer.isSeekPlaybackEnabled()) {
-                    logger.info("Clock Boundary Starting track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
-                     streamViewer.start();
-                }
-                if ((clockTime < trackModel.getOffset()
-                        || clockTime >= trackModel.getOffset() + trackModel.getDuration()
-                        || clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd())
-                        && streamViewer.isPlaying()) {
-                    logger.info("Clock Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
-                    streamViewer.stop();
-                }
-            }
+        if((clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd()
+                || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
+                && !clockTimer.isStopped()){
+            logger.info("Clock Boundary Stopping Master Clock at " + clockTime );
+            clockTimer.stop();
+            labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
         }
+
         // Updates the position of the needle and label
         // Check for visible to remove Java Null pointer exception for non-initialised Needle Model
         if (visible) {
@@ -451,10 +473,35 @@ public final class VideoController extends DatavyuDialog
     }
 
     @Override
+    public void streamsBoundaryCheck(double clockTime) {
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        for (StreamViewer streamViewer : streamViewers) {
+            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
+            if (trackModel != null && !clockTimer.isStopped()) {
+                // Only if in range and not already playing and not in seek playback
+                if ( clockTime >= trackModel.getOffset()
+                        && clockTime <= trackModel.getOffset() + trackModel.getDuration()
+                        && !streamViewer.isPlaying()
+                        && !streamViewer.isSeekPlaybackEnabled()) {
+                    logger.info("Stream Boundary Starting track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
+                    streamViewer.start();
+                }
+                if ((clockTime < trackModel.getOffset()
+                        || clockTime >= trackModel.getOffset() + trackModel.getDuration())
+                        && streamViewer.isPlaying()) {
+                    logger.info("Stream Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
+                    streamViewer.stop();
+                }
+            }
+        }
+    }
+
+    @Override
     public void clockSeekPlayback(double clockTime) {
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         for (StreamViewer streamViewer : streamViewers) {
-            if (streamViewer.isSeekPlaybackEnabled()) {
+            if (streamViewer.isSeekPlaybackEnabled()
+                && streamViewer.isPlaying()) {
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
                 if (trackModel != null) {
                     streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
@@ -1098,7 +1145,7 @@ public final class VideoController extends DatavyuDialog
      *
      * @return a set of StreamViewers.
      */
-    public Set<StreamViewer> getStreamViewers() {
+    public LinkedHashSet<StreamViewer> getStreamViewers() {
         return streamViewers;
     }
 
@@ -1155,7 +1202,6 @@ public final class VideoController extends DatavyuDialog
     @Action
     public void setCellOffsetAction() {
         logger.info("Set cell offset");
-        clockTimer.setForceTime((long) clockTimer.getStreamTime());
         new SetSelectedCellStopTimeController(getCurrentTime());
         setOffsetField(getCurrentTime());
     }
@@ -1198,7 +1244,6 @@ public final class VideoController extends DatavyuDialog
         logger.info("Change time to " + e.getTime() + " milliseconds and toggle: " + e.getToggleStartStop());
 
         // Set the time
-//        clockTimer.setTime(e.getTime());
         clockTimer.setForceTime(e.getTime());
 
         // Toggle
@@ -1263,9 +1308,16 @@ public final class VideoController extends DatavyuDialog
     private void handleRegionChange(final RegionState region) {
         final long start = region.getRegionStart();
         final long end = region.getRegionEnd();
-        logger.info("Set Region with start " + start + " ane end " + end );
+        logger.info("Set Region with start " + start + " ane end " + end + " CLock " + clockTimer.getClockTime());
         clockTimer.setMinTime(start);
         clockTimer.setMaxTime(end);
+
+        // setRegionOfInterest method will change the values of the RegionModel
+        // and NeedleModel and trigger two property changes. The clock timer will
+        // not force a sync if the needle time is not in the snapped region
+        // Note: make sure that we changed the clock timer min and max before
+        // we simulate a find press.
+        pressFind();
     }
 
     private void handleViewportChange(final ViewportState viewport) {
@@ -1391,6 +1443,7 @@ public final class VideoController extends DatavyuDialog
         } else {
             logger.info("Pause: Stop isPlaying at rate: " + clockTimer.getRate());
             clockTimer.stop();
+            clockTimer.setForceTime((long) clockTimer.getStreamTime());
             labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
         }
     }
@@ -1402,6 +1455,7 @@ public final class VideoController extends DatavyuDialog
     public void stopAction() {
         logger.info("Stop.");
         clockTimer.setRate(0f);
+        clockTimer.setForceTime((long) clockTimer.getStreamTime());
     }
 
     /**
@@ -1666,10 +1720,13 @@ public final class VideoController extends DatavyuDialog
      * @param shuttleJump The required rate and direction of the shuttle.
      */
     private void shuttle(int shuttleJump) {
-        float currentRate = clockTimer.getRate();
-        float nextRate = shuttleRates.nextRate(currentRate, shuttleJump);
-        clockTimer.setRate(nextRate);
-        logger.info("Changed rate from " + currentRate + " to " + nextRate + " for " + shuttleJump + " jumps.");
+        if (clockTimer.getClockTime() > mixerController.getRegionController().getModel().getRegion().getRegionStart()
+                && clockTimer.getClockTime() < mixerController.getRegionController().getModel().getRegion().getRegionEnd()) {
+            float currentRate = clockTimer.getRate();
+            float nextRate = shuttleRates.nextRate(currentRate, shuttleJump);
+            clockTimer.setRate(nextRate);
+            logger.info("Changed rate from " + currentRate + " to " + nextRate + " for " + shuttleJump + " jumps.");
+        }
     }
 
     /**
