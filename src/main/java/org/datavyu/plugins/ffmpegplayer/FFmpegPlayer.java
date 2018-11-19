@@ -18,25 +18,6 @@ public class FFmpegPlayer extends JPanel {
 
     /** The logger for this class */
     private static Logger logger = LogManager.getFormatterLogger(FFmpegPlayer.class);
-
-    /** Load the native library that interfaces to ffmpeg 4.0 */
-    static {
-        try {
-            logger.info("Extracting libraries for ffmpeg.");
-            NativeLibraryLoader.extract("avutil-56");
-            NativeLibraryLoader.extract("swscale-5");
-            NativeLibraryLoader.extract("swresample-3");
-            NativeLibraryLoader.extract("avcodec-58");
-            NativeLibraryLoader.extract("avformat-58");
-            NativeLibraryLoader.extract("avfilter-7");
-            NativeLibraryLoader.extract("avdevice-58");
-            NativeLibraryLoader.extract("postproc-55");
-            NativeLibraryLoader.extract("SDL2");
-            NativeLibraryLoader.extract("FfmpegJavaMediaPlayer");
-        } catch (Exception e) {
-            logger.error("Failed loading ffmpeg libraries due to error: ", e);
-        }
-    }
 	
 	/** The movie stream for this movie player */
 	private MediaPlayerData mediaPlayer;
