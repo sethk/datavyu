@@ -1,3 +1,41 @@
+# Datavyu 1.4.2 Release Notes
+## 11/19/2018
+
+### New features
+* Introduced MPV plugin for Windows:
+    * Added support for 1080p Resolution.
+    * Playback speed from -32x to +32x for Images and Audio.
+    * Accurate and consistent seeks.
+    * Stepping frame by frame forward and backward. 
+* FFmpeg plugin new features:
+    * Added support for 1080p Resolution.
+    * Added support for playback speeds from 0x to 32x for Images and Audio.
+    * Improved the seek accuracy.
+    * Stepping frame by frame forward and backward. 
+    * Keep aspect ratio when resizing FFmpeg plugin window.
+* Added new Ruby API function to load a video from a script.
+* Re-arrange column from the Code Editor dialog.
+
+### Bug fixes
+* Fixed installation issues on older Mac OS versions.
+* Fixed unselected spreadsheet cells when clicking on the Video Controller window.
+* Load the correct plugin from the OPF file.
+* Fixed incorrect time when inserting cells on subsequently locked regions.
+* Seek to cells' onset when snapping the cell.
+* Fixed delete column from the menu bar.
+* FFmpeg plugin for Windows
+    * Fixed FFmpeg plugin crashes when stressed.
+    * Display the first image when the video is loaded.
+    * Update images when seeking and the stream is stopped.
+    * Enable seeks before the first play.
+    * Fixed Synchronization problems between audio and images.
+
+### Known Issues
+* FFmpeg plugin for Windows
+    * Backward playback is not performing as expected.
+    * The Plugin will not update the image when seeking to the end of the track.
+    * Fix seeks will toggle between frames.
+    * Inconsistent frame reporting between plugins. We suggest using the same plugin when coding to maintain consistency.
 # Datavyu 1.4.1 Release Notes
 ## 06/28/2018
 
