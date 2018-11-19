@@ -5,13 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
 import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
-import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 import org.datavyu.util.NativeLibraryLoader;
 
-import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.io.File;
 
 public class MpvPlayer extends JPanel {
@@ -21,16 +18,6 @@ public class MpvPlayer extends JPanel {
 
     /** The logger for this class */
     private static Logger logger = LogManager.getFormatterLogger(MpvPlayer.class);
-
-    static {
-        try {
-            logger.info("Extracting libraries for MPV .");
-            NativeLibraryLoader.extract("mpv-1");
-            NativeLibraryLoader.extract("MpvMediaPlayer");
-        } catch (Exception e) {
-            logger.error("Failed loading MPV libraries due to error: ", e);
-        }
-    }
 	
 	/** The movie stream for this movie player */
 	private MediaPlayer mediaPlayer;
