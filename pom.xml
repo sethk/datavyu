@@ -1119,9 +1119,9 @@
 
         <!-- This is a beta version of the FFmpeg plugin 0.18-SNAPSHOT -->
         <dependency>
-            <groupId>datavyu</groupId>
+            <groupId>org.datavyu</groupId>
             <artifactId>ffmpeg-plugin</artifactId>
-            <version>0.19-20181109.210613-8</version>
+            <version>0.19-20181119.212437-1</version>
         </dependency>
 
         <!-- Updates with JRE from java version >= 1.7 -->
