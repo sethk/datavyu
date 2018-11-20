@@ -550,11 +550,14 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
             case KeyEvent.VK_ADD:
 
                 if (modifiers == InputEvent.SHIFT_MASK) {
-                    videoController.pressFind();
                     videoController.findOffsetAction();
-                } else if (modifiers == InputEvent.CTRL_MASK) {
                     videoController.pressFind();
+                } else if (modifiers == InputEvent.CTRL_MASK) {
+                    // IMPORTANT: Don't change the order of
+                    // the video controller calls, it will break
+                    // the features.
                     videoController.setRegionOfInterestAction();
+                    videoController.pressFind();
                 } else {
                     videoController.pressFind();
                 }

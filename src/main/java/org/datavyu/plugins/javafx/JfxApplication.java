@@ -254,11 +254,14 @@ public class JfxApplication extends Application {
                     }
                     case ADD:{
                         if (event.getCode() == KeyCode.SHIFT){
-                            videoController.pressFind();
                             videoController.findOffsetAction();
-                        } else if(event.getCode() == KeyCode.CONTROL){
                             videoController.pressFind();
+                        } else if(event.getCode() == KeyCode.CONTROL){
+                            // IMPORTANT: Don't change the order of
+                            // the video controller calls, it will break
+                            // the features.
                             videoController.setRegionOfInterestAction();
+                            videoController.pressFind();
                         } else {
                             videoController.pressFind();
                         }
