@@ -680,11 +680,21 @@ def compute_kappa(pri_col, rel_col, *codes)
   observed_values = Hash.new{ |h, k| h[k] = [] }
   cells.each do |cell|
     codes.each do |code|
-      observed_values[code] << cell.get_arg(code)
+      observed_values[code] << cell.get_code(code)
     end
   end
 
-  observed_values.each_value{ |v| v.uniq! }
+  # Take the unique values for each code.
+  # Filter out codes that do not have minimum number of required values to compute kappa.
+  observed_values.delete_if do |c, vs|
+    vs.uniq!
+    if vs.size < 2
+      puts "Cannot compute score for #{c} (less than 2 values observed): #{v.join(',')}"
+      true
+    else
+      false
+    end
+  end
 
   # Init contingency tables for each code name
   tables = Hash.new
@@ -699,8 +709,8 @@ def compute_kappa(pri_col, rel_col, *codes)
   end
 
   cellPairs.each_pair do |pricell, relcell|
-    codes.each do |x|
-      tables[x].add(pricell.get_arg(x), relcell.get_arg(x))
+    tables.keys.each do |x|
+      tables[x].add(pricell.get_code(x), relcell.get_code(x))
     end
   end
 
