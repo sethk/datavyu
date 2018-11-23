@@ -10,6 +10,7 @@ import org.datavyu.plugins.Filter;
 import org.datavyu.plugins.FilterNames;
 import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.StreamViewer;
+import org.datavyu.util.ClockTimer;
 import org.datavyu.util.VersionRange;
 
 import javax.swing.*;
@@ -47,7 +48,7 @@ public class MpvPlugin implements Plugin {
 
     @Override
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
-                                           final boolean modal) {
+                                           final boolean modal, ClockTimer clockTimer) {
         return Platform.isWindows() ? new MpvStreamViewer(identifier, sourceFile, parent, modal) : null;
     }
 

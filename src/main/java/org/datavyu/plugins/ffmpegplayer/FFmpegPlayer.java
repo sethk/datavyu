@@ -3,8 +3,10 @@ package org.datavyu.plugins.ffmpegplayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer;
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
 import org.datavyu.plugins.ffmpeg.MediaPlayerData;
+import org.datavyu.util.ClockTimer;
 import org.datavyu.util.NativeLibraryLoader;
 
 import javax.swing.*;
@@ -38,6 +40,15 @@ public class FFmpegPlayer extends JPanel {
 		}catch (Exception e) {
 			logger.error("Cannot initialize ffmpeg player due to error: ", e);
 		}
+	}
+
+	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile, ClockTimer clockTimer) {
+		this(viewer, sourceFile);
+		setLayout(new BorderLayout());
+		if(clockTimer != null) {
+			mediaPlayer.setSubject(clockTimer);
+		}
+
 	}
 
 	/**
@@ -152,5 +163,9 @@ public class FFmpegPlayer extends JPanel {
 
     public double getFPS() {
     return mediaPlayer.getFps();
+	}
+
+	public MediaPlayer getNativePlayer() {
+		return mediaPlayer;
 	}
 }

@@ -14,6 +14,8 @@
  */
 package org.datavyu.util;
 
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -23,7 +25,11 @@ import java.util.TimerTask;
 /**
  * Keeps multiple streams in periodic sync and does not play beyond the boundaries of a stream.
  */
-public final class ClockTimer {
+public final class ClockTimer implements Subject {
+
+    enum EventType{
+        TIME, MIN_TIME, MAX_TIME
+    }
 
     /** Synchronization threshold in milliseconds */
     public static final long SYNC_THRESHOLD = 1500L; // 1.5 sec  (because some plugins are not very precise in seek)
@@ -65,6 +71,10 @@ public final class ClockTimer {
 
     /** Listeners of this clock */
     private Set<ClockListener> clockListeners = new HashSet<>();
+
+    private Set<MediaPlayer> clockOservers = new HashSet<>();
+    private boolean changed;
+    private final Object mutex= new Object();
 
     /**
      * Default constructor.
@@ -291,6 +301,7 @@ public final class ClockTimer {
      */
     private synchronized void periodicSync() {
         updateElapsedTime();
+        notifyObservers(EventType.TIME);
         notifyPeriodicSync();
     }
 
@@ -368,6 +379,47 @@ public final class ClockTimer {
         for (ClockListener clockListener : clockListeners) {
             clockListener.clockStop(clockTime);
         }
+    }
+
+    @Override
+    public void register(MediaPlayer mediaPlayer) {
+        if(mediaPlayer == null) throw new NullPointerException("Null MediaPlayer");
+        synchronized (mutex) {
+            if(!clockOservers.contains(mediaPlayer)) clockOservers.add(mediaPlayer);
+        }
+    }
+
+    @Override
+    public void unregister(MediaPlayer mediaPlayer) {
+        synchronized (mutex) {
+            clockOservers.remove(mediaPlayer);
+        }
+    }
+
+    @Override
+    public void notifyObservers(EventType event) {
+        Set<MediaPlayer> observersLocal = null;
+        // synchronization is used to make sure any observer registered after message
+        // is received is not notified
+        synchronized (mutex) {
+            if (!changed)
+                return;
+            observersLocal = new HashSet<>(this.clockOservers);
+            this.changed=false;
+        }
+        for (MediaPlayer mediaPlayer : observersLocal) {
+            if(event == EventType.TIME)
+                mediaPlayer.updateMasterTime();
+            if(event == EventType.MIN_TIME)
+                mediaPlayer.updateMasterMinTime();
+            if(event == EventType.MIN_TIME)
+                mediaPlayer.updateMasterMaxTime();
+        }
+    }
+
+    @Override
+    public Object getUpdate(MediaPlayer obj) {
+        return null;
     }
 
     /**

@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.models.Identifier;
 import org.datavyu.plugins.StreamViewerDialog;
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.util.ClockTimer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -154,4 +156,9 @@ public class MpvStreamViewer extends StreamViewerDialog {
 
     @Override
     public boolean isSeekPlaybackEnabled() { return playBackRate < 0F || playBackRate > 32F; }
+
+    @Override
+    public MediaPlayer getNativePlayer() {
+        return null;
+    }
 }

@@ -24,6 +24,7 @@ package org.datavyu.plugins;
 
 import org.datavyu.Datavyu;
 import org.datavyu.models.Identifier;
+import org.datavyu.util.ClockTimer;
 import org.datavyu.util.VersionRange;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ public interface Plugin {
      * @return A new instance of the plugins data viewer.
      */
     StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
-                                    boolean modal);
+                                    boolean modal, ClockTimer clockTimer);
 
     /**
      * @return The data viewer class.

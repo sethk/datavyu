@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.models.Identifier;
 import org.datavyu.plugins.StreamViewerDialog;
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
 
 import java.awt.*;
 import java.io.File;
@@ -232,5 +233,10 @@ public final class NativeOSXViewer extends StreamViewerDialog {
     @Override
     public boolean isSeekPlaybackEnabled() {
         return playBackRate > 2F || playBackRate < -2F;
+    }
+
+    @Override
+    public MediaPlayer getNativePlayer() {
+        return null;
     }
 }

@@ -411,7 +411,7 @@ public final class ProjectController {
                     Identifier.generateIdentifier(),
                     file,
                     Datavyu.getApplication().getMainFrame(),
-                    false);
+                    false, null);
 
             if (setting.getSettingsId() != null) {
                 // new project file

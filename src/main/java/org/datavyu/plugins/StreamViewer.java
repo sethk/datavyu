@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import javax.swing.JDialog;
 
 import org.datavyu.models.Identifier;
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.views.component.DefaultTrackPainter;
 import org.datavyu.views.component.TrackPainter;
 
@@ -202,4 +203,6 @@ public interface StreamViewer {
     boolean isStepEnabled();
 
     boolean isSeekPlaybackEnabled();
+
+    MediaPlayer getNativePlayer();
 }

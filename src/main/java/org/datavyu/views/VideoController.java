@@ -348,7 +348,8 @@ public final class VideoController extends DatavyuDialog
                             id,
                             videoFile,
                             Datavyu.getApplication().getMainFrame(),
-                            false);
+                            false, clockTimer);
+                    clockTimer.register(streamViewer.getNativePlayer());
                     addStream(plugin.getTypeIcon(), streamViewer);
                     mixerController.bindTrackActions(streamViewer.getIdentifier(), streamViewer.getCustomActions());
                     streamViewer.addViewerStateListener(mixerController.getTracksEditorController()
@@ -515,18 +516,6 @@ public final class VideoController extends DatavyuDialog
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockPeriodicSync(double clockTime) {
-        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-        for (StreamViewer streamViewer : streamViewers) {
-            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-            if (trackModel != null) {
-                double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
-                double difference = Math.abs(trackTime - streamViewer.getCurrentTime());
-                if (difference >= ClockTimer.SYNC_THRESHOLD) {
-                    streamViewer.setCurrentTime((long) trackTime);
-                    logger.info("Sync of clock with difference: " + difference + " milliseconds.");
-                }
-            }
-        }
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
