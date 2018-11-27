@@ -42,13 +42,22 @@ public class FFmpegPlayer extends JPanel {
 		}
 	}
 
+    /**
+     * Construct an FFmpegPlayer by creating the underlying movie stream provider
+     * and registering stream listeners for the video and audio. The stream
+     * listener for the video will show the image in this JPanel.An external Clock
+     * is attached to the player and this later will act as a slave and force a sync
+     * when needed
+     *
+     * @param viewer The ffmpeg viewer
+     * @param sourceFile The source file
+     * @param clockTimer The master clock to be attached to the player
+     */
 	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile, ClockTimer clockTimer) {
 		this(viewer, sourceFile);
-		setLayout(new BorderLayout());
 		if(clockTimer != null) {
 			mediaPlayer.setSubject(clockTimer);
 		}
-
 	}
 
 	/**

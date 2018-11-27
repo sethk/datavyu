@@ -35,7 +35,7 @@ public final class ClockTimer implements Subject {
     public static final long SYNC_THRESHOLD = 1500L; // 1.5 sec  (because some plugins are not very precise in seek)
 
     /** Clock tick period in milliseconds */
-    private static final long CLOCK_SYNC_INTERVAL = 1500L;
+    private static final long CLOCK_SYNC_INTERVAL = 100L;
 
     /** Clock initial delay in milliseconds */
     private static final long CLOCK_SYNC_DELAY = 0L;
@@ -301,6 +301,7 @@ public final class ClockTimer implements Subject {
      */
     private synchronized void periodicSync() {
         updateElapsedTime();
+        changed = true;
         notifyObservers(EventType.TIME);
         notifyPeriodicSync();
     }
@@ -399,14 +400,15 @@ public final class ClockTimer implements Subject {
     @Override
     public void notifyObservers(EventType event) {
         Set<MediaPlayer> observersLocal = null;
-        // synchronization is used to make sure any observer registered after message
+        // synchronization is used to make sure any media player registered after message
         // is received is not notified
         synchronized (mutex) {
             if (!changed)
                 return;
             observersLocal = new HashSet<>(this.clockOservers);
-            this.changed=false;
+            changed = false;
         }
+
         for (MediaPlayer mediaPlayer : observersLocal) {
             if(event == EventType.TIME)
                 mediaPlayer.updateMasterTime();
@@ -418,8 +420,16 @@ public final class ClockTimer implements Subject {
     }
 
     @Override
-    public Object getUpdate(MediaPlayer obj) {
-        return null;
+    public synchronized Object getTimeUpdate(MediaPlayer obj) {
+        return clockTime;
+    }
+
+    @Override
+    public synchronized Object getMinTimeUpdate(MediaPlayer obj) { return minTime; }
+
+    @Override
+    public synchronized Object getMaxTimeUpdate(MediaPlayer obj) {
+        return maxTime;
     }
 
     /**

@@ -49,7 +49,7 @@ public class MpvPlugin implements Plugin {
     @Override
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
                                            final boolean modal, ClockTimer clockTimer) {
-        return Platform.isWindows() ? new MpvStreamViewer(identifier, sourceFile, parent, modal) : null;
+        return Platform.isWindows() ? new MpvStreamViewer(identifier, sourceFile, parent, modal, clockTimer) : null;
     }
 
     @Override

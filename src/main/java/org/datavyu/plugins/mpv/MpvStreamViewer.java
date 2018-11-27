@@ -22,10 +22,11 @@ public class MpvStreamViewer extends StreamViewerDialog {
     /** Currently is seeking */
     private boolean isSeeking = false;
 
-    MpvStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
+    MpvStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal,
+                    ClockTimer clockTimer) {
         super(identifier, parent, modal);
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
-        player = new MpvPlayer(this, sourceFile);
+        player = new MpvPlayer(this, sourceFile, clockTimer);
         setSourceFile(sourceFile);
     }
 
@@ -159,6 +160,6 @@ public class MpvStreamViewer extends StreamViewerDialog {
 
     @Override
     public MediaPlayer getNativePlayer() {
-        return null;
+        return player.getNativePlayer();
     }
 }

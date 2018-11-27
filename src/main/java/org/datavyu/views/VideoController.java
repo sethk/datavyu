@@ -349,7 +349,9 @@ public final class VideoController extends DatavyuDialog
                             videoFile,
                             Datavyu.getApplication().getMainFrame(),
                             false, clockTimer);
-                    clockTimer.register(streamViewer.getNativePlayer());
+                    if(streamViewer.getNativePlayer() != null) {
+                        clockTimer.register(streamViewer.getNativePlayer());
+                    }
                     addStream(plugin.getTypeIcon(), streamViewer);
                     mixerController.bindTrackActions(streamViewer.getIdentifier(), streamViewer.getCustomActions());
                     streamViewer.addViewerStateListener(mixerController.getTracksEditorController()
@@ -513,9 +515,24 @@ public final class VideoController extends DatavyuDialog
     }
 
     /**
+     * This method is used only for the JavaFx player, and Native OSX
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockPeriodicSync(double clockTime) {
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        for (StreamViewer streamViewer : streamViewers) {
+            if(streamViewer.getNativePlayer() == null) {
+                TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
+                if (trackModel != null) {
+                    double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
+                    double difference = Math.abs(trackTime - streamViewer.getCurrentTime());
+                    if (difference >= ClockTimer.SYNC_THRESHOLD) {
+                        streamViewer.setCurrentTime((long) trackTime);
+                        logger.info("Sync of clock with difference: " + difference + " milliseconds.");
+                    }
+                }
+            }
+        }
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
@@ -624,6 +641,10 @@ public final class VideoController extends DatavyuDialog
         }
 
         streamViewers.remove(streamViewer);
+
+        if(streamViewer.getNativePlayer() != null) {
+            clockTimer.unregister(streamViewer.getNativePlayer());
+        }
 
         streamViewer.stop();
         streamViewer.close();
