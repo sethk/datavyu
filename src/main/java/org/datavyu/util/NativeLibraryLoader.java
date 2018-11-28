@@ -121,9 +121,6 @@ public class NativeLibraryLoader {
         URL url = getResource(destName);
         InputStream in = url.openStream();
         File outfile = new File(libraryFolder, destName + getExtension(destName));
-        if(outfile.exists()){
-            return outfile;
-        }
         FileOutputStream out = new FileOutputStream(outfile);
         BufferedOutputStream dest = new BufferedOutputStream(out, Constants.BUFFER_COPY_SIZE);
         int count;

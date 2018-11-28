@@ -10,7 +10,6 @@ import org.datavyu.plugins.StreamViewer;
 import org.datavyu.plugins.Filter;
 import org.datavyu.plugins.FilterNames;
 import org.datavyu.plugins.Plugin;
-import org.datavyu.util.ClockTimer;
 import org.datavyu.util.VersionRange;
 
 import javax.swing.*;
@@ -48,8 +47,8 @@ public class FFmpegPlugin implements Plugin {
 
     @Override
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
-                                           final boolean modal, ClockTimer clockTimer) {
-        return Platform.isWindows() ? new FFmpegStreamViewer(identifier, sourceFile, parent, modal, clockTimer) : null;
+                                           final boolean modal) {
+        return Platform.isWindows() ? new FFmpegStreamViewer(identifier, sourceFile, parent, modal) : null;
     }
 
     @Override

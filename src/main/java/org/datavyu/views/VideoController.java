@@ -57,7 +57,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.List;
 
 
 /**
@@ -348,10 +347,8 @@ public final class VideoController extends DatavyuDialog
                             id,
                             videoFile,
                             Datavyu.getApplication().getMainFrame(),
-                            false, clockTimer);
-                    if(streamViewer.getNativePlayer() != null) {
-                        clockTimer.register(streamViewer.getNativePlayer());
-                    }
+                            false);
+
                     addStream(plugin.getTypeIcon(), streamViewer);
                     mixerController.bindTrackActions(streamViewer.getIdentifier(), streamViewer.getCustomActions());
                     streamViewer.addViewerStateListener(mixerController.getTracksEditorController()
@@ -521,7 +518,8 @@ public final class VideoController extends DatavyuDialog
     public void clockPeriodicSync(double clockTime) {
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         for (StreamViewer streamViewer : streamViewers) {
-            if(streamViewer.getNativePlayer() == null) {
+            if (!streamViewer.isSlavePlayer()) {
+
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
                 if (trackModel != null) {
                     double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
@@ -641,10 +639,6 @@ public final class VideoController extends DatavyuDialog
         }
 
         streamViewers.remove(streamViewer);
-
-        if(streamViewer.getNativePlayer() != null) {
-            clockTimer.unregister(streamViewer.getNativePlayer());
-        }
 
         streamViewer.stop();
         streamViewer.close();

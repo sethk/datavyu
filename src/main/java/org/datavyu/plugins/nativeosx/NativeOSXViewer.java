@@ -236,7 +236,7 @@ public final class NativeOSXViewer extends StreamViewerDialog {
     }
 
     @Override
-    public MediaPlayer getNativePlayer() {
-        return null;
+    public boolean isSlavePlayer() {
+        return false;
     }
 }

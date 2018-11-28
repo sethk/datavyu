@@ -25,10 +25,10 @@ import java.util.TimerTask;
 /**
  * Keeps multiple streams in periodic sync and does not play beyond the boundaries of a stream.
  */
-public final class ClockTimer implements Subject {
+public final class ClockTimer implements MasterClock {
 
     enum EventType{
-        TIME, MIN_TIME, MAX_TIME
+        CURRENT_TIME, MIN_TIME, MAX_TIME
     }
 
     /** Synchronization threshold in milliseconds */
@@ -74,7 +74,6 @@ public final class ClockTimer implements Subject {
 
     private Set<MediaPlayer> clockOservers = new HashSet<>();
     private boolean changed;
-    private final Object mutex= new Object();
 
     /**
      * Default constructor.
@@ -302,7 +301,7 @@ public final class ClockTimer implements Subject {
     private synchronized void periodicSync() {
         updateElapsedTime();
         changed = true;
-        notifyObservers(EventType.TIME);
+        notifyPlayers(EventType.CURRENT_TIME);
         notifyPeriodicSync();
     }
 
@@ -383,53 +382,34 @@ public final class ClockTimer implements Subject {
     }
 
     @Override
-    public void register(MediaPlayer mediaPlayer) {
-        if(mediaPlayer == null) throw new NullPointerException("Null MediaPlayer");
-        synchronized (mutex) {
-            if(!clockOservers.contains(mediaPlayer)) clockOservers.add(mediaPlayer);
-        }
+    public void registerPlayer(MediaPlayer mediaPlayer) {
+        if (mediaPlayer == null) throw new NullPointerException("Null MediaPlayer");
+        if (!clockOservers.contains(mediaPlayer)) clockOservers.add(mediaPlayer);
     }
 
     @Override
-    public void unregister(MediaPlayer mediaPlayer) {
-        synchronized (mutex) {
-            clockOservers.remove(mediaPlayer);
-        }
+    public synchronized void unregisterPlayer(MediaPlayer mediaPlayer) {
+        clockOservers.remove(mediaPlayer);
     }
 
     @Override
-    public void notifyObservers(EventType event) {
+    public synchronized void notifyPlayers(EventType event) {
         Set<MediaPlayer> observersLocal = null;
-        // synchronization is used to make sure any media player registered after message
-        // is received is not notified
-        synchronized (mutex) {
-            if (!changed)
-                return;
-            observersLocal = new HashSet<>(this.clockOservers);
-            changed = false;
+        if (!changed){
+            return;
         }
+        observersLocal = new HashSet<>(this.clockOservers);
+        changed = false;
 
         for (MediaPlayer mediaPlayer : observersLocal) {
-            if(event == EventType.TIME)
-                mediaPlayer.updateMasterTime();
-            if(event == EventType.MIN_TIME)
-                mediaPlayer.updateMasterMinTime();
-            if(event == EventType.MIN_TIME)
-                mediaPlayer.updateMasterMaxTime();
+            if (event == EventType.CURRENT_TIME) {
+                mediaPlayer.updateMasterTime(clockTime);
+            } else if (event == EventType.MIN_TIME) {
+                mediaPlayer.updateMasterMinTime(minTime);
+            } else if (event == EventType.MIN_TIME) {
+                mediaPlayer.updateMasterMaxTime(maxTime);
+            }
         }
-    }
-
-    @Override
-    public synchronized Object getTimeUpdate(MediaPlayer obj) {
-        return clockTime;
-    }
-
-    @Override
-    public synchronized Object getMinTimeUpdate(MediaPlayer obj) { return minTime; }
-
-    @Override
-    public synchronized Object getMaxTimeUpdate(MediaPlayer obj) {
-        return maxTime;
     }
 
     /**

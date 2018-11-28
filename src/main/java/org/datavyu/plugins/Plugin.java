@@ -43,7 +43,7 @@ public interface Plugin {
      * @return A new instance of the plugins data viewer.
      */
     StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
-                                    boolean modal, ClockTimer clockTimer);
+                                    boolean modal);
 
     /**
      * @return The data viewer class.

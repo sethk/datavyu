@@ -2,12 +2,10 @@ package org.datavyu.plugins.ffmpegplayer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.Datavyu;
 import org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
 import org.datavyu.plugins.ffmpeg.MediaPlayerData;
-import org.datavyu.util.ClockTimer;
-import org.datavyu.util.NativeLibraryLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,26 +35,9 @@ public class FFmpegPlayer extends JPanel {
 		try {
 			mediaPlayer = new FfmpegJavaMediaPlayer(sourceFile.toURI(), viewer);
 			mediaPlayer.init();
+			Datavyu.getVideoController().getClockTimer().registerPlayer(mediaPlayer);
 		}catch (Exception e) {
 			logger.error("Cannot initialize ffmpeg player due to error: ", e);
-		}
-	}
-
-    /**
-     * Construct an FFmpegPlayer by creating the underlying movie stream provider
-     * and registering stream listeners for the video and audio. The stream
-     * listener for the video will show the image in this JPanel.An external Clock
-     * is attached to the player and this later will act as a slave and force a sync
-     * when needed
-     *
-     * @param viewer The ffmpeg viewer
-     * @param sourceFile The source file
-     * @param clockTimer The master clock to be attached to the player
-     */
-	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile, ClockTimer clockTimer) {
-		this(viewer, sourceFile);
-		if(clockTimer != null) {
-			mediaPlayer.setSubject(clockTimer);
 		}
 	}
 
@@ -172,9 +153,5 @@ public class FFmpegPlayer extends JPanel {
 
     public double getFPS() {
     return mediaPlayer.getFps();
-	}
-
-	public MediaPlayer getNativePlayer() {
-		return mediaPlayer;
 	}
 }

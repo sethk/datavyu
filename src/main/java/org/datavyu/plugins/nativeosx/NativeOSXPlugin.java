@@ -24,7 +24,6 @@ import org.datavyu.plugins.StreamViewer;
 import org.datavyu.plugins.Filter;
 import org.datavyu.plugins.FilterNames;
 import org.datavyu.plugins.Plugin;
-import org.datavyu.util.ClockTimer;
 import org.datavyu.util.VersionRange;
 
 import javax.swing.*;
@@ -69,7 +68,7 @@ public final class NativeOSXPlugin implements Plugin {
 
     @Override
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
-                                           final boolean modal, ClockTimer clockTimer) {
+                                           final boolean modal) {
         if (Platform.isMac() || Platform.isWindows()) {
             return new NativeOSXViewer(identifier, sourceFile, parent, modal);
         } else {

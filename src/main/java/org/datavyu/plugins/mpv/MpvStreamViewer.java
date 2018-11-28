@@ -4,8 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.models.Identifier;
 import org.datavyu.plugins.StreamViewerDialog;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
-import org.datavyu.util.ClockTimer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,11 +20,10 @@ public class MpvStreamViewer extends StreamViewerDialog {
     /** Currently is seeking */
     private boolean isSeeking = false;
 
-    MpvStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal,
-                    ClockTimer clockTimer) {
+    MpvStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
-        player = new MpvPlayer(this, sourceFile, clockTimer);
+        player = new MpvPlayer(this, sourceFile);
         setSourceFile(sourceFile);
     }
 
@@ -159,7 +156,5 @@ public class MpvStreamViewer extends StreamViewerDialog {
     public boolean isSeekPlaybackEnabled() { return playBackRate < 0F || playBackRate > 32F; }
 
     @Override
-    public MediaPlayer getNativePlayer() {
-        return player.getNativePlayer();
-    }
+    public boolean isSlavePlayer() { return true; }
 }

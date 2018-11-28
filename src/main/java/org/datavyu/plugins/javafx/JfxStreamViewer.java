@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.models.Identifier;
 import org.datavyu.plugins.*;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -216,7 +215,7 @@ public class JfxStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public MediaPlayer getNativePlayer() {
-        return null;
+    public boolean isSlavePlayer() {
+        return false;
     }
 }

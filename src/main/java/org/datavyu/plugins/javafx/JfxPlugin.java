@@ -9,7 +9,6 @@ import org.datavyu.plugins.StreamViewer;
 import org.datavyu.plugins.Filter;
 import org.datavyu.plugins.FilterNames;
 import org.datavyu.plugins.Plugin;
-import org.datavyu.util.ClockTimer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,7 +67,7 @@ public class JfxPlugin implements Plugin {
 
     @Override
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
-                                           boolean modal, ClockTimer clockTimer) {
+                                           boolean modal) {
         return new JfxStreamViewer(identifier, sourceFile, parent, modal);
     }
 
