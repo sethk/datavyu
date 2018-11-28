@@ -73,7 +73,6 @@ public final class ClockTimer implements MasterClock {
     private Set<ClockListener> clockListeners = new HashSet<>();
 
     private Set<MediaPlayer> clockOservers = new HashSet<>();
-    private boolean changed;
 
     /**
      * Default constructor.
@@ -300,7 +299,6 @@ public final class ClockTimer implements MasterClock {
      */
     private synchronized void periodicSync() {
         updateElapsedTime();
-        changed = true;
         notifyPlayers(EventType.CURRENT_TIME);
         notifyPeriodicSync();
     }
@@ -395,11 +393,7 @@ public final class ClockTimer implements MasterClock {
     @Override
     public synchronized void notifyPlayers(EventType event) {
         Set<MediaPlayer> observersLocal = null;
-        if (!changed){
-            return;
-        }
         observersLocal = new HashSet<>(this.clockOservers);
-        changed = false;
 
         for (MediaPlayer mediaPlayer : observersLocal) {
             if (event == EventType.CURRENT_TIME) {
