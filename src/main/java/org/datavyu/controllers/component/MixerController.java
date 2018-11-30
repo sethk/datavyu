@@ -736,8 +736,11 @@ public final class MixerController implements PropertyChangeListener,
      * @param e expecting the event to be generated from a JToggleButton
      */
     private void snapRegionHandler(final ActionEvent e) {
+        // IMPORTANT: Don't change the order of
+        // the video controller calls, it will break
+        // the features.
         Datavyu.getVideoController().setRegionOfInterestAction();
-
+        Datavyu.getVideoController().pressFind();
     }
 
     /**
