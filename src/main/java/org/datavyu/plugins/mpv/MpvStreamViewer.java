@@ -154,4 +154,7 @@ public class MpvStreamViewer extends StreamViewerDialog {
 
     @Override
     public boolean isSeekPlaybackEnabled() { return playBackRate < 0F || playBackRate > 32F; }
+
+    @Override
+    public boolean isSlavePlayer() { return true; }
 }

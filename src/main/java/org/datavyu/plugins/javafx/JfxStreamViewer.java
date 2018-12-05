@@ -213,4 +213,9 @@ public class JfxStreamViewer extends StreamViewerDialog {
     public boolean isSeekPlaybackEnabled() {
         return playBackRate > 2F || playBackRate < 0F;
     }
+
+    @Override
+    public boolean isSlavePlayer() {
+        return false;
+    }
 }
