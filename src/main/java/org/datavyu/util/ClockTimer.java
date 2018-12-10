@@ -14,6 +14,8 @@
  */
 package org.datavyu.util;
 
+import org.datavyu.plugins.ffmpeg.MediaPlayer;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -23,13 +25,17 @@ import java.util.TimerTask;
 /**
  * Keeps multiple streams in periodic sync and does not play beyond the boundaries of a stream.
  */
-public final class ClockTimer {
+public final class ClockTimer implements MasterClock {
+
+    enum EventType{
+        CURRENT_TIME, MIN_TIME, MAX_TIME
+    }
 
     /** Synchronization threshold in milliseconds */
     public static final long SYNC_THRESHOLD = 1500L; // 1.5 sec  (because some plugins are not very precise in seek)
 
     /** Clock tick period in milliseconds */
-    private static final long CLOCK_SYNC_INTERVAL = 1500L;
+    private static final long CLOCK_SYNC_INTERVAL = 100L;
 
     /** Clock initial delay in milliseconds */
     private static final long CLOCK_SYNC_DELAY = 0L;
@@ -65,6 +71,8 @@ public final class ClockTimer {
 
     /** Listeners of this clock */
     private Set<ClockListener> clockListeners = new HashSet<>();
+
+    private Set<MediaPlayer> clockOservers = new HashSet<>();
 
     /**
      * Default constructor.
@@ -291,6 +299,7 @@ public final class ClockTimer {
      */
     private synchronized void periodicSync() {
         updateElapsedTime();
+        notifyPlayers(EventType.CURRENT_TIME);
         notifyPeriodicSync();
     }
 
@@ -367,6 +376,33 @@ public final class ClockTimer {
     private void notifyStop() {
         for (ClockListener clockListener : clockListeners) {
             clockListener.clockStop(clockTime);
+        }
+    }
+
+    @Override
+    public void registerPlayer(MediaPlayer mediaPlayer) {
+        if (mediaPlayer == null) throw new NullPointerException("Null MediaPlayer");
+        if (!clockOservers.contains(mediaPlayer)) clockOservers.add(mediaPlayer);
+    }
+
+    @Override
+    public synchronized void unregisterPlayer(MediaPlayer mediaPlayer) {
+        clockOservers.remove(mediaPlayer);
+    }
+
+    @Override
+    public synchronized void notifyPlayers(EventType event) {
+        Set<MediaPlayer> observersLocal = null;
+        observersLocal = new HashSet<>(this.clockOservers);
+
+        for (MediaPlayer mediaPlayer : observersLocal) {
+            if (event == EventType.CURRENT_TIME) {
+                mediaPlayer.updateMasterTime(clockTime);
+            } else if (event == EventType.MIN_TIME) {
+                mediaPlayer.updateMasterMinTime(minTime);
+            } else if (event == EventType.MIN_TIME) {
+                mediaPlayer.updateMasterMaxTime(maxTime);
+            }
         }
     }
 

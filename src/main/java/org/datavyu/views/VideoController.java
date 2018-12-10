@@ -57,7 +57,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.List;
 
 
 /**
@@ -349,6 +348,7 @@ public final class VideoController extends DatavyuDialog
                             videoFile,
                             Datavyu.getApplication().getMainFrame(),
                             false);
+
                     addStream(plugin.getTypeIcon(), streamViewer);
                     mixerController.bindTrackActions(streamViewer.getIdentifier(), streamViewer.getCustomActions());
                     streamViewer.addViewerStateListener(mixerController.getTracksEditorController()
@@ -512,18 +512,22 @@ public final class VideoController extends DatavyuDialog
     }
 
     /**
+     * This method is used only for the JavaFx player, and Native OSX
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockPeriodicSync(double clockTime) {
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         for (StreamViewer streamViewer : streamViewers) {
-            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-            if (trackModel != null) {
-                double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
-                double difference = Math.abs(trackTime - streamViewer.getCurrentTime());
-                if (difference >= ClockTimer.SYNC_THRESHOLD) {
-                    streamViewer.setCurrentTime((long) trackTime);
-                    logger.info("Sync of clock with difference: " + difference + " milliseconds.");
+            if (!streamViewer.isSlavePlayer()) {
+
+                TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
+                if (trackModel != null) {
+                    double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
+                    double difference = Math.abs(trackTime - streamViewer.getCurrentTime());
+                    if (difference >= ClockTimer.SYNC_THRESHOLD) {
+                        streamViewer.setCurrentTime((long) trackTime);
+                        logger.info("Sync of clock with difference: " + difference + " milliseconds.");
+                    }
                 }
             }
         }

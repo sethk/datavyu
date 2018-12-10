@@ -2,10 +2,10 @@ package org.datavyu.plugins.mpv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.Datavyu;
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
 import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
-import org.datavyu.util.NativeLibraryLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,6 +35,7 @@ public class MpvPlayer extends JPanel {
 		try {
 			mediaPlayer = new MpvMediaPlayer(sourceFile.toURI(), viewer);
 			mediaPlayer.init();
+			Datavyu.getVideoController().getClockTimer().registerPlayer(mediaPlayer);
 		}catch (Exception e) {
 			logger.error("Cannot initialize MPV player due to error: ", e);
 		}

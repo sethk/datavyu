@@ -24,6 +24,7 @@ package org.datavyu.plugins;
 
 import org.datavyu.Datavyu;
 import org.datavyu.models.Identifier;
+import org.datavyu.util.ClockTimer;
 import org.datavyu.util.VersionRange;
 
 import javax.swing.*;
