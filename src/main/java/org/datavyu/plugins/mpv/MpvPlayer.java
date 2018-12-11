@@ -3,9 +3,8 @@ package org.datavyu.plugins.mpv;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
-import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
-import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.PlayerStateEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +32,7 @@ public class MpvPlayer extends JPanel {
 	MpvPlayer(MpvStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
 		try {
-			mediaPlayer = new MpvMediaPlayer(sourceFile.toURI(), viewer);
+			mediaPlayer = new MpvAwtMediaPlayer(sourceFile.toURI(), viewer);
 			mediaPlayer.init();
 			Datavyu.getVideoController().getClockTimer().registerPlayer(mediaPlayer);
 		}catch (Exception e) {

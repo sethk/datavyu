@@ -2,177 +2,127 @@ package org.datavyu.plugins.javafx;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.datavyu.Datavyu;
-import org.datavyu.util.FrameRate;
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.views.VideoController;
 
+import java.awt.*;
 import java.io.File;
+import java.net.URI;
 
-public class JfxApplication extends Application {
+public class JavaFxApplication extends Application {
 
-    private static Logger logger = LogManager.getFormatterLogger(JfxApplication.class);
-    private File dataFile;
-    private boolean init = false;
-    private MediaPlayer mp;
-    private MediaView mv;
+    private MediaPlayer mediaPlayer;
+    private final Object readyLock = new Object();
+    private URI mediaPath;
     private Stage stage;
-    private long duration = -1;
-    private long lastSeekTime = -1;
 
-    public JfxApplication(File file) {
-        dataFile = file;
+    public JavaFxApplication(File mediaFile) {
+        this.mediaPath = mediaFile.toURI();
     }
 
-    public void seek(long time) {
-        if (lastSeekTime != time) {
-            logger.info("Seeking to: " + time);
-            double rate = 0;
-            if (mp.getRate() != 0) {
-                mp.pause();
-                rate = mp.getRate();
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        stage = primaryStage;
+        mediaPlayer = new JavaFxMediaPlayer(mediaPath, primaryStage, readyLock);
+        mediaPlayer.init();
+        Datavyu.getVideoController().getClockTimer().registerPlayer(mediaPlayer);
+        Task<Void> waitingTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+                synchronized (readyLock){
+                    readyLock.wait();
+                }
+
+                Platform.runLater(() -> handler());
+                return null;
             }
-            // NOTE: JavaFX only seems to be able to setCurrentTime accurately in 2.2 when the rate != 0, so lets fake that here.
-            mp.setRate(1);
-            mp.seek(Duration.millis(time));
-            mp.setRate(rate);
-            lastSeekTime = time;
-        }
+        };
+        new Thread(waitingTask).start();
     }
 
-    public void pause() {
-        logger.info("Pausing at time: " + mp.getCurrentTime());
-        mp.pause();
+    public void setVolume(float volume) {
+        mediaPlayer.setVolume(volume);
+    }
+
+    public Dimension getOriginalVideoSize() {
+        return new Dimension(mediaPlayer.getImageWidth(), mediaPlayer.getImageHeight());
+    }
+
+    public void setCurrentTime(double streamTime) {
+        mediaPlayer.seek(streamTime);
+    }
+
+    public double getFPS() {
+        return mediaPlayer.getFps();
+    }
+
+    public double getDuration() {
+        return mediaPlayer.getDuration();
+    }
+
+    public double getCurrentTime() {
+        return mediaPlayer.getPresentationTime();
     }
 
     public void play() {
-        mp.play();
+        mediaPlayer.play();
     }
 
     public void stop() {
-        mp.stop();
+        mediaPlayer.stop();
     }
 
-    public long getCurrentTime() {
-        return (long) mp.getCurrentTime().toMillis();
+    boolean isPlaying() {
+        return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING;
     }
 
-    public float getFrameRate() {
-        return FrameRate.createDefaultFrameRate(dataFile).getFPS();
+    public void cleanUp() {
+        mediaPlayer.dispose();
     }
 
-    public long getDuration() {
-        if (duration == -1) {
-            duration = (long) mp.getTotalDuration().toMillis();
-        }
-        return duration;
+    public void setPlaybackSpeed(float rate) {
+        mediaPlayer.setRate(rate);
     }
 
-    public float getRate() {
-        return (float) mp.getRate();
+    public void setMute(final boolean newMute) {
+        mediaPlayer.setMute(newMute);
     }
 
-    public void setRate(float rate) {
-        mp.setRate((double) rate);
+    public boolean isMute() {
+        return mediaPlayer.getMute();
     }
-
-    public double getHeight() {
-        return mp.getMedia().getHeight();
-    }
-
-    public boolean isPlaying() { return mp.getStatus() == MediaPlayer.Status.PLAYING; }
 
     public void setScale(double scale) {
-        logger.info("Setting scale to %2.2f", scale);
-        stage.setHeight(mp.getMedia().getHeight() * scale);
-        stage.setWidth(mp.getMedia().getWidth() * scale);
+        stage.setHeight(mediaPlayer.getImageHeight() * scale);
+        stage.setWidth(mediaPlayer.getImageWidth() * scale);
     }
 
     public void setVisible(final boolean visible) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                mv.setVisible(visible);
                 if (!visible) {
-                    mp.setMute(true);
+                    mediaPlayer.setMute(true);
                     stage.hide();
                 } else {
-                    mp.setMute(false);
+                    mediaPlayer.setMute(false);
                     stage.show();
                 }
             }
         });
-
     }
 
-    public void setVolume(double volume) {
-        mp.setVolume(volume);
-    }
-
-    public boolean isInit() {
-        return init;
-    }
-
-    public void closeAndDestroy() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                stage.close();
-            }
-        });
-
-    }
-
-    public void start(final Stage primaryStage) {
-        stage = primaryStage;
-
-        final Media m = new Media(dataFile.toURI().toString());
-        mp = new MediaPlayer(m);
-        mp.setOnReady(new Runnable() {
-            @Override
-            public void run() {
-                logger.info("Creating a new media view.");
-                mv = new MediaView(mp);
-
-                final DoubleProperty width = mv.fitWidthProperty();
-                final DoubleProperty height = mv.fitHeightProperty();
-
-                width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
-                height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
-
-                mv.setPreserveRatio(true);
-
-                StackPane root = new StackPane();
-                root.getChildren().add(mv);
-
-                final Scene scene = new Scene(root, 960, 540);
-                scene.setFill(Color.BLACK);
-
-                primaryStage.setScene(scene);
-                double aspectRatio = ((double) m.getHeight()) / m.getWidth();
-                primaryStage.minHeightProperty().bind(scene.widthProperty().multiply(aspectRatio));
-                primaryStage.maxHeightProperty().bind(scene.widthProperty().multiply(aspectRatio));
-                primaryStage.setTitle(dataFile.getName());
-                primaryStage.show();
-
-                init = true;
-                handler();
-            }
-        });
+    public Object getJavaFxReadyLock(){
+        return readyLock;
     }
 
     private void handler(){

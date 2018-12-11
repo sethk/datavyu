@@ -1,7 +1,6 @@
 package org.datavyu.util;
 
-
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.plugins.MediaPlayer;
 
 public interface MasterClock {
 

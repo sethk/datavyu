@@ -18,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.models.Identifier;
 import org.datavyu.plugins.StreamViewerDialog;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
 
 import java.awt.*;
 import java.io.File;
