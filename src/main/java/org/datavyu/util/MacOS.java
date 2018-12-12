@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.Plugin;
-import org.datavyu.plugins.nativeosx.NativeOSXPlugin;
+import org.datavyu.plugins.nativeosx.AvFoundationPlugin;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public class MacOS {
     /** The logger for this class */
-    private static Logger logger = LogManager.getLogger(DatavyuVersion.class);
+    private static Logger logger = LogManager.getLogger(MacOS.class);
 
     /**
      * Get options for dialog on Mac with three responses.
@@ -228,10 +228,10 @@ public class MacOS {
      */
     public static Plugin getNativeOSXPlugin() {
         try {
-            return new NativeOSXPlugin();
+            return new AvFoundationPlugin();
         } catch (Exception e) {
             logger.error("Could create plugin. Error: ", e);
         }
-        return new NativeOSXPlugin();
+        return new AvFoundationPlugin();
     }
 }

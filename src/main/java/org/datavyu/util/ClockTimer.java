@@ -29,7 +29,7 @@ import java.util.TimerTask;
 public final class ClockTimer implements MasterClock {
 
     enum EventType{
-        CURRENT_TIME, MIN_TIME, MAX_TIME
+        CURRENT_TIME, MIN_TIME, MAX_TIME, FORCE_SYNC
     }
 
     /** Synchronization threshold in milliseconds */
@@ -403,6 +403,8 @@ public final class ClockTimer implements MasterClock {
                 mediaPlayer.updateMasterMinTime(minTime);
             } else if (event == EventType.MIN_TIME) {
                 mediaPlayer.updateMasterMaxTime(maxTime);
+            } else if (event == EventType.FORCE_SYNC) {
+                mediaPlayer.seek(clockTime);
             }
         }
     }

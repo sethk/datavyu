@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 
-public final class NativeOSXPlugin implements Plugin {
+public final class AvFoundationPlugin implements Plugin {
 
     private static final List<Datavyu.Platform> VALID_OPERATING_SYSTEMS = Lists.newArrayList(Datavyu.Platform.MAC);
 
@@ -70,7 +70,7 @@ public final class NativeOSXPlugin implements Plugin {
     public StreamViewer getNewStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent,
                                            final boolean modal) {
         if (Platform.isMac() || Platform.isWindows()) {
-            return new NativeOSXViewer(identifier, sourceFile, parent, modal);
+            return new AvFoundationViewer(identifier, sourceFile, parent, modal);
         } else {
             return null;
         }
@@ -109,7 +109,7 @@ public final class NativeOSXPlugin implements Plugin {
     public Class<? extends StreamViewer> getViewerClass() {
 
         if (Platform.isMac()) {
-            return NativeOSXViewer.class;
+            return AvFoundationViewer.class;
         }
 
         return null;
