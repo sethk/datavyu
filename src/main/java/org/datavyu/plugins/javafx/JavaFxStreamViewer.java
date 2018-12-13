@@ -139,4 +139,19 @@ public class JavaFxStreamViewer extends StreamViewerDialog {
         mediaPlayer.setVisible(isVisible);
         this.isVisible = isVisible;
     }
+
+    @Override
+    public boolean isStepEnabled() {
+        return true;
+    }
+
+    @Override
+    public void stepForward() {
+        mediaPlayer.stepForward();
+    }
+
+    @Override
+    public void stepBackward() {
+        mediaPlayer.stepBackward();
+    }
 }

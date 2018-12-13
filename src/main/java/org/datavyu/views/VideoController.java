@@ -1615,7 +1615,7 @@ public final class VideoController extends DatavyuDialog
                 if (streamViewer.isStepEnabled() && almostEqual(streamViewer.getFramesPerSecond(), frameRate,
                         ALMOST_EQUAL_FRAME_RATES)) {
                     streamViewer.stepBackward();
-                    logger.info("Jog Forward Stream " + streamViewer.getIdentifier() +
+                    logger.debug("Jog Forward Stream " + streamViewer.getIdentifier() +
                                     " Master Clock " + newTime +
                                     " Stream Clock " + streamViewer.getCurrentTime());
                 } else if (trackModel != null){
@@ -1699,7 +1699,7 @@ public final class VideoController extends DatavyuDialog
                 if (streamViewer.isStepEnabled() && almostEqual(streamViewer.getFramesPerSecond(), frameRate,
                         ALMOST_EQUAL_FRAME_RATES)) {
                     streamViewer.stepForward();
-                    logger.info("Jog Forward Stream " + streamViewer.getIdentifier() +
+                    logger.debug("Jog Forward Stream " + streamViewer.getIdentifier() +
                                     " Master Clock " + newTime +
                                     " Stream Clock " + streamViewer.getCurrentTime());
                 } else if (trackModel != null){

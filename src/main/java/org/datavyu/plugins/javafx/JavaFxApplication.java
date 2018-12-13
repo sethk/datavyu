@@ -37,8 +37,7 @@ public class JavaFxApplication extends Application {
         Task<Void> waitingTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-
-                synchronized (readyLock){
+                synchronized (readyLock) {
                     readyLock.wait();
                 }
 
@@ -119,6 +118,14 @@ public class JavaFxApplication extends Application {
                 }
             }
         });
+    }
+
+    public void stepForward() {
+        mediaPlayer.stepForward();
+    }
+
+    public void stepBackward() {
+        mediaPlayer.stepBackward();
     }
 
     public Object getJavaFxReadyLock(){
