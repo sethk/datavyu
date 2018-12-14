@@ -3,9 +3,9 @@ package org.datavyu.plugins.ffmpegplayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
+import org.datavyu.plugins.MediaPlayerData;
+import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer;
-import org.datavyu.plugins.ffmpeg.PlayerStateEvent;
-import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
 import javax.swing.*;
 import java.awt.*;
