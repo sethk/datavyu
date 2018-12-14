@@ -1606,6 +1606,8 @@ public final class VideoController extends DatavyuDialog
             double frameRate = frameRateController.getFrameRate();
             long clockTime = (long) clockTimer.getClockTime();
             long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
+            // Update the clock timer with the new time
+            long newTime = clockTime - (clockTime % stepSize) - stepSize;
             for (StreamViewer streamViewer : streamViewers) {
                 // TODO: Tie offset & duration to stream viewer only and pull it in the track model
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
@@ -1613,24 +1615,27 @@ public final class VideoController extends DatavyuDialog
                 if (streamViewer.isStepEnabled() && almostEqual(streamViewer.getFramesPerSecond(), frameRate,
                         ALMOST_EQUAL_FRAME_RATES)) {
                     streamViewer.stepBackward();
+                    logger.debug("Jog Forward Stream " + streamViewer.getIdentifier() +
+                                    " Master Clock " + newTime +
+                                    " Stream Clock " + streamViewer.getCurrentTime());
                 } else if (trackModel != null){
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize) - stepSize, 0),
-                            trackModel.getDuration());
+                    long newStreamTime = Math.min(Math.max(trackTime - (trackTime % stepSize) - stepSize, 0),
+                                            trackModel.getDuration());
 
-                    logger.info("Jog back from " + trackTime + " milliseconds to " + newTime + " milliseconds");
+                    logger.info("Jog back from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds");
 
-                    streamViewer.setCurrentTime(newTime);
+                    streamViewer.setCurrentTime(newStreamTime);
                 }
                 // otherwise we can't step
             }
-            // Update the clock timer with the new time
-            long newTime = clockTime - (clockTime % stepSize) - stepSize;
+
             //Force the time in order to update the cell highlighting
             clockTimer.setForceTime(newTime);
+
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }
@@ -1685,28 +1690,32 @@ public final class VideoController extends DatavyuDialog
             long clockTime = (long) clockTimer.getClockTime();
             long stepSize = (long) Math.ceil(MILLI_IN_SEC / frameRate); // step size is in milliseconds
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+
+            // Update the clock timer with the new time
+            long newTime = clockTime - (clockTime % stepSize) + stepSize;
             for (StreamViewer streamViewer : streamViewers) {
-                // TODO: Tie offset & duration to stream viewer only and pull it in the track model
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
+                // TODO: Tie offset & duration to stream viewer only and pull it in the track model
                 if (streamViewer.isStepEnabled() && almostEqual(streamViewer.getFramesPerSecond(), frameRate,
                         ALMOST_EQUAL_FRAME_RATES)) {
                     streamViewer.stepForward();
+                    logger.debug("Jog Forward Stream " + streamViewer.getIdentifier() +
+                                    " Master Clock " + newTime +
+                                    " Stream Clock " + streamViewer.getCurrentTime());
                 } else if (trackModel != null){
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize) + stepSize, 0),
-                            trackModel.getDuration());
+                    long newStreamTime = Math.min(Math.max(trackTime - (trackTime % stepSize) + stepSize, 0),
+                                            trackModel.getDuration());
 
-                    logger.info("Jog forward from " + trackTime + " milliseconds to " + newTime + " milliseconds.");
+                    logger.info("Jog forward from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds.");
 
-                    streamViewer.setCurrentTime(newTime);
+                    streamViewer.setCurrentTime(newStreamTime);
                 }
                 // otherwise we can't step
             }
-            // Update the clock timer with the new time
-            long newTime = clockTime - (clockTime % stepSize) + stepSize;
             //Force the time in order to update the cell highlighting
             clockTimer.setForceTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
