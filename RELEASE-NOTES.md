@@ -6,12 +6,12 @@
     * Added support for 1080p Resolution.
     * Playback speed from -32x to +32x for Images and Audio.
     * Accurate and consistent seeks.
-    * Stepping frame by frame forward and backward. 
+    * Stepping frame by frame forward and backward.
 * FFmpeg plugin new features:
     * Added support for 1080p Resolution.
     * Added support for playback speeds from 0x to 32x for Images and Audio.
     * Improved the seek accuracy.
-    * Stepping frame by frame forward and backward. 
+    * Stepping frame by frame forward and backward.
     * Keep aspect ratio when resizing FFmpeg plugin window.
 * Added new Ruby API function to load a video from a script.
 * Re-arrange column from the Code Editor dialog.
@@ -34,8 +34,9 @@
 * FFmpeg plugin for Windows
     * Backward playback is not performing as expected.
     * The Plugin will not update the image when seeking to the end of the track.
-    * Fix seeks will toggle between frames.
+    * Seeking (either through Find or synchronization when stopping) does not always produce same frame. May seek to adjacent frame.
     * Inconsistent frame reporting between plugins. We suggest using the same plugin when coding to maintain consistency.
+
 # Datavyu 1.4.1 Release Notes
 ## 06/28/2018
 
