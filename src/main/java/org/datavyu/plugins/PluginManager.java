@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.ffmpegplayer.FFmpegPlugin;
-import org.datavyu.plugins.javafx.JfxPlugin;
 import org.datavyu.util.MacOS;
 import org.jdesktop.application.LocalStorage;
 
@@ -370,14 +369,6 @@ public final class PluginManager {
                         return 1;
                     }
 
-                    if ("QTKit Video".equals(o1.getPluginName())) {
-                        return -1;
-                    }
-
-                    if ("QTKit Video".equals(o2.getPluginName())) {
-                        return 1;
-                    }
-
                     return o1.getPluginName().compareTo(o2.getPluginName());
                 }
             });
@@ -393,11 +384,11 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
-                    if ("JavaFX Video".equals(o1.getPluginName())) {
+                    if ("MPV Plugin".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("JavaFX Video".equals(o2.getPluginName())) {
+                    if ("MPV Plugin".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -415,11 +406,11 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
-                    if ("JavaFX Video".equals(o1.getPluginName())) {
+                    if ("MPV Plugin".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("JavaFX Video".equals(o2.getPluginName())) {
+                    if ("MPV Plugin".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -450,15 +441,9 @@ public final class PluginManager {
 
             // Windows default is FFmpegPlugin
             if (Datavyu.getPlatform() == Datavyu.Platform.WINDOWS) {
-                FFmpegPlugin fFmpegPlugin = new FFmpegPlugin();
-                logger.info("Loading windows plugin: " + fFmpegPlugin.getPluginName());
-                return fFmpegPlugin;
+                return new FFmpegPlugin();
             }
 
-            // Linux default is JFXPlugin
-            if (Datavyu.getPlatform() == Datavyu.Platform.LINUX) {
-                return new JfxPlugin();
-            }
         }
 
         for (Plugin candidate : pluginClassifiers.get(classifier)) {
