@@ -387,30 +387,10 @@
             </activation>
 
             <dependencies>
-
-                <dependency>
-                    <groupId>org.datavyu</groupId>
-                    <artifactId>vlcLibs-macosx</artifactId>
-                    <version>2.2.2</version>
-                    <scope>provided</scope>
-                </dependency>
-
                 <dependency>
                     <groupId>ch.randelshofer.quaqua</groupId>
                     <artifactId>quaqua-osx64</artifactId>
                     <version>7.0.1</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.datavyu</groupId>
-                    <artifactId>libNativeOSXCanvas</artifactId>
-                    <version>0.92</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.datavyu</groupId>
-                    <artifactId>libQTKitCanvas</artifactId>
-                    <version>0.2</version>
                 </dependency>
             </dependencies>
 
