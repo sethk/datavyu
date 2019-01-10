@@ -361,6 +361,14 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
+                    if ("FFmpeg Plugin".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("FFmpeg Plugin".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
                     if ("Native OSX Video".equals(o1.getPluginName())) {
                         return -1;
                     }
@@ -384,6 +392,14 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
+                    if ("FFmpeg Plugin".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("FFmpeg Plugin".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
                     if ("MPV Plugin".equals(o1.getPluginName())) {
                         return -1;
                     }
@@ -406,11 +422,11 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
-                    if ("MPV Plugin".equals(o1.getPluginName())) {
+                    if ("FFmpeg Plugin".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("MPV Plugin".equals(o2.getPluginName())) {
+                    if ("FFmpeg Plugin".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -434,9 +450,9 @@ public final class PluginManager {
         // Hard-code plugins for Windows, OSX, and Linux
         if (classifier.equals("datavyu.video")) {
 
-            // Mac default is OSXPlugin
+            // Mac default is FFmpegPlugin
             if (Datavyu.getPlatform() == Datavyu.Platform.MAC) {
-                return MacOS.getNativeOSXPlugin();
+                return new FFmpegPlugin();
             }
 
             // Windows default is FFmpegPlugin
