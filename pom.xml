@@ -1089,26 +1089,6 @@
             <version>2.9.4</version>
         </dependency>
 
-        <!--&lt;!&ndash; FFmpeg 4.0 &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.datavyu</groupId>-->
-            <!--<artifactId>ffmpeg-libs</artifactId>-->
-            <!--<version>4.0.2</version>-->
-        <!--</dependency>-->
-
-        <!--&lt;!&ndash; SDl 2.0.8 &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.datavyu</groupId>-->
-            <!--<artifactId>sdl-libs</artifactId>-->
-            <!--<version>2.0.8</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.datavyu</groupId>-->
-            <!--<artifactId>mpv-libs</artifactId>-->
-            <!--<version>0.29.1</version>-->
-        <!--</dependency>-->
-
         <!-- Updates with JRE from java version >= 1.7 -->
         <!-- See: https://stackoverflow.com/questions/15278215/maven-project-with-javafx-with-jar-file-in-lib -->
         <dependency>
