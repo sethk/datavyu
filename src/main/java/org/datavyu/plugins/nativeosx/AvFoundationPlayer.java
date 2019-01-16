@@ -40,9 +40,7 @@ public class AvFoundationPlayer {
     mediaPlayer.setMute(newMute);
   }
 
-  public void stop() {
-    mediaPlayer.stop();
-  }
+  public void stop() { mediaPlayer.stop(); }
 
   public void setPlaybackSpeed(float rate) {
     mediaPlayer.setRate(rate);
@@ -59,6 +57,8 @@ public class AvFoundationPlayer {
   public void play() {
     mediaPlayer.play();
   }
+
+  public void pause() { mediaPlayer.pause();}
 
   public boolean isPlaying() {
     return mediaPlayer.isPlaying();

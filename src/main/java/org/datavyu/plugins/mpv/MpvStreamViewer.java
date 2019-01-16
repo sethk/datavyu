@@ -148,12 +148,10 @@ public class MpvStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isPlaying() {
-        return player != null && player.isPlaying();
-    }
+    public boolean isPlaying() { return player != null && player.isPlaying(); }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return playBackRate < 0F || playBackRate > 32F; }
+    public boolean isSeekPlaybackEnabled() { return playBackRate < 0F; }
 
     @Override
     public boolean isSlavePlayer() { return true; }

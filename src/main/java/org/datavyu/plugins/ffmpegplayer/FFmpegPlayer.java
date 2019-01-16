@@ -109,7 +109,15 @@ public class FFmpegPlayer extends JPanel {
 	 */
 	public void stop() {
 		logger.info("Stopping the video.");
-		mediaPlayer.setRate(0);
+		mediaPlayer.stop();
+	}
+
+	/**
+	 * Pause the video/audio.
+	 */
+	public void pause() {
+		logger.info("Pausing the video.");
+		mediaPlayer.pause();
 	}
 
 	@Deprecated
@@ -151,7 +159,7 @@ public class FFmpegPlayer extends JPanel {
 	    return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING;
     }
 
-    public double getFPS() {
+  public double getFPS() {
     return mediaPlayer.getFps();
 	}
 }

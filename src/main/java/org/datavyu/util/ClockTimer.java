@@ -14,7 +14,6 @@
  */
 package org.datavyu.util;
 
-
 import org.datavyu.plugins.MediaPlayer;
 
 import java.util.HashSet;
@@ -37,6 +36,7 @@ public final class ClockTimer implements MasterClock {
 
     /** Clock tick period in milliseconds */
     private static final long CLOCK_SYNC_INTERVAL = 100L;
+//    private static final long CLOCK_SYNC_INTERVAL = 31L;
 
     /** Clock initial delay in milliseconds */
     private static final long CLOCK_SYNC_DELAY = 0L;
@@ -73,7 +73,7 @@ public final class ClockTimer implements MasterClock {
     /** Listeners of this clock */
     private Set<ClockListener> clockListeners = new HashSet<>();
 
-    private Set<MediaPlayer> clockOservers = new HashSet<>();
+    private Set<MediaPlayer> clockObservers = new HashSet<>();
 
     /**
      * Default constructor.
@@ -112,12 +112,12 @@ public final class ClockTimer implements MasterClock {
         }, CHECK_BOUNDARY_DELAY, CHECK_BOUNDARY_INTERVAL);
 
         // Seek playback for fast, backward playback
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                notifySeekPlayback();
-            }
-        }, SEEK_PLAYBACK_DELAY, SEEK_PLAYBACK_INTERVAL);
+//        new Timer().scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                notifySeekPlayback();
+//            }
+//        }, SEEK_PLAYBACK_DELAY, SEEK_PLAYBACK_INTERVAL);
     }
 
     /**
@@ -318,9 +318,9 @@ public final class ClockTimer implements MasterClock {
         // TODO: Remove this once plugin's support fast playback forward / backward playback
         // Only activate the seek playback for rates < 0 or > 2x
         //if (rate > 2F || rate < 0F) { }
-        for (ClockListener clockListener : clockListeners) {
-            clockListener.clockSeekPlayback(clockTime);
-        }
+//        for (ClockListener clockListener : clockListeners) {
+//            clockListener.clockSeekPlayback(clockTime);
+//        }
     }
 
     private void notifyCheckClockBoundary() {
@@ -383,18 +383,18 @@ public final class ClockTimer implements MasterClock {
     @Override
     public void registerPlayer(MediaPlayer mediaPlayer) {
         if (mediaPlayer == null) throw new NullPointerException("Null MediaPlayer");
-        if (!clockOservers.contains(mediaPlayer)) clockOservers.add(mediaPlayer);
+        if (!clockObservers.contains(mediaPlayer)) clockObservers.add(mediaPlayer);
     }
 
     @Override
     public synchronized void unregisterPlayer(MediaPlayer mediaPlayer) {
-        clockOservers.remove(mediaPlayer);
+        clockObservers.remove(mediaPlayer);
     }
 
     @Override
     public synchronized void notifyPlayers(EventType event) {
         Set<MediaPlayer> observersLocal = null;
-        observersLocal = new HashSet<>(this.clockOservers);
+        observersLocal = new HashSet<>(this.clockObservers);
 
         for (MediaPlayer mediaPlayer : observersLocal) {
             if (event == EventType.CURRENT_TIME) {

@@ -12,11 +12,11 @@ import java.io.File;
 
 public class MpvPlayer extends JPanel {
 
-    /** Identifier for object serialization */
-    private static final long serialVersionUID = 5109839668203738974L;
+	/** Identifier for object serialization */
+	private static final long serialVersionUID = 7498084201876769022L;
 
-    /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(MpvPlayer.class);
+  /** The logger for this class */
+  private static Logger logger = LogManager.getFormatterLogger(MpvPlayer.class);
 	
 	/** The movie stream for this movie player */
 	private MediaPlayer mediaPlayer;
@@ -112,9 +112,17 @@ public class MpvPlayer extends JPanel {
 		mediaPlayer.stop();
 	}
 
+	/**
+	 * Pause the video/audio.
+	 */
+	public void pause() {
+		logger.info("Pausing the video.");
+		mediaPlayer.pause();
+	}
+
+
 	@Deprecated
-	public void setScale(float scale) {
-    }
+	public void setScale(float scale) { }
 
 	/**
 	 * Instead of isPlaying a sequence of frames just step by one frame.
@@ -150,7 +158,7 @@ public class MpvPlayer extends JPanel {
 	    return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING;
     }
 
-    public double getFPS() {
+  public double getFPS() {
     return mediaPlayer.getFps();
 	}
 }
