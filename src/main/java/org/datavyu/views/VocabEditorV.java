@@ -25,12 +25,9 @@ import org.datavyu.models.db.Variable;
 import org.datavyu.undoableedits.AddVariableEdit;
 import org.datavyu.undoableedits.RemoveVariableEdit;
 import org.datavyu.views.discrete.SpreadSheetPanel;
-import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.datavalues.vocabelements.FormalArgEditor;
 import org.datavyu.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 
 import javax.swing.*;
 import javax.swing.undo.UndoableEdit;
@@ -143,13 +140,6 @@ public final class VocabEditorV extends DatavyuDialog {
                                     break;
                                 case KeyEvent.VK_DELETE:
                                     delete();
-                                    break;
-                                case KeyEvent.VK_LEFT:
-                                    if (moveCodeLeftButton.isEnabled())
-                                        moveArgumentLeft(); //on mac may want to advise ctrl+shift+left (ctrl+left switches detsktops)
-                                    break;
-                                case KeyEvent.VK_RIGHT:
-                                    if (moveCodeRightButton.isEnabled()) moveArgumentRight();
                                     break;
                                 default:
                                     result = false;
@@ -499,9 +489,6 @@ public final class VocabEditorV extends DatavyuDialog {
      * model.
      */
     public void updateDialogState() {
-        ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-                .getResourceMap(VocabEditorV.class);
-
 
         for (VocabElementV vev : veViews) {
             // A vocab element has focus - enable certain things.
@@ -865,99 +852,4 @@ public final class VocabEditorV extends DatavyuDialog {
             nameWarningsLabel.setForeground(Color.RED);
         }
     }
-
-    /**
-     * Determine what action to perform when a VocabElement is removed from the vocab list
-     *
-     * @param db the current database
-     * @param VEID the identifier of the vocab element to be deleted
-     *//*
-    @Override
-    public void VLDeletion(Database db, long VEID) {
-        try{
-            if(db.vocabElementExists(VEID)){
-                VocabElement ve = db.getVocabElement(VEID);
-                for(int i=ve.getNumFormalArgs()-1; i>= 0; i--){
-                    ve.deleteFormalArg(i);
-                }
-                int delIndex=0;
-                for(VocabElementV view: veViews){
-                    long vID = view.getModel().getID();
-                    if(vID == VEID){
-                        verticalFrame.remove(delIndex);
-                        verticalFrame.revalidate();
-                        veViews.remove(delIndex);
-                        break;  // only ever delete one element & avoid breaking loop
-                    }
-                    delIndex++;
-                }
-            }
-        }catch(Exception e){
-            LOGGER.error("could not delete VE from DB" +e);
-        }
-    }*/
-
-    /**
-     * Determine what action to perform when a VocabElement is replaced in the vocab list
-     *
-     * @param db the database currently being used
-     * @param VEID the identifier of the vocab element that has changed
-     *//*
-    @Override
-    public void VLReplace(Database db, long VEID) {
-        try{
-        for(int i=0; i < veViews.size()-1;i++){
-            if(VEID == veViews.get(i).getModel().getID()){
-                verticalFrame.remove(i);
-                veViews.remove(i);
-                VocabElement ve = db.getVocabElement(VEID);
-                VocabElementV vev = new VocabElementV(ve, this);
-                verticalFrame.add(vev, i);
-                verticalFrame.revalidate();
-                veViews.add(i, vev);
-            }
-        }
-        }catch(Exception e){
-            LOGGER.error("problem replacing vocab element"+e);
-        }
-    }*/
-
-    /**
-     * Determine what action to perform when a VocabElement is added to the vocab list
-     *
-     * @param db the current database
-     * @param VEID the identifier of the vocab element being inserted
-     *//*
-    @Override
-    public void VLInsertion(Database db, long VEID) {
-        try {
-            if(db.getVocabElement(VEID) instanceof PredicateVocabElement||
-                    db.getMatrixVE(VEID).getType().compareTo(MatrixType.MATRIX)==0){
-
-                boolean exists = false;
-                for(int i = 0; i< veViews.size();i++){
-                    if(veViews.get(i).getModel().getName().equals(
-                            db.getVocabElement(VEID).getName())){
-                        exists = true;
-                    }
-                }
-
-                if(!exists){
-                    // if the vocab element is new, give it the default argument
-                    VocabElement ve = db.getVocabElement(VEID);
-                    if(!(db.getVocabElement(VEID) instanceof PredicateVocabElement)){
-                        ve.deleteFormalArg(0);
-                        ve.appendFormalArg(new NominalFormalArg(db, "<arg0>"));
-                    }
-                    // add the vocab element to the appropriate lists
-                    VocabElementV vev = new VocabElementV(ve, this);
-                    verticalFrame.add(vev);
-                    verticalFrame.revalidate();
-                    veViews.add(vev);
-                }
-            }
-        } catch (SystemErrorException ex) {
-                LOGGER.error("could not add vocab element"+ex);
-        }
-    }*/
 }
