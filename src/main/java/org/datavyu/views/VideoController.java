@@ -660,6 +660,8 @@ public final class VideoController extends DatavyuDialog
         // Recalculate the maximum playback duration
         updateMaxViewerDuration();
 
+        updateStepSizeTextField();
+
         // Remove the data viewer from the tracks panel
         mixerController.deregisterTrack(streamViewer.getIdentifier());
 
