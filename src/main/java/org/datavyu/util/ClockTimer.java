@@ -14,6 +14,8 @@
  */
 package org.datavyu.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaPlayer;
 
 import java.util.HashSet;
@@ -31,12 +33,14 @@ public final class ClockTimer implements MasterClock {
         CURRENT_TIME, MIN_TIME, MAX_TIME, FORCE_SYNC
     }
 
+    /** The logger for this class. */
+    private static Logger logger = LogManager.getLogger(ClockTimer.class);
+
     /** Synchronization threshold in milliseconds */
     public static final long SYNC_THRESHOLD = 1500L; // 1.5 sec  (because some plugins are not very precise in seek)
 
     /** Clock tick period in milliseconds */
     private static final long CLOCK_SYNC_INTERVAL = 100L;
-//    private static final long CLOCK_SYNC_INTERVAL = 31L;
 
     /** Clock initial delay in milliseconds */
     private static final long CLOCK_SYNC_DELAY = 0L;
@@ -112,12 +116,12 @@ public final class ClockTimer implements MasterClock {
         }, CHECK_BOUNDARY_DELAY, CHECK_BOUNDARY_INTERVAL);
 
         // Seek playback for fast, backward playback
-//        new Timer().scheduleAtFixedRate(new TimerTask() {
-//            @Override
-//            public void run() {
-//                notifySeekPlayback();
-//            }
-//        }, SEEK_PLAYBACK_DELAY, SEEK_PLAYBACK_INTERVAL);
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                notifySeekPlayback();
+            }
+        }, SEEK_PLAYBACK_DELAY, SEEK_PLAYBACK_INTERVAL);
     }
 
     /**
@@ -318,9 +322,9 @@ public final class ClockTimer implements MasterClock {
         // TODO: Remove this once plugin's support fast playback forward / backward playback
         // Only activate the seek playback for rates < 0 or > 2x
         //if (rate > 2F || rate < 0F) { }
-//        for (ClockListener clockListener : clockListeners) {
-//            clockListener.clockSeekPlayback(clockTime);
-//        }
+        for (ClockListener clockListener : clockListeners) {
+            clockListener.clockSeekPlayback(clockTime);
+        }
     }
 
     private void notifyCheckClockBoundary() {
@@ -403,8 +407,6 @@ public final class ClockTimer implements MasterClock {
                 mediaPlayer.updateMasterMinTime(minTime);
             } else if (event == EventType.MIN_TIME) {
                 mediaPlayer.updateMasterMaxTime(maxTime);
-            } else if (event == EventType.FORCE_SYNC) {
-                mediaPlayer.seek(clockTime);
             }
         }
     }

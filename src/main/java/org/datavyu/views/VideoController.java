@@ -498,17 +498,17 @@ public final class VideoController extends DatavyuDialog
 
     @Override
     public void clockSeekPlayback(double clockTime) {
-//        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-//        for (StreamViewer streamViewer : streamViewers) {
-//            if (streamViewer.isSeekPlaybackEnabled()
-//                && streamViewer.isPlaying()) {
-//                TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-//                if (trackModel != null) {
-//                    streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
-//                    logger.info("Clock Seek Playback is seeking stream " + streamViewer.getIdentifier() + " to time: " + (clockTime - trackModel.getOffset()));
-//                }
-//            }
-//        }
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        for (StreamViewer streamViewer : streamViewers) {
+            if (streamViewer.isSeekPlaybackEnabled()
+                && streamViewer.isPlaying()) {
+                TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
+                if (trackModel != null) {
+                    streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
+                    logger.info("Clock Seek Playback is seeking stream " + streamViewer.getIdentifier() + " to time: " + (clockTime - trackModel.getOffset()));
+                }
+            }
+        }
     }
 
     /**
@@ -516,21 +516,6 @@ public final class VideoController extends DatavyuDialog
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockPeriodicSync(double clockTime) {
-//        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-//        for (StreamViewer streamViewer : streamViewers) {
-//            if (!streamViewer.isSlavePlayer()) {
-//
-//                TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-//                if (trackModel != null) {
-//                    double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
-//                    double difference = Math.abs(trackTime - streamViewer.getCurrentTime());
-//                    if (difference >= ClockTimer.SYNC_THRESHOLD) {
-//                        streamViewer.setCurrentTime((long) trackTime);
-//                        logger.info("Sync of clock with difference: " + difference + " milliseconds.");
-//                    }
-//                }
-//            }
-//        }
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }

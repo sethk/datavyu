@@ -161,4 +161,8 @@ public class MpvPlayer extends JPanel {
   public double getFPS() {
     return mediaPlayer.getFps();
 	}
+
+	public boolean isSeekPlaybackEnabled() {
+		return mediaPlayer.isSeekPlaybackEnabled();
+	}
 }

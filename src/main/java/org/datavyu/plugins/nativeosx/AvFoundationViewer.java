@@ -48,11 +48,6 @@ public class AvFoundationViewer extends StreamViewerDialog {
   }
 
   @Override
-  public boolean isSlavePlayer() {
-    return true;
-  }
-
-  @Override
   protected float getPlayerFramesPerSecond() {
     return (float) player.getFPS();
   }
@@ -102,12 +97,8 @@ public class AvFoundationViewer extends StreamViewerDialog {
   }
 
   @Override
-  public boolean isSeekPlaybackEnabled() {
-    return false;
-  }
+  public boolean isSeekPlaybackEnabled() { return player.isSeekPlaybackEnabled(); }
 
   @Override
-  public boolean isStepEnabled() {
-    return true;
-  }
+  public boolean isStepEnabled() { return true; }
 }

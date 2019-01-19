@@ -549,9 +549,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     }
 
     @Override
-    public boolean isStepEnabled() {
-        return false;
-    }
+    public boolean isStepEnabled() { return false; }
 
     @Override
     public void stepForward() {

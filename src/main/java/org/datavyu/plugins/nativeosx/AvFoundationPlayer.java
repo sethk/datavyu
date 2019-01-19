@@ -79,4 +79,8 @@ public class AvFoundationPlayer {
   public void stepBackward() {
     mediaPlayer.stepBackward();
   }
+
+  public boolean isSeekPlaybackEnabled() {
+    return mediaPlayer.isSeekPlaybackEnabled();
+  }
 }
