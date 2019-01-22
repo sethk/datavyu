@@ -52,7 +52,7 @@ public final class ClockTimer implements MasterClock {
 
     private static final long CHECK_BOUNDARY_DELAY = 0L;
 
-    private static final long SEEK_PLAYBACK_INTERVAL = 31L; // milliseconds
+    private static final long SEEK_PLAYBACK_INTERVAL = 100L; // milliseconds
 
     private static final long SEEK_PLAYBACK_DELAY = 0L;
 
