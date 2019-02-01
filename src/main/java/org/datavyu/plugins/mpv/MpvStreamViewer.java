@@ -2,12 +2,14 @@ package org.datavyu.plugins.mpv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.Datavyu;
 import org.datavyu.models.Identifier;
 import org.datavyu.plugins.StreamViewerDialog;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import org.datavyu.util.ClockTimer;
 
 public class MpvStreamViewer extends StreamViewerDialog {
 
@@ -20,11 +22,15 @@ public class MpvStreamViewer extends StreamViewerDialog {
     /** Currently is seeking */
     private boolean isSeeking = false;
 
+    private ClockTimer clockTimer;
+
     MpvStreamViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
         super(identifier, parent, modal);
         logger.info("Opening file: " + sourceFile.getAbsolutePath());
         player = new MpvPlayer(this, sourceFile);
         setSourceFile(sourceFile);
+        clockTimer = Datavyu.getVideoController().getClockTimer();
+        clockTimer.registerListener(this);
     }
 
     private void launch(Runnable task) {
@@ -41,11 +47,13 @@ public class MpvStreamViewer extends StreamViewerDialog {
 
     @Override
     protected void setPlayerVolume(float volume) {
+        logger.debug("Setting Volume to " + volume);
         player.setVolume(volume);
     }
 
     @Override
     protected Dimension getOriginalVideoSize() {
+        logger.debug("Getting Image Dimension");
         return player.getOriginalVideoSize();
     }
 
@@ -53,10 +61,10 @@ public class MpvStreamViewer extends StreamViewerDialog {
     public void setCurrentTime(long time) {
         launch(() -> {
             try {
-                logger.info("Set time to: " + time + " milliseconds.");
                 if (!isSeeking) {
                     EventQueue.invokeLater(() -> {
                         isSeeking = true;
+                        logger.info("Set time to: " + time + " milliseconds.");
                         player.setCurrentTime(time / 1000.0);
                         isSeeking = false;
                     });
@@ -71,6 +79,7 @@ public class MpvStreamViewer extends StreamViewerDialog {
     public void start() {
         launch(() -> {
             if (!isPlaying()) {
+                logger.info("Starting the video");
                 player.play();
             }
         });
@@ -80,13 +89,25 @@ public class MpvStreamViewer extends StreamViewerDialog {
     public void stop() {
         launch(() -> {
             if (isPlaying()) {
+                logger.info("Stopping the video");
                 player.stop();
             }
         });
     }
 
     @Override
+    public void pause() {
+        launch(() -> {
+            if (isPlaying()) {
+                logger.info("Pausing the video");
+                player.pause();
+            }
+        });
+    }
+
+    @Override
     public void setRate(float speed) {
+        logger.info("Setting playback speed to: " + speed + "X");
         launch(() -> {
             playBackRate = speed;
             if(isSeekPlaybackEnabled()){
@@ -103,10 +124,14 @@ public class MpvStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    protected float getPlayerFramesPerSecond() { return (float) player.getFPS(); }
+    protected float getPlayerFramesPerSecond() {
+        logger.debug("Getting the video Frame Per Second");
+        return (float) player.getFPS();
+    }
 
     @Override
     public long getDuration() {
+        logger.debug("Getting video duration");
         return (long) (player.getDuration() * 1000);
     }
 
@@ -117,21 +142,20 @@ public class MpvStreamViewer extends StreamViewerDialog {
 
     @Override
     protected void cleanUp() {
+        logger.info("Destroying the Player");
         player.cleanUp();
     }
 
     @Override
     public void stepForward() {
-        launch(() -> {
-            player.stepForward();
-        });
+        logger.info("Step forward");
+        launch(() -> player.stepForward());
     }
 
     @Override
     public void stepBackward() {
-        launch(() -> {
-            player.stepBackward();
-        });
+        logger.info("Step backward");
+        launch(() -> player.stepBackward());
     }
 
     @Override

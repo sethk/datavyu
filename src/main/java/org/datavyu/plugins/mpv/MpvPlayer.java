@@ -2,7 +2,6 @@ package org.datavyu.plugins.mpv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.Datavyu;
 import org.datavyu.plugins.MediaPlayer;
 import org.datavyu.plugins.PlayerStateEvent;
 
@@ -34,7 +33,6 @@ public class MpvPlayer extends JPanel {
 		try {
 			mediaPlayer = new MpvAwtMediaPlayer(sourceFile.toURI(), viewer);
 			mediaPlayer.init();
-			Datavyu.getVideoController().getClockTimer().registerPlayer(mediaPlayer);
 		}catch (Exception e) {
 			logger.error("Cannot initialize MPV player due to error: ", e);
 		}
@@ -45,9 +43,7 @@ public class MpvPlayer extends JPanel {
 	 *
 	 * @return Duration of the opened stream.
 	 */
-	public double getDuration() {
-		return mediaPlayer.getDuration();
-	}
+	public double getDuration() {	return mediaPlayer.getDuration(); }
 
 	/**
 	 * Get the original stream size (not the size when a viewing window is used).
@@ -63,9 +59,7 @@ public class MpvPlayer extends JPanel {
 	 *
 	 * @return Current time in seconds.
 	 */
-	public double getCurrentTime() {
-		return mediaPlayer.getPresentationTime();
-	}
+	public double getCurrentTime() { return mediaPlayer.getPresentationTime(); }
 
 	/**
 	 * Seek to the position.
@@ -73,16 +67,16 @@ public class MpvPlayer extends JPanel {
 	 * @param position Position in seconds.
 	 */
 	public void setCurrentTime(double position) {
-        logger.info("Seeking position: " + position);
-		mediaPlayer.seek(position);
-    }
+      logger.info("Seeking position: " + position);
+			mediaPlayer.seek(position);
+	}
 
 	/**
 	 * Clean up the player before closing.
 	 */
 	public void cleanUp() {
 	    logger.info("Closing stream.");
-		mediaPlayer.dispose();
+		  mediaPlayer.dispose();
 	}
 
 	/**
@@ -91,32 +85,23 @@ public class MpvPlayer extends JPanel {
 	 * @param playbackSpeed The start back speed.
 	 */
 	public void setPlaybackSpeed(float playbackSpeed) {
-		logger.info("Setting start back speed: " + playbackSpeed);
-		// Not implemented yet, we are using the fake playback
 		mediaPlayer.setRate(playbackSpeed);
 	}
 
 	/**
 	 * Play the video/audio.
 	 */
-	public void play() {
-		logger.info("Starting the video");
-		mediaPlayer.play();
-	}
+	public void play() { mediaPlayer.play(); }
 
 	/**
 	 * Stop the video/audio.
 	 */
-	public void stop() {
-		logger.info("Stopping the video.");
-		mediaPlayer.stop();
-	}
+	public void stop() { mediaPlayer.stop(); }
 
 	/**
 	 * Pause the video/audio.
 	 */
 	public void pause() {
-		logger.info("Pausing the video.");
 		mediaPlayer.pause();
 	}
 
@@ -127,42 +112,24 @@ public class MpvPlayer extends JPanel {
 	/**
 	 * Instead of isPlaying a sequence of frames just step by one frame.
 	 */
-	public void stepForward() {
-	    logger.info("Step forward.");
-		mediaPlayer.stepForward();
-	}
+	public void stepForward() { mediaPlayer.stepForward(); }
 
-	public void stepBackward() {
-		logger.info("Step backward.");
-		mediaPlayer.stepBackward();
-	}
+	public void stepBackward() { mediaPlayer.stepBackward(); }
 
 	/**
 	 * Set the audio volume.
 	 *
 	 * @param volume New volume to set.
 	 */
-	public void setVolume(float volume) {
-		mediaPlayer.setVolume(volume);
-	}
+	public void setVolume(float volume) { mediaPlayer.setVolume(volume); }
 
-	public void setMute(final boolean newMute) {
-		mediaPlayer.setMute(newMute);
-	}
+	public void setMute(final boolean newMute) { mediaPlayer.setMute(newMute); }
 
-	public boolean isMute() {
-		return mediaPlayer.getMute();
-	}
+	public boolean isMute() {	return mediaPlayer.getMute(); }
 
-	boolean isPlaying() {
-	    return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING;
-    }
+	boolean isPlaying() { return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING; }
 
-  public double getFPS() {
-    return mediaPlayer.getFps();
-	}
+  public double getFPS() { return mediaPlayer.getFps();	}
 
-	public boolean isSeekPlaybackEnabled() {
-		return mediaPlayer.isSeekPlaybackEnabled();
-	}
+	public boolean isSeekPlaybackEnabled() { return mediaPlayer.isSeekPlaybackEnabled(); }
 }

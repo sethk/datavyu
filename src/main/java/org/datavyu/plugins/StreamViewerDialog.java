@@ -18,7 +18,12 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
+import org.datavyu.controllers.component.MixerController;
+import org.datavyu.controllers.component.TracksEditorController;
 import org.datavyu.models.Identifier;
+import org.datavyu.models.component.TrackModel;
+import org.datavyu.util.ClockTimer;
+import org.datavyu.util.ClockTimer.ClockListener;
 import org.datavyu.views.DatavyuDialog;
 import org.datavyu.views.component.DefaultTrackPainter;
 import org.datavyu.views.component.TrackPainter;
@@ -41,7 +46,8 @@ import java.util.Properties;
  *   - resizing the display, and
  *   - controls the video stream.
  */
-public abstract class StreamViewerDialog extends DatavyuDialog implements StreamViewer {
+public abstract class StreamViewerDialog extends DatavyuDialog implements StreamViewer,
+    ClockListener {
 
     /** Text for volume icon */
     private static final String VOLUME_TOOLTIP = "Change volume";
@@ -125,6 +131,8 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     // Offset gets updated when the user pushes the bar through 'handleCarriageOffsetChangeEvent' in the VideoController
     private long offset;
 
+    private ClockTimer clockTimer;
+
     /**
      * Constructs a base data video viewer.
      */
@@ -200,6 +208,9 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         menuForResize.setName("menuForResize");
 
         initComponents();
+
+        clockTimer = Datavyu.getVideoController().getClockTimer();
+        clockTimer.registerListener(this);
     }
 
     private void handleVolumeSliderEvent(final ChangeEvent e) {
@@ -564,5 +575,102 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     @Override
     public boolean isSeekPlaybackEnabled() {
         return false;
+    }
+
+
+    @Override
+    public void clockSeekPlayback(final double clockTime) {
+        if (isSeekPlaybackEnabled() && isPlaying()) {
+            MixerController mixerController = Datavyu.getVideoController().getMixerController();
+            TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+            TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
+            if (trackModel != null) {
+                setCurrentTime((long) clockTime - trackModel.getOffset());
+                logger.info(
+                    "Clock Seek Playback is seeking stream "
+                        + getIdentifier()
+                        + " to time: "
+                        + (clockTime - trackModel.getOffset()));
+            }
+        }
+    }
+
+    @Override
+    public void clockBoundaryCheck(final double clockTime) {
+        // Nothing to do here
+    }
+
+    @Override
+    public void streamsBoundaryCheck(final double clockTime) {
+        MixerController mixerController = Datavyu.getVideoController().getMixerController();
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
+        if (trackModel != null && !clockTimer.isStopped()) {
+            // Only if in range and not already playing and not in seek playback
+            if ( clockTime >= trackModel.getOffset()
+                && clockTime <= trackModel.getOffset() + trackModel.getDuration()
+                && !isPlaying()
+                && !isSeekPlaybackEnabled()) {
+                logger.info("Stream Boundary Starting track: " + getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ getCurrentTime());
+                start();
+            }
+            if ((clockTime < trackModel.getOffset()
+                || clockTime >= trackModel.getOffset() + trackModel.getDuration())
+                && isPlaying()) {
+                logger.info("Stream Boundary Stopping track: " + getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ getCurrentTime());
+                pause();
+            }
+        }
+    }
+
+    @Override
+    public synchronized void clockForceSync(double clockTime) {
+        logger.info("Forced sync");
+        setCurrentTime((long) clockTime);
+    }
+
+    @Override
+    public void clockPeriodicSync(final double clockTime) {
+        MixerController mixerController = Datavyu.getVideoController().getMixerController();
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
+        if (trackModel != null) {
+            double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
+            double difference = Math.abs(trackTime - getCurrentTime());
+            if (difference >= ClockTimer.SYNC_THRESHOLD
+                && !isSeekPlaybackEnabled()) {
+                setCurrentTime((long) trackTime);
+                logger.info("Sync of clock with difference: " + difference + " milliseconds.");
+            }
+        }
+    }
+
+    @Override
+    public void clockStart(final double clockTime) {
+        logger.info("Start");
+        MixerController mixerController = Datavyu.getVideoController().getMixerController();
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
+        // TODO: Ensure that there is a return value by tying offset/duration directly to the object
+        if (trackModel != null) {
+            if (clockTime >= trackModel.getOffset()
+                && clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
+                && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()) {
+                logger.info("Clock Start Starts track: " + getIdentifier() + " at time: " + clockTime);
+                start();
+            }
+        }
+    }
+
+    @Override
+    public void clockStop(double clockTime) {
+        logger.debug("Clock pause Pauses track: " + getIdentifier() + " at time: " + clockTime);
+        pause();
+    }
+
+    @Override
+    public void clockRate(final float rate) {
+        logger.debug("Clock setting rate of track: " + getIdentifier() + " to " + rate + "X");
+        setRate(rate);
     }
 }
