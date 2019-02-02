@@ -65,8 +65,8 @@ import java.util.*;
 public final class VideoController extends DatavyuDialog
         implements ClockListener, TracksControllerListener, PropertyChangeListener {
 
-    /** Sync threshold for HARD sync between */
-    private static final long SYNC_THRESHOLD = 31L; // milliseconds
+//    /** Sync threshold for HARD sync between */
+//    private static final long SYNC_THRESHOLD = 31L; // milliseconds
 
     /** Threshold used to compare frame rates */
     private static final double ALMOST_EQUAL_FRAME_RATES = 1e-1*5;
@@ -516,21 +516,6 @@ public final class VideoController extends DatavyuDialog
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockPeriodicSync(double clockTime) {
-        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-        for (StreamViewer streamViewer : streamViewers) {
-            if (!streamViewer.isSlavePlayer()) {
-
-                TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-                if (trackModel != null) {
-                    double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
-                    double difference = Math.abs(trackTime - streamViewer.getCurrentTime());
-                    if (difference >= ClockTimer.SYNC_THRESHOLD) {
-                        streamViewer.setCurrentTime((long) trackTime);
-                        logger.info("Sync of clock with difference: " + difference + " milliseconds.");
-                    }
-                }
-            }
-        }
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }

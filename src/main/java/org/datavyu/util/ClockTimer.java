@@ -14,7 +14,8 @@
  */
 package org.datavyu.util;
 
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaPlayer;
 
 import java.util.HashSet;
@@ -32,6 +33,9 @@ public final class ClockTimer implements MasterClock {
         CURRENT_TIME, MIN_TIME, MAX_TIME, FORCE_SYNC
     }
 
+    /** The logger for this class. */
+    private static Logger logger = LogManager.getLogger(ClockTimer.class);
+
     /** Synchronization threshold in milliseconds */
     public static final long SYNC_THRESHOLD = 1500L; // 1.5 sec  (because some plugins are not very precise in seek)
 
@@ -48,7 +52,7 @@ public final class ClockTimer implements MasterClock {
 
     private static final long CHECK_BOUNDARY_DELAY = 0L;
 
-    private static final long SEEK_PLAYBACK_INTERVAL = 31L; // milliseconds
+    private static final long SEEK_PLAYBACK_INTERVAL = 100L; // milliseconds
 
     private static final long SEEK_PLAYBACK_DELAY = 0L;
 
@@ -73,7 +77,7 @@ public final class ClockTimer implements MasterClock {
     /** Listeners of this clock */
     private Set<ClockListener> clockListeners = new HashSet<>();
 
-    private Set<MediaPlayer> clockOservers = new HashSet<>();
+    private Set<MediaPlayer> clockObservers = new HashSet<>();
 
     /**
      * Default constructor.
@@ -383,18 +387,18 @@ public final class ClockTimer implements MasterClock {
     @Override
     public void registerPlayer(MediaPlayer mediaPlayer) {
         if (mediaPlayer == null) throw new NullPointerException("Null MediaPlayer");
-        if (!clockOservers.contains(mediaPlayer)) clockOservers.add(mediaPlayer);
+        if (!clockObservers.contains(mediaPlayer)) clockObservers.add(mediaPlayer);
     }
 
     @Override
     public synchronized void unregisterPlayer(MediaPlayer mediaPlayer) {
-        clockOservers.remove(mediaPlayer);
+        clockObservers.remove(mediaPlayer);
     }
 
     @Override
     public synchronized void notifyPlayers(EventType event) {
         Set<MediaPlayer> observersLocal = null;
-        observersLocal = new HashSet<>(this.clockOservers);
+        observersLocal = new HashSet<>(this.clockObservers);
 
         for (MediaPlayer mediaPlayer : observersLocal) {
             if (event == EventType.CURRENT_TIME) {
@@ -403,8 +407,6 @@ public final class ClockTimer implements MasterClock {
                 mediaPlayer.updateMasterMinTime(minTime);
             } else if (event == EventType.MIN_TIME) {
                 mediaPlayer.updateMasterMaxTime(maxTime);
-            } else if (event == EventType.FORCE_SYNC) {
-                mediaPlayer.seek(clockTime);
             }
         }
     }

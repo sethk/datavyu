@@ -202,12 +202,4 @@ public interface StreamViewer {
     boolean isStepEnabled();
 
     boolean isSeekPlaybackEnabled();
-
-    /**
-     * A slave player is a player that could receive an external
-     * Clock and use the latter as a master clock.
-     *
-     * @return
-     */
-    boolean isSlavePlayer();
 }
