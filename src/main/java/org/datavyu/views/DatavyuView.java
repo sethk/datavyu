@@ -37,6 +37,8 @@ import org.datavyu.util.ConfigProperties;
 import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.datavyu.util.FileFilters.*;
 import org.datavyu.util.FileSystemTreeModel;
+import org.datavyu.util.MacOS;
+import org.datavyu.util.WindowsOS;
 import org.datavyu.views.discrete.SpreadSheetPanel;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -2817,6 +2819,31 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
+    }
+
+    public void checkFirstStart() {
+        ConfigProperties config = ConfigProperties.getInstance();
+        if (config.isFirstStart()) {
+              String defaultOption = "No";
+              String alternativeOption = "Yes";
+              String[] options =
+                  Datavyu.getPlatform() == Platform.MAC
+                      ? MacOS.getOptions(defaultOption, alternativeOption)
+                      : WindowsOS.getOptions(defaultOption, alternativeOption);
+              int selectedOption =
+                  JOptionPane.showOptionDialog(
+                      Datavyu.getView().getComponent(),
+                      "Share Data",
+                      "Acknowledgment",
+                      JOptionPane.YES_NO_OPTION,
+                      JOptionPane.QUESTION_MESSAGE,
+                      null,
+                      options,
+                      defaultOption);
+              boolean confirmation =
+                  (Datavyu.getPlatform() == Platform.MAC) ? (selectedOption == 1) : (selectedOption == 0);
+              config.setShareData(confirmation);
+        }
     }
 
     class OpenTask extends SwingWorker<ProjectController, Void> {

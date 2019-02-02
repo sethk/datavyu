@@ -877,6 +877,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
         videoController.setLocation(x, y);
         show(videoController);
         datavyuView.checkForAutosavedFile();
+        datavyuView.checkFirstStart();
 
         // The DB we create by default doesn't really have any unsaved changes.
         projectController.getDataStore().markAsUnchanged();

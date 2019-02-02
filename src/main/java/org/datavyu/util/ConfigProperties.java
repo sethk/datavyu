@@ -104,8 +104,18 @@ public final class ConfigProperties implements Serializable {
     /** Default value for warn on column names */
     private static final boolean DO_WARN_ON_COLUMN_NAMES = true;
 
+    private static final boolean DEFAULT_FIRST_START = true;
+
+    private static final boolean DEFAULT_SHARE_DATA = false;
+
     /** True if column name warnings should be displayed */
     private boolean doWarnOnIllegalColumnNames;
+
+    /** True if is the first datavyu launch */
+    private boolean firstStart;
+
+    /** True if is the user acknowledge sharing data */
+    private boolean shareData;
 
     /** Default on use of pre release */
     private static final boolean USE_PRE_RELEASE = false;
@@ -206,6 +216,8 @@ public final class ConfigProperties implements Serializable {
             configurationProperties.setIgnoreVersion(DEFAULT_IGNORE_VERSION);
         }
         configurationProperties.setDoWarnOnIllegalColumnNames(DO_WARN_ON_COLUMN_NAMES);
+        configurationProperties.setFirstStart(DEFAULT_FIRST_START);
+        configurationProperties.setShareData(DEFAULT_SHARE_DATA);
         configurationProperties.setUsePreRelease(USE_PRE_RELEASE);
         if (!configurationProperties.hasFavoritesFolder()) {
             configurationProperties.setFavoritesFolder(DEFAULT_FAVORITES_FOLDER);
@@ -578,6 +590,36 @@ public final class ConfigProperties implements Serializable {
      */    
     public void setDoWarnOnIllegalColumnNames(final boolean doWarn) {
         doWarnOnIllegalColumnNames = doWarn;
+    }
+
+    /**
+     * Get the first launch flag.
+     *
+     * @return whether or not is the first launch
+     */
+    public boolean isFirstStart() {
+        return firstStart;
+    }
+
+    /**
+     * Set the first start flag for first launch.
+     *
+     * @param isFirstStart whether or not to display warnings for illegal column names.
+     */
+    public void setFirstStart(final boolean isFirstStart) {
+        firstStart = isFirstStart;
+    }
+
+    /**
+     */
+    public boolean isShareData() {
+        return shareData;
+    }
+
+    /**
+     */
+    public void setShareData(final boolean share) {
+        shareData = share;
     }
 
     /**
