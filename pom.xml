@@ -864,13 +864,13 @@
         <!-- We must specify this JNA version first so that all our dependencies are happy -->
 
         <!-- Native interface access -->
-        <!-- Documentation: http://java-native-access.github.io/jna/4.5.0/javadoc/ -->
+        <!-- Documentation: http://java-native-access.github.io/jna/5.2.0/javadoc/ -->
         <!-- Artifact: https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
-        <!-- Updated here: 09/19/2017 -->
+        <!-- Updated here: 02/04/2019 -->
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>4.5.0</version>
+            <version>5.2.0</version>
         </dependency>
 
         <!-- Run ruby scripts from java -->
