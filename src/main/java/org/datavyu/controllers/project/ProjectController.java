@@ -17,6 +17,7 @@ package org.datavyu.controllers.project;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
+import org.datavyu.Datavyu.Platform;
 import org.datavyu.controllers.VocabEditorController;
 import org.datavyu.controllers.component.MixerController;
 import org.datavyu.models.Identifier;
@@ -32,6 +33,8 @@ import org.datavyu.plugins.StreamViewer;
 import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.PluginManager;
 import org.datavyu.util.FileSystemUtils;
+import org.datavyu.util.MacOS;
+import org.datavyu.util.WindowsOS;
 import org.datavyu.views.VideoController;
 import org.datavyu.views.discrete.SpreadSheetPanel;
 import org.jdesktop.application.Application;
@@ -394,18 +397,26 @@ public final class ProjectController {
 
             Plugin plugin = pluginManager.getAssociatedPlugin(setting.getPluginName());
 
-/*            // BugzID:2110
-            if ((plugin == null) && (setting.getPluginClassifier() != null)) {
-                plugin = pm.getCompatiblePlugin(setting.getPluginClassifier(), file);
-            }
-
             if (plugin == null) {
-
-                // Record missing plugin.
-                missingPluginList.add(setting.getPluginName());
-
-                continue;
-            }*/
+                String defaultOption = "Cancel";
+                String alternativeOption = "OK";
+                String[] options = Datavyu.getPlatform() == Platform.MAC ? MacOS
+                    .getOptions(defaultOption, alternativeOption) :
+                    WindowsOS.getOptions(defaultOption, alternativeOption);
+                int selectedOption = JOptionPane.showOptionDialog(Datavyu.getView().getComponent(),
+                    "Datavyu no longer support this plugin, please visit http://www.datavyu.org\n"
+                        + "to find the appropriate Datavyu version for your plugin.\n"
+                        + "Would you like to open the video with the default plugin?",
+                    "Plugin Not Supported",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, defaultOption);
+                boolean confirmation = (Datavyu.getPlatform() == Platform.MAC) ? (selectedOption == 1) : (selectedOption == 0);
+                if (confirmation) {
+                    plugin = PluginManager.getInstance().getCompatiblePlugin(setting.getPluginClassifier(), file) ;
+                } else {
+                    return;
+                }
+            }
 
             final StreamViewer streamViewer = plugin.getNewStreamViewer(
                     Identifier.generateIdentifier(),
