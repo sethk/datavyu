@@ -51,7 +51,13 @@ public class AvFoundationViewer extends StreamViewerDialog  {
       player.setMute(false);
     }
     if (rate == 0) {
-      player.stop();
+      // AV Foundation will set the rate to 0x when stopped
+      stop();
+      return;
+    } else if (rate == 1) {
+      // Need to call start to set the State to PLAYING
+      start();
+      return;
     } else {
       player.setPlaybackSpeed(rate);
     }
