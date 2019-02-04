@@ -1,5 +1,7 @@
 package org.datavyu.plugins.nativeosx;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.Identifier;
 import org.datavyu.plugins.StreamViewerDialog;
 
@@ -7,33 +9,41 @@ import java.awt.*;
 import java.io.File;
 
 
-public class AvFoundationViewer extends StreamViewerDialog {
+public class AvFoundationViewer extends StreamViewerDialog  {
 
-  AvFoundationPlayer player;
+  /** The logger for this class */
+  private static Logger logger = LogManager.getFormatterLogger(AvFoundationViewer.class);
+
+  private AvFoundationPlayer player;
 
   AvFoundationViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
     super(identifier, parent, modal);
+    logger.info("Opening file: " + sourceFile.getAbsolutePath());
     player = new AvFoundationPlayer(this, sourceFile);
     setSourceFile(sourceFile);
   }
 
   @Override
   protected void setPlayerVolume(final float volume) {
+    logger.debug("Setting Volume to " + volume);
     player.setVolume(volume);
   }
 
   @Override
   protected Dimension getOriginalVideoSize() {
+    logger.debug("Getting Image Dimension");
     return player.getOriginalVideoSize();
   }
 
   @Override
   public void setCurrentTime(long time) {
+    logger.info("Set time to: " + time + " milliseconds.");
     player.setCurrentTime(time / 1000.0);
   }
 
   @Override
   public void setRate(final float rate) {
+    logger.info("Setting playback speed to: " + rate + "X");
     playBackRate = rate;
     if(isSeekPlaybackEnabled()){
       player.setMute(true);
@@ -49,11 +59,13 @@ public class AvFoundationViewer extends StreamViewerDialog {
 
   @Override
   protected float getPlayerFramesPerSecond() {
+    logger.debug("Getting the video Frame Per Second");
     return (float) player.getFPS();
   }
 
   @Override
   public long getDuration() {
+    logger.debug("Getting video duration");
     return (long) (player.getDuration() * 1000);
   }
 
@@ -65,14 +77,24 @@ public class AvFoundationViewer extends StreamViewerDialog {
   @Override
   public void start() {
     if(!isPlaying()){
+      logger.info("Starting the video");
       player.play();
     }
   }
 
   @Override
   public void stop() {
-    if(!isPlaying()){
+    if(isPlaying()){
+      logger.info("Stopping the video");
       player.stop();
+    }
+  }
+
+  @Override
+  public void pause() {
+    if(isPlaying()){
+      logger.info("Pausing the video");
+      player.pause();
     }
   }
 
@@ -83,16 +105,19 @@ public class AvFoundationViewer extends StreamViewerDialog {
 
   @Override
   protected void cleanUp() {
+    logger.info("Destroying the Player");
     player.cleanUp();
   }
 
   @Override
   public void stepForward() {
+    logger.info("Step forward");
     player.stepForward();
   }
 
   @Override
   public void stepBackward() {
+    logger.info("Step backward");
     player.stepBackward();
   }
 

@@ -753,43 +753,32 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
     public void clockPeriodicSync(double clockTime) {
         if(isSelected()
             && Datavyu.getVideoController().getCellHighlightAndFocus()
-            && !Datavyu.getVideoController().getClockTimer().isStopped()) {
+            && !Datavyu.getVideoController().getClockTimer().isPaused()) {
             focusNextCell();
         }
     }
 
     @Override
-    public void clockForceSync(double clockTime) {
-
-    }
+    public void clockForceSync(double clockTime) { }
 
     @Override
-    public void clockRate(float rate) {
-
-    }
+    public void clockRate(float rate) { }
 
     @Override
-    public void clockStart(double clockTime) {
-
-    }
+    public void clockStart(double clockTime) { }
 
     @Override
-    public void clockStop(double clockTime) {
-
-    }
+    public void clockStop(double clockTime) { }
 
     @Override
-    public void clockBoundaryCheck(double clockTime) {
-
-    }
+    public void clockPause(double clockTime) { }
 
     @Override
-    public void streamsBoundaryCheck(double clockTime) {
-
-    }
+    public void clockBoundaryCheck(double clockTime) { }
 
     @Override
-    public void clockSeekPlayback(double clockTime) {
+    public void streamsBoundaryCheck(double clockTime) { }
 
-    }
+    @Override
+    public void clockSeekPlayback(double clockTime) { }
 }

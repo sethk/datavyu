@@ -109,6 +109,11 @@ public interface StreamViewer {
     void stop();
 
     /**
+     * Pauses the play back of the data stream
+     */
+    void pause();
+
+    /**
      * Steps foward
      */
     void stepForward();

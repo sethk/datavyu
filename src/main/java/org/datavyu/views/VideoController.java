@@ -420,19 +420,6 @@ public final class VideoController extends DatavyuDialog
      */
     public void clockStart(double clockTime) {
         logger.info("Start");
-        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-        for (StreamViewer streamViewer : streamViewers) {
-            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-            // TODO: Ensure that there is a return value by tying offset/duration directly to the object
-            if (trackModel != null) {
-                if (clockTime >= trackModel.getOffset()
-                        && clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
-                        && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()) {
-                    logger.info("Clock Start Starts track: " + trackModel.getIdentifier() + " at time: " + clockTime);
-                    streamViewer.start();
-                }
-            }
-        }
     }
 
     /**
@@ -448,9 +435,6 @@ public final class VideoController extends DatavyuDialog
 
     public void clockForceSync(double clockTime) {
         logger.info("Forced sync");
-        for (StreamViewer streamViewer : streamViewers) {
-            streamViewer.setCurrentTime((long) clockTime);
-        }
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
@@ -459,9 +443,9 @@ public final class VideoController extends DatavyuDialog
     public void clockBoundaryCheck(double clockTime) {
         if((clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd()
                 || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
-                && !clockTimer.isStopped()){
-            logger.info("Clock Boundary Stopping Master Clock at " + clockTime );
-            clockTimer.stop();
+                && !clockTimer.isPaused()){
+            logger.info("Clock Boundary Pausing Master Clock at " + clockTime );
+            clockTimer.pause();
             labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
         }
 
@@ -474,41 +458,12 @@ public final class VideoController extends DatavyuDialog
 
     @Override
     public void streamsBoundaryCheck(double clockTime) {
-        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-        for (StreamViewer streamViewer : streamViewers) {
-            TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-            if (trackModel != null && !clockTimer.isStopped()) {
-                // Only if in range and not already playing and not in seek playback
-                if ( clockTime >= trackModel.getOffset()
-                        && clockTime <= trackModel.getOffset() + trackModel.getDuration()
-                        && !streamViewer.isPlaying()
-                        && !streamViewer.isSeekPlaybackEnabled()) {
-                    logger.info("Stream Boundary Starting track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
-                    streamViewer.start();
-                }
-                if ((clockTime < trackModel.getOffset()
-                        || clockTime >= trackModel.getOffset() + trackModel.getDuration())
-                        && streamViewer.isPlaying()) {
-                    logger.info("Stream Boundary Stopping track: " + trackModel.getIdentifier() + " Master Clock at " + clockTime +" and Streamviewer clock at "+ streamViewer.getCurrentTime());
-                    streamViewer.stop();
-                }
-            }
-        }
+        // Nothing to do here
     }
 
     @Override
     public void clockSeekPlayback(double clockTime) {
-        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-        for (StreamViewer streamViewer : streamViewers) {
-            if (streamViewer.isSeekPlaybackEnabled()
-                && streamViewer.isPlaying()) {
-                TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-                if (trackModel != null) {
-                    streamViewer.setCurrentTime((long) clockTime - trackModel.getOffset());
-                    logger.info("Clock Seek Playback is seeking stream " + streamViewer.getIdentifier() + " to time: " + (clockTime - trackModel.getOffset()));
-                }
-            }
-        }
+        // Nothing to do here
     }
 
     /**
@@ -524,11 +479,15 @@ public final class VideoController extends DatavyuDialog
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockStop(double clockTime) {
-        logger.info("Stop clock at " + (long) clockTime + " msec.");
-        for (StreamViewer streamViewer : streamViewers) {
-            // Sync streams at stop
-            streamViewer.stop();
-        }
+        // Updates the position of the needle and label
+        updateCurrentTimeLabelAndNeedle((long) clockTime);
+    }
+
+    /**
+     * @param clockTime Current clockTimer time in milliseconds.
+     */
+    public void clockPause(double clockTime) {
+        // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
 
@@ -537,9 +496,6 @@ public final class VideoController extends DatavyuDialog
      */
     public void clockRate(float rate) {
         labelSpeed.setText(FloatingPointUtils.doubleToFractionStr(rate));
-        for (StreamViewer streamViewer : streamViewers) {
-            streamViewer.setRate(rate);
-        }
     }
 
     /**
@@ -1420,13 +1376,13 @@ public final class VideoController extends DatavyuDialog
     @SuppressWarnings("unused")  // Called through actionMap
     public void pauseAction() {
         // Toggle between isPlaying and not isPlaying
-        if (clockTimer.isStopped()) {
+        if (clockTimer.isPaused() && !clockTimer.isStopped()) {
             logger.info("Pause: Resume isPlaying at rate: " + clockTimer.getRate());
             clockTimer.start();
             labelSpeed.setText(FloatingPointUtils.doubleToFractionStr(clockTimer.getRate()));
         } else {
             logger.info("Pause: Stop isPlaying at rate: " + clockTimer.getRate());
-            clockTimer.stop();
+            clockTimer.pause();
             clockTimer.setForceTime((long) clockTimer.getStreamTime());
             labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
         }
@@ -1732,7 +1688,7 @@ public final class VideoController extends DatavyuDialog
 
         // Ensure precise sync up
         long time = getCurrentTime();
-        if (!clockTimer.isStopped()) {
+        if (!clockTimer.isPaused()) {
             clockTimer.setForceTime(time);
         }
 
@@ -1750,7 +1706,7 @@ public final class VideoController extends DatavyuDialog
 
         // Ensure precise sync up
         long time = getCurrentTime();
-        if (!clockTimer.isStopped()) {
+        if (!clockTimer.isPaused()) {
             clockTimer.setForceTime(time);
         }
 
@@ -1767,7 +1723,7 @@ public final class VideoController extends DatavyuDialog
 
         // Set precise clock
         long time = getCurrentTime();
-        if (!clockTimer.isStopped()) {
+        if (!clockTimer.isPaused()) {
             clockTimer.setForceTime(time);
         }
 
