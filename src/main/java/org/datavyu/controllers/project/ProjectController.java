@@ -404,7 +404,7 @@ public final class ProjectController {
                     .getOptions(defaultOption, alternativeOption) :
                     WindowsOS.getOptions(defaultOption, alternativeOption);
                 int selectedOption = JOptionPane.showOptionDialog(Datavyu.getView().getComponent(),
-                    "Datavyu no longer support this, please visit www.datavyu.org\n"
+                    "Datavyu no longer support this plugin, please visit http://www.datavyu.org\n"
                         + "to find the appropriate Datavyu version for your plugin.\n"
                         + "Would you like to open the video with the default plugin?",
                     "Plugin Not Supported",
