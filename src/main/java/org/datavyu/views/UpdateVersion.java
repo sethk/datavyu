@@ -74,7 +74,7 @@ public class UpdateVersion extends JDialog {
         JLabel currentVersionLabel = new JLabel();
         JLabel updateAvailableLabel = new JLabel();
         JLabel checkingForUpdatesLabel = new JLabel();
-        JLabel checkingForDataShare = new JLabel();
+        JLabel checkingForDataShareLabel = new JLabel();
         localVersionLabel = new JLabel();
         serverVersionLabel = new JLabel();
         updateLaterButton = new JButton();
@@ -170,9 +170,9 @@ public class UpdateVersion extends JDialog {
             }
         });
 
-        checkingForDataShare.setText("Data Share Acknowledgment...");
+        checkingForDataShareLabel.setText("Data Collection Acknowledgment...");
 
-        checkShareData.setText("Data Share");
+        checkShareData.setText("Share Data");
         checkShareData.setFocusPainted(false);
         checkShareData.setFocusable(false);
         checkShareData.addActionListener(new ActionListener() {
@@ -181,8 +181,8 @@ public class UpdateVersion extends JDialog {
                 if (checkShareData.isSelected()) {
                     int dialogResult;
                     dialogResult = JOptionPane.showConfirmDialog(null,
-                        "Share Data",
-                        "Acknowledgment",
+                        "Share Data!",
+                        "Datavyu ",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
                     if (dialogResult == JOptionPane.YES_OPTION) {
@@ -212,7 +212,7 @@ public class UpdateVersion extends JDialog {
                                                                 .addGap(30, 30, 30)
                                                                 .addComponent(checkPreRelease))
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(checkingForDataShare)
+                                                                .addComponent(checkingForDataShareLabel)
                                                                 .addGap(30, 30, 30)
                                                                 .addComponent(checkShareData))
                                                         .addGroup(layout.createSequentialGroup()
@@ -250,13 +250,16 @@ public class UpdateVersion extends JDialog {
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(checkPreRelease)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(checkShareData)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, 18)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(checkingForDataShareLabel)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(checkShareData)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(currentVersionLabel)
                                         .addComponent(localVersionLabel))
