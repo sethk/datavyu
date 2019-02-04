@@ -443,9 +443,9 @@ public final class VideoController extends DatavyuDialog
     public void clockBoundaryCheck(double clockTime) {
         if((clockTime >= mixerController.getRegionController().getModel().getRegion().getRegionEnd()
                 || clockTime <= mixerController.getRegionController().getModel().getRegion().getRegionStart())
-                && !clockTimer.isStopped()){
-            logger.info("Clock Boundary Stopping Master Clock at " + clockTime );
-            clockTimer.stop();
+                && !clockTimer.isPaused()){
+            logger.info("Clock Boundary Pausing Master Clock at " + clockTime );
+            clockTimer.pause();
             labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
         }
 
@@ -479,6 +479,14 @@ public final class VideoController extends DatavyuDialog
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockStop(double clockTime) {
+        // Updates the position of the needle and label
+        updateCurrentTimeLabelAndNeedle((long) clockTime);
+    }
+
+    /**
+     * @param clockTime Current clockTimer time in milliseconds.
+     */
+    public void clockPause(double clockTime) {
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
@@ -1366,13 +1374,13 @@ public final class VideoController extends DatavyuDialog
     @SuppressWarnings("unused")  // Called through actionMap
     public void pauseAction() {
         // Toggle between isPlaying and not isPlaying
-        if (clockTimer.isStopped()) {
+        if (clockTimer.isPaused() && !clockTimer.isStopped()) {
             logger.info("Pause: Resume isPlaying at rate: " + clockTimer.getRate());
             clockTimer.start();
             labelSpeed.setText(FloatingPointUtils.doubleToFractionStr(clockTimer.getRate()));
         } else {
             logger.info("Pause: Stop isPlaying at rate: " + clockTimer.getRate());
-            clockTimer.stop();
+            clockTimer.pause();
             clockTimer.setForceTime((long) clockTimer.getStreamTime());
             labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
         }
@@ -1678,7 +1686,7 @@ public final class VideoController extends DatavyuDialog
 
         // Ensure precise sync up
         long time = getCurrentTime();
-        if (!clockTimer.isStopped()) {
+        if (!clockTimer.isPaused()) {
             clockTimer.setForceTime(time);
         }
 
@@ -1696,7 +1704,7 @@ public final class VideoController extends DatavyuDialog
 
         // Ensure precise sync up
         long time = getCurrentTime();
-        if (!clockTimer.isStopped()) {
+        if (!clockTimer.isPaused()) {
             clockTimer.setForceTime(time);
         }
 
@@ -1713,7 +1721,7 @@ public final class VideoController extends DatavyuDialog
 
         // Set precise clock
         long time = getCurrentTime();
-        if (!clockTimer.isStopped()) {
+        if (!clockTimer.isPaused()) {
             clockTimer.setForceTime(time);
         }
 

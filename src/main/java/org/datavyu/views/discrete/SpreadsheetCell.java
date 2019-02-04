@@ -715,32 +715,23 @@ public class SpreadsheetCell extends JPanel
     }
 
     @Override
-    public void clockStop(double clockTime) {
-
-    }
+    public void clockStop(double clockTime) { }
 
     @Override
-    public void clockStart(double clockTime) {
-
-    }
+    public void clockPause(double clockTime) { }
 
     @Override
-    public void clockRate(float rate) {
-
-    }
+    public void clockStart(double clockTime) { }
 
     @Override
-    public void clockBoundaryCheck(double clockTime) {
-
-    }
+    public void clockRate(float rate) { }
 
     @Override
-    public void streamsBoundaryCheck(double clockTime) {
-
-    }
+    public void clockBoundaryCheck(double clockTime) { }
 
     @Override
-    public void clockSeekPlayback(double clockTime) {
+    public void streamsBoundaryCheck(double clockTime) { }
 
-    }
+    @Override
+    public void clockSeekPlayback(double clockTime) { }
 }

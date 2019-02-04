@@ -573,39 +573,37 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     }
 
     @Override
-    public boolean isSeekPlaybackEnabled() {
-        return false;
-    }
+    public boolean isSeekPlaybackEnabled() { return false; }
 
 
     @Override
-    public void clockSeekPlayback(final double clockTime) {
+    public synchronized void clockSeekPlayback(final double clockTime) {
         if (isSeekPlaybackEnabled() && isPlaying()) {
             MixerController mixerController = Datavyu.getVideoController().getMixerController();
             TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
             TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
             if (trackModel != null) {
-                setCurrentTime((long) clockTime - trackModel.getOffset());
                 logger.info(
                     "Clock Seek Playback is seeking stream "
                         + getIdentifier()
                         + " to time: "
                         + (clockTime - trackModel.getOffset()));
+                setCurrentTime((long) clockTime - trackModel.getOffset());
             }
         }
     }
 
     @Override
-    public void clockBoundaryCheck(final double clockTime) {
+    public synchronized void clockBoundaryCheck(final double clockTime) {
         // Nothing to do here
     }
 
     @Override
-    public void streamsBoundaryCheck(final double clockTime) {
+    public synchronized void streamsBoundaryCheck(final double clockTime) {
         MixerController mixerController = Datavyu.getVideoController().getMixerController();
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
-        if (trackModel != null && !clockTimer.isStopped()) {
+        if (trackModel != null && !clockTimer.isPaused()) {
             // Only if in range and not already playing and not in seek playback
             if ( clockTime >= trackModel.getOffset()
                 && clockTime <= trackModel.getOffset() + trackModel.getDuration()
@@ -630,7 +628,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     }
 
     @Override
-    public void clockPeriodicSync(final double clockTime) {
+    public synchronized void clockPeriodicSync(final double clockTime) {
         MixerController mixerController = Datavyu.getVideoController().getMixerController();
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
@@ -639,14 +637,14 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
             double difference = Math.abs(trackTime - getCurrentTime());
             if (difference >= ClockTimer.SYNC_THRESHOLD
                 && !isSeekPlaybackEnabled()) {
-                setCurrentTime((long) trackTime);
                 logger.info("Sync of clock with difference: " + difference + " milliseconds.");
+                setCurrentTime((long) trackTime);
             }
         }
     }
 
     @Override
-    public void clockStart(final double clockTime) {
+    public synchronized void clockStart(final double clockTime) {
         logger.info("Start");
         MixerController mixerController = Datavyu.getVideoController().getMixerController();
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
@@ -663,13 +661,19 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     }
 
     @Override
-    public void clockStop(double clockTime) {
+    public synchronized void clockStop(double clockTime) {
+        logger.debug("Clock stop Stops track: " + getIdentifier() + " at time: " + clockTime);
+        stop();
+    }
+
+    @Override
+    public synchronized void clockPause(double clockTime) {
         logger.debug("Clock pause Pauses track: " + getIdentifier() + " at time: " + clockTime);
         pause();
     }
 
     @Override
-    public void clockRate(final float rate) {
+    public synchronized void clockRate(final float rate) {
         logger.debug("Clock setting rate of track: " + getIdentifier() + " to " + rate + "X");
         setRate(rate);
     }

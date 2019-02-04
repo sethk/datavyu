@@ -33,7 +33,7 @@ public final class ClockTimer {
     private static Logger logger = LogManager.getLogger(ClockTimer.class);
 
     /** Synchronization threshold in milliseconds */
-    public static final long SYNC_THRESHOLD = 500L; // 1.5 sec  (because some plugins are not very precise in seek)
+    public static final long SYNC_THRESHOLD = 1500L; // 1.5 sec  (because some plugins are not very precise in seek)
 
     /** Clock tick period in milliseconds */
     private static final long CLOCK_INTERVAL = 100L;
@@ -195,12 +195,15 @@ public final class ClockTimer {
         }
     }
 
-    /**
-     * Sets the update rate for the clock
-     *
-     * @param newRate New update rate
-     */
-    public synchronized void setRate(float newRate) {
+  /**
+   * Sets the update rate for the clock.
+   *
+   * <p>IMPORTANT: Setting the rate to 0 will stop the clock and fires a
+   * notify stop event.
+   *
+   * @param newRate New update rate
+   */
+  public synchronized void setRate(float newRate) {
         logger.debug("Setting Clock Rate to " + newRate + "X");
         updateElapsedTime();
         rate = newRate;
@@ -227,14 +230,7 @@ public final class ClockTimer {
         }
     }
 
-    /**
-     * If the clock is not stopped, then this stops the clock and fires a notify
-     * stop event with the current clock time
-     *
-     * WARNING: If you want to influence the rate as well you need to set the rate to 0
-     * instead of calling stop directly!
-     */
-    public synchronized void stop() {
+    private synchronized void stop() {
         if (!isStopped) {
             logger.debug("Stopping Clock");
             updateElapsedTime();
@@ -246,10 +242,35 @@ public final class ClockTimer {
     }
 
     /**
+     * If the clock is not stopped, then this pause the clock and fires a notify
+     * pause event with the current clock time
+     *
+     * WARNING: If you want to influence the rate as well you need to set the rate to 0
+     * instead of calling stop directly!
+     */
+    public synchronized void pause() {
+        if (!isStopped) {
+            logger.debug("Pausing Clock");
+            updateElapsedTime();
+            isStopped = true;
+            notifyPause();
+            // Force sync after a stop
+            notifyForceSync();
+        }
+    }
+
+    /**
+     * @return True if clock is Paused.
+     */
+    public synchronized boolean isPaused() {
+        return isStopped;
+    }
+
+    /**
      * @return True if clock is stopped.
      */
     public synchronized boolean isStopped() {
-        return isStopped;
+        return getRate() == 0f;
     }
 
     /**
@@ -351,6 +372,15 @@ public final class ClockTimer {
             clockListener.clockStop(clockTime);
         }
     }
+
+    /**
+     * Notify clock listeners of pause event.
+     */
+    private void notifyPause() {
+        for (ClockListener clockListener : clockListeners) {
+            clockListener.clockPause(clockTime);
+        }
+    }
     /**
      * Listener interface for clock 'ticks'.
      */
@@ -389,6 +419,11 @@ public final class ClockTimer {
          * @param clockTime Current time in milliseconds
          */
         void clockStop(double clockTime);
+
+        /**
+         * @param clockTime Current time in milliseconds
+         */
+        void clockPause(double clockTime);
 
         /**
          * @param rate Current (updated) rate.
