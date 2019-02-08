@@ -2843,6 +2843,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
               boolean confirmation =
                   (Datavyu.getPlatform() == Platform.MAC) ? (selectedOption == 1) : (selectedOption == 0);
               config.setShareData(confirmation);
+              config.setFirstStart(false);
         }
     }
 
