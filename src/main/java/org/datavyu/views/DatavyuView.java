@@ -2824,6 +2824,8 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     public void checkFirstStart() {
         ConfigProperties config = ConfigProperties.getInstance();
         if (config.isFirstStart()) {
+              ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
+                .getResourceMap(DatavyuView.class);
               String defaultOption = "No";
               String alternativeOption = "Yes";
               String[] options =
@@ -2832,14 +2834,14 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
                       : WindowsOS.getOptions(defaultOption, alternativeOption);
               int selectedOption =
                   JOptionPane.showOptionDialog(
-                      Datavyu.getView().getComponent(),
-                      "Share Data",
-                      "Acknowledgment",
-                      JOptionPane.YES_NO_OPTION,
-                      JOptionPane.QUESTION_MESSAGE,
-                      null,
-                      options,
-                      defaultOption);
+                      Datavyu.getView().getComponent()
+                      , rMap.getString("dataCollectionNotice.text")
+                      ,"Data Collection"
+                      , JOptionPane.YES_NO_OPTION
+                      , JOptionPane.QUESTION_MESSAGE
+                      , null
+                      , options
+                      , defaultOption);
               boolean confirmation =
                   (Datavyu.getPlatform() == Platform.MAC) ? (selectedOption == 1) : (selectedOption == 0);
               config.setShareData(confirmation);
