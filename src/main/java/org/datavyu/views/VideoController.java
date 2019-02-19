@@ -1395,7 +1395,7 @@ public final class VideoController extends DatavyuDialog
     public void stopAction() {
         logger.info("Stop.");
         clockTimer.setRate(0f);
-        clockTimer.setForceTime((long) clockTimer.getStreamTime());
+        clockTimer.setForceTime((long) clockTimer.getClockTime());
     }
 
     /**
