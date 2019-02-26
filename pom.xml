@@ -401,6 +401,20 @@
                 </dependency>
             </dependencies>
 
+            <build>
+                <plugins>
+                    <!-- Exclude MPV Plugin on Mac Platforms -->
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration combine.self="append">
+                            <excludes>
+                                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
         </profile>
 
         <profile>
@@ -512,9 +526,9 @@
                         <!-- The Compiler Plugin is used to compile the sources of your project -->
                         <!-- Artifact: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
                         <!-- Documentation: https://maven.apache.org/plugins/maven-compiler-plugin -->
-                        <!-- Updated 09/19/2017 -->
+                        <!-- Updated 02/26/2019 -->
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.7.0</version>
+                        <version>3.8.0</version>
                         <configuration>
                             <debug>false</debug>
                             <optimize>true</optimize>
