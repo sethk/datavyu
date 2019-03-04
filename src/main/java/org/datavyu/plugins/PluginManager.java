@@ -369,14 +369,6 @@ public final class PluginManager {
                         return 1;
                     }
 
-                    if ("Native OSX Video".equals(o1.getPluginName())) {
-                        return -1;
-                    }
-
-                    if ("Native OSX Video".equals(o2.getPluginName())) {
-                        return 1;
-                    }
-
                     return o1.getPluginName().compareTo(o2.getPluginName());
                 }
             });
@@ -397,14 +389,6 @@ public final class PluginManager {
                     }
 
                     if ("FFmpeg Plugin".equals(o2.getPluginName())) {
-                        return 1;
-                    }
-
-                    if ("MPV Plugin".equals(o1.getPluginName())) {
-                        return -1;
-                    }
-
-                    if ("MPV Plugin".equals(o2.getPluginName())) {
                         return 1;
                     }
 
