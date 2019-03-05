@@ -841,49 +841,6 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
         if (DatavyuVersion.isUpdateAvailable() && !DatavyuVersion.isIgnoreVersion()) {
             Datavyu.getApplication().show(new UpdateVersion(Datavyu.getApplication().getMainFrame(), true));
         }
-
-        if (!ConfigProperties.getInstance().isFirstStart()
-            && ConfigProperties.getInstance().isShareData()) {
-
-            GoogleAnalyticsConfig config = new GoogleAnalyticsConfig();
-            config.setBatchingEnabled(true).setBatchSize(10);
-
-            ga = GoogleAnalytics.builder()
-                    .withConfig(config)
-                    .withTrackingId("UA-129130876-3")
-                    .build();
-
-                ResourceMap resourceMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(Build.class);
-
-                logger.debug("Application Name: Datavyu"
-                    + " ,Application Version: " +resourceMap.getString("Application.version")
-                    + " ,OS Name: " + System.getProperty("os.name")
-                    + " ,OS Version: " + System.getProperty("os.version")
-                    + " ,Java Version: " + System.getProperty("java.version"));
-
-                ga.screenView()
-                    .applicationName("datavyu")
-                    .applicationVersion(resourceMap.getString("Application.version"))
-                    .send();
-
-                ga.event()
-                    .eventCategory("os")
-                    .eventAction("name")
-                    .eventLabel(System.getProperty("os.name"))
-                    .send();
-
-                ga.event()
-                    .eventCategory("os")
-                    .eventAction("version")
-                    .eventLabel(System.getProperty("os.version"))
-                    .send();
-
-                ga.event()
-                    .eventCategory("java")
-                    .eventAction("version")
-                    .eventLabel(System.getProperty("java.version"))
-                    .send();
-        }
     }
 
     /**
@@ -936,6 +893,45 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
         // The DB we create by default doesn't really have any unsaved changes.
         projectController.getDataStore().markAsUnchanged();
         ready();
+
+        if (ConfigProperties.getInstance().isShareData()) {
+
+            ga = GoogleAnalytics.builder()
+                .withTrackingId("UA-129130876-3")
+                .build();
+
+            ResourceMap resourceMap = Application.getInstance(Datavyu.class).getContext()
+                .getResourceMap(Build.class);
+
+            logger.debug("Application Name: Datavyu"
+                + " ,Application Version: " + resourceMap.getString("Application.version")
+                + " ,OS Name: " + System.getProperty("os.name")
+                + " ,OS Version: " + System.getProperty("os.version")
+                + " ,Java Version: " + System.getProperty("java.version"));
+
+            ga.screenView()
+                .applicationName("datavyu")
+                .applicationVersion(resourceMap.getString("Application.version"))
+                .send();
+
+            ga.event()
+                .eventCategory("os")
+                .eventAction("name")
+                .eventLabel(System.getProperty("os.name"))
+                .send();
+
+            ga.event()
+                .eventCategory("os")
+                .eventAction("version")
+                .eventLabel(System.getProperty("os.version"))
+                .send();
+
+            ga.event()
+                .eventCategory("java")
+                .eventAction("version")
+                .eventLabel(System.getProperty("java.version"))
+                .send();
+        }
     }
 
     @Override
@@ -956,8 +952,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
             MacOS.setOSXPressAndHoldValue(true);
         }
 
-        if (!ConfigProperties.getInstance().isFirstStart()
-            && ConfigProperties.getInstance().isShareData()) {
+        if (ConfigProperties.getInstance().isShareData()) {
             for (StreamViewer streamViewer :getVideoController().getStreamViewers()) {
                 String videoFormat = FilenameUtils.getExtension(streamViewer.getSourceFile().getName());
                 String pluginName = PluginManager.getInstance()
