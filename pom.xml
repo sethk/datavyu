@@ -668,7 +668,6 @@
                     <target>1.8</target>
                     <excludes>
                         <exclude>**/org/datavyu/plugins/mpv/*</exclude>
-                        <exclude>**/org/datavyu/plugins/nativeosx/*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

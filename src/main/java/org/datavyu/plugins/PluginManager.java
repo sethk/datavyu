@@ -369,6 +369,14 @@ public final class PluginManager {
                         return 1;
                     }
 
+                    if ("Native OSX Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("Native OSX Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
                     return o1.getPluginName().compareTo(o2.getPluginName());
                 }
             });
