@@ -401,20 +401,6 @@
                 </dependency>
             </dependencies>
 
-            <build>
-                <plugins>
-                    <!-- Exclude MPV Plugin on Mac Platforms -->
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration combine.self="append">
-                            <excludes>
-                                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-
         </profile>
 
         <profile>
@@ -528,12 +514,9 @@
                         <!-- Documentation: https://maven.apache.org/plugins/maven-compiler-plugin -->
                         <!-- Updated 02/26/2019 -->
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.0</version>
-                        <configuration>
+                        <configuration combine.self="append">
                             <debug>false</debug>
                             <optimize>true</optimize>
-                            <source>1.8</source>
-                            <target>1.8</target>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -679,10 +662,14 @@
             <!-- Updated here: 09/20/2017 -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <excludes>
+                        <exclude>**/org/datavyu/plugins/mpv/*</exclude>
+                        <exclude>**/org/datavyu/plugins/nativeosx/*</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 
