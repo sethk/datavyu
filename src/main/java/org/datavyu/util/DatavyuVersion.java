@@ -162,7 +162,7 @@ public class DatavyuVersion {
             URL url = new URL(versionURL);
             URLConnection urlConnection = url.openConnection();
             String userAgentStr;
-            if (ConfigProperties.getInstance().isShareData()) {
+            if (ConfigProperties.getInstance().getShareData()) {
                 /* Bug 320: Add OS information to user-agent */
                 userAgentStr =
                 Application.getInstance(Datavyu.class)

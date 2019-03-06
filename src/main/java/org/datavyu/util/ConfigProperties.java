@@ -166,24 +166,29 @@ public final class ConfigProperties implements Serializable {
         // Copy the settings.xml file from the resources to the tmp folder where the Swing Application Framework
         // loads and stores the *.properties and *.xml files for this application with user defined properties.
         try {
-            logger.info("Copying " + Constants.CONFIGURATION_FILE + " to " + localDirectory);
             // It is important that the path into the resource with "/"
             File configurationFile = new File(localDirectory + "/" + Constants.CONFIGURATION_FILE);
-            configurationFile.getParentFile().mkdirs();
-            InputStream inputStream = configurationProperties.getClass().getResourceAsStream(
-                                                                        "/" + Constants.CONFIGURATION_FILE);
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(localDirectory,
-                                                                              Constants.CONFIGURATION_FILE));
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream,
-                                                                                 Constants.BUFFER_COPY_SIZE);
-            int count;
-            byte[] data = new byte[Constants.BUFFER_COPY_SIZE];
-            while ((count = inputStream.read(data, 0, Constants.BUFFER_COPY_SIZE)) != -1) {
-                bufferedOutputStream.write(data, 0, count);
+            // Don't Copy the original settings.xml if already exists
+            if (!configurationFile.exists()) {
+                logger.info("Copying " + Constants.CONFIGURATION_FILE + " to " + localDirectory);
+
+                configurationFile.getParentFile().mkdirs();
+                InputStream inputStream = configurationProperties.getClass().getResourceAsStream(
+                    "/" + Constants.CONFIGURATION_FILE);
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(localDirectory,
+                    Constants.CONFIGURATION_FILE));
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+                    fileOutputStream,
+                    Constants.BUFFER_COPY_SIZE);
+                int count;
+                byte[] data = new byte[Constants.BUFFER_COPY_SIZE];
+                while ((count = inputStream.read(data, 0, Constants.BUFFER_COPY_SIZE)) != -1) {
+                    bufferedOutputStream.write(data, 0, count);
+                }
+                bufferedOutputStream.close();
+                fileOutputStream.close();
+                inputStream.close();
             }
-            bufferedOutputStream.close();
-            fileOutputStream.close();
-            inputStream.close();
         } catch (IOException io) {
             logger.error("Could not copy resource for settings " + io.getMessage());
         }
@@ -216,8 +221,7 @@ public final class ConfigProperties implements Serializable {
             configurationProperties.setIgnoreVersion(DEFAULT_IGNORE_VERSION);
         }
         configurationProperties.setDoWarnOnIllegalColumnNames(DO_WARN_ON_COLUMN_NAMES);
-        configurationProperties.setFirstStart(DEFAULT_FIRST_START);
-        configurationProperties.setShareData(DEFAULT_SHARE_DATA);
+
         configurationProperties.setUsePreRelease(USE_PRE_RELEASE);
         if (!configurationProperties.hasFavoritesFolder()) {
             configurationProperties.setFavoritesFolder(DEFAULT_FAVORITES_FOLDER);
@@ -597,7 +601,7 @@ public final class ConfigProperties implements Serializable {
      *
      * @return whether or not is the first launch
      */
-    public boolean isFirstStart() {
+    public boolean getFirstStart() {
         return firstStart;
     }
 
@@ -612,7 +616,7 @@ public final class ConfigProperties implements Serializable {
 
     /**
      */
-    public boolean isShareData() {
+    public boolean getShareData() {
         return shareData;
     }
 

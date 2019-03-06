@@ -34,7 +34,7 @@ public class UpdateVersion extends JDialog {
         ConfigProperties configuration = ConfigProperties.getInstance();
         checkPreRelease.setSelected(configuration.getUsePreRelease());
 
-        checkShareData.setSelected(configuration.isShareData());
+        checkShareData.setSelected(configuration.getShareData());
 
         DatavyuVersion localVersion = DatavyuVersion.getLocalVersion();
         serverVersion = DatavyuVersion.getServerVersion();

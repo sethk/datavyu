@@ -2822,7 +2822,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
     public void checkFirstStart() {
         ConfigProperties config = ConfigProperties.getInstance();
-        if (config.isFirstStart()) {
+        if (config.getFirstStart()) {
             ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
                 .getResourceMap(DatavyuView.class);
 

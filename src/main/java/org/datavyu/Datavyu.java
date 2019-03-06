@@ -16,7 +16,6 @@ package org.datavyu;
 
 import ch.randelshofer.quaqua.QuaquaManager;
 import com.brsanthu.googleanalytics.GoogleAnalytics;
-import com.brsanthu.googleanalytics.GoogleAnalyticsConfig;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -894,7 +893,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
         projectController.getDataStore().markAsUnchanged();
         ready();
 
-        if (ConfigProperties.getInstance().isShareData()) {
+        if (ConfigProperties.getInstance().getShareData()) {
 
             ga = GoogleAnalytics.builder()
                 .withTrackingId("UA-129130876-3")
@@ -952,7 +951,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
             MacOS.setOSXPressAndHoldValue(true);
         }
 
-        if (ConfigProperties.getInstance().isShareData()) {
+        if (ConfigProperties.getInstance().getShareData()) {
             for (StreamViewer streamViewer :getVideoController().getStreamViewers()) {
                 String videoFormat = FilenameUtils.getExtension(streamViewer.getSourceFile().getName());
                 String pluginName = PluginManager.getInstance()
