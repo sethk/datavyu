@@ -14,10 +14,13 @@
  */
 package org.datavyu.controllers.project;
 
+import java.awt.Desktop;
+import java.awt.Font;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
-import org.datavyu.Datavyu.Platform;
 import org.datavyu.controllers.VocabEditorController;
 import org.datavyu.controllers.component.MixerController;
 import org.datavyu.models.Identifier;
@@ -33,8 +36,6 @@ import org.datavyu.plugins.StreamViewer;
 import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.PluginManager;
 import org.datavyu.util.FileSystemUtils;
-import org.datavyu.util.MacOS;
-import org.datavyu.util.WindowsOS;
 import org.datavyu.views.VideoController;
 import org.datavyu.views.discrete.SpreadSheetPanel;
 import org.jdesktop.application.Application;
@@ -398,24 +399,45 @@ public final class ProjectController {
             Plugin plugin = pluginManager.getAssociatedPlugin(setting.getPluginName());
 
             if (plugin == null) {
-                String defaultOption = "Cancel";
-                String alternativeOption = "OK";
-                String[] options = Datavyu.getPlatform() == Platform.MAC ? MacOS
-                    .getOptions(defaultOption, alternativeOption) :
-                    WindowsOS.getOptions(defaultOption, alternativeOption);
-                int selectedOption = JOptionPane.showOptionDialog(Datavyu.getView().getComponent(),
-                    "Datavyu no longer support this plugin, please visit http://www.datavyu.org\n"
-                        + "to find the appropriate Datavyu version for your plugin.\n"
-                        + "Would you like to open the video with the default plugin?",
-                    "Plugin Not Supported",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, options, defaultOption);
-                boolean confirmation = (Datavyu.getPlatform() == Platform.MAC) ? (selectedOption == 1) : (selectedOption == 0);
-                if (confirmation) {
-                    plugin = PluginManager.getInstance().getCompatiblePlugin(setting.getPluginClassifier(), file) ;
-                } else {
-                    return;
-                }
+                JLabel label = new JLabel();
+                Font font = label.getFont();
+
+                // create some css from the label's font
+                StringBuilder style = new StringBuilder("font-family:").append(font.getFamily()).append(";");
+                style.append("font-weight:").append(font.isBold() ? "bold" : "normal").append(";");
+                style.append("font-size:").append(font.getSize()).append("pt;");
+
+                // html content
+                JEditorPane ep = new JEditorPane("text/html",
+                    "<html><body style=\"" + style + "\">"
+                        + "Datavyu no longer support this plugin, please <a href=\"http://www.datavyu.org/download.html\">visit</a> <br/>"
+                        + "to find the appropriate Datavyu version for your plugin.<br/>"
+                        + "The video will be opened with the default plugin.");
+
+                // handle link events
+                ep.addHyperlinkListener(new HyperlinkListener() {
+                    @Override
+                    public void hyperlinkUpdate(HyperlinkEvent evt) {
+                        if (evt.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                            try {
+                                // roll your own link launcher or use Desktop if J6+
+                                Desktop.getDesktop().browse(evt.getURL().toURI());
+                            } catch (Exception e) {
+                                logger.error("Error when opening hyper text " + e);
+                            }
+                        }
+                    }
+                });
+                ep.setEditable(false);
+                ep.setBackground(label.getBackground());
+
+                // show
+                JOptionPane.showMessageDialog(Datavyu.getView().getComponent()
+                    , ep
+                    , JOptionPane.MESSAGE_PROPERTY
+                    , JOptionPane.PLAIN_MESSAGE);
+
+                plugin = PluginManager.getInstance().getCompatiblePlugin(setting.getPluginClassifier(), file) ;
             }
 
             final StreamViewer streamViewer = plugin.getNewStreamViewer(

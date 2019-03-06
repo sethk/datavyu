@@ -37,6 +37,8 @@ import org.datavyu.util.ConfigProperties;
 import org.datavyu.util.DragAndDrop.TransparentPanel;
 import org.datavyu.util.FileFilters.*;
 import org.datavyu.util.FileSystemTreeModel;
+import org.datavyu.util.MacOS;
+import org.datavyu.util.WindowsOS;
 import org.datavyu.views.discrete.SpreadSheetPanel;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -52,7 +54,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -2817,6 +2818,68 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
 
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
+    }
+
+    public void checkFirstStart() {
+        ConfigProperties config = ConfigProperties.getInstance();
+        if (config.getFirstStart()) {
+            ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
+                .getResourceMap(DatavyuView.class);
+
+            JLabel label = new JLabel();
+            Font font = label.getFont();
+
+            // create some css from the label's font
+            StringBuilder style = new StringBuilder("font-family:").append(font.getFamily()).append(";");
+            style.append("font-weight:").append(font.isBold() ? "bold" : "normal").append(";");
+            style.append("font-size:").append(font.getSize()).append("pt;");
+
+
+            String defaultOption = "No";
+            String alternativeOption = "Yes";
+            String[] options =
+                Datavyu.getPlatform() == Platform.MAC
+                    ? MacOS.getOptions(defaultOption, alternativeOption)
+                    : WindowsOS.getOptions(defaultOption, alternativeOption);
+
+            // html content
+            JEditorPane ep = new JEditorPane("text/html"
+                , "<html><body style=\"" + style + "\">"
+                + rMap.getString("dataCollectionNotice.text") + " </html>");
+
+            // handle link events
+            ep.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent evt) {
+                    if (evt.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                        try {
+                            // roll your own link launcher or use Desktop if J6+
+                            Desktop.getDesktop().browse(evt.getURL().toURI());
+                        } catch (Exception e) {
+                            logger.error("Error when opening hyper text " + e);
+                        }
+                    }
+                }
+            });
+            ep.setEditable(false);
+            ep.setBackground(label.getBackground());
+
+            int selectedOption =
+                JOptionPane.showOptionDialog(
+                    Datavyu.getView().getComponent()
+                    , ep
+                    , "Data Collection"
+                    , JOptionPane.YES_NO_OPTION
+                    , JOptionPane.PLAIN_MESSAGE
+                    , null
+                    , options
+                    , defaultOption);
+            boolean confirmation =
+                (Datavyu.getPlatform() == Platform.MAC) ? (selectedOption == 1)
+                    : (selectedOption == 0);
+            config.setShareData(confirmation);
+            config.setFirstStart(false);
+        }
     }
 
     class OpenTask extends SwingWorker<ProjectController, Void> {

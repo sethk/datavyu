@@ -104,8 +104,18 @@ public final class ConfigProperties implements Serializable {
     /** Default value for warn on column names */
     private static final boolean DO_WARN_ON_COLUMN_NAMES = true;
 
+    private static final boolean DEFAULT_FIRST_START = true;
+
+    private static final boolean DEFAULT_SHARE_DATA = false;
+
     /** True if column name warnings should be displayed */
     private boolean doWarnOnIllegalColumnNames;
+
+    /** True if is the first datavyu launch */
+    private boolean firstStart;
+
+    /** True if is the user acknowledge sharing data */
+    private boolean shareData;
 
     /** Default on use of pre release */
     private static final boolean USE_PRE_RELEASE = false;
@@ -156,24 +166,29 @@ public final class ConfigProperties implements Serializable {
         // Copy the settings.xml file from the resources to the tmp folder where the Swing Application Framework
         // loads and stores the *.properties and *.xml files for this application with user defined properties.
         try {
-            logger.info("Copying " + Constants.CONFIGURATION_FILE + " to " + localDirectory);
             // It is important that the path into the resource with "/"
             File configurationFile = new File(localDirectory + "/" + Constants.CONFIGURATION_FILE);
-            configurationFile.getParentFile().mkdirs();
-            InputStream inputStream = configurationProperties.getClass().getResourceAsStream(
-                                                                        "/" + Constants.CONFIGURATION_FILE);
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(localDirectory,
-                                                                              Constants.CONFIGURATION_FILE));
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream,
-                                                                                 Constants.BUFFER_COPY_SIZE);
-            int count;
-            byte[] data = new byte[Constants.BUFFER_COPY_SIZE];
-            while ((count = inputStream.read(data, 0, Constants.BUFFER_COPY_SIZE)) != -1) {
-                bufferedOutputStream.write(data, 0, count);
+            // Don't Copy the original settings.xml if already exists
+            if (!configurationFile.exists()) {
+                logger.info("Copying " + Constants.CONFIGURATION_FILE + " to " + localDirectory);
+
+                configurationFile.getParentFile().mkdirs();
+                InputStream inputStream = configurationProperties.getClass().getResourceAsStream(
+                    "/" + Constants.CONFIGURATION_FILE);
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(localDirectory,
+                    Constants.CONFIGURATION_FILE));
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+                    fileOutputStream,
+                    Constants.BUFFER_COPY_SIZE);
+                int count;
+                byte[] data = new byte[Constants.BUFFER_COPY_SIZE];
+                while ((count = inputStream.read(data, 0, Constants.BUFFER_COPY_SIZE)) != -1) {
+                    bufferedOutputStream.write(data, 0, count);
+                }
+                bufferedOutputStream.close();
+                fileOutputStream.close();
+                inputStream.close();
             }
-            bufferedOutputStream.close();
-            fileOutputStream.close();
-            inputStream.close();
         } catch (IOException io) {
             logger.error("Could not copy resource for settings " + io.getMessage());
         }
@@ -206,6 +221,7 @@ public final class ConfigProperties implements Serializable {
             configurationProperties.setIgnoreVersion(DEFAULT_IGNORE_VERSION);
         }
         configurationProperties.setDoWarnOnIllegalColumnNames(DO_WARN_ON_COLUMN_NAMES);
+
         configurationProperties.setUsePreRelease(USE_PRE_RELEASE);
         if (!configurationProperties.hasFavoritesFolder()) {
             configurationProperties.setFavoritesFolder(DEFAULT_FAVORITES_FOLDER);
@@ -578,6 +594,36 @@ public final class ConfigProperties implements Serializable {
      */    
     public void setDoWarnOnIllegalColumnNames(final boolean doWarn) {
         doWarnOnIllegalColumnNames = doWarn;
+    }
+
+    /**
+     * Get the first launch flag.
+     *
+     * @return whether or not is the first launch
+     */
+    public boolean getFirstStart() {
+        return firstStart;
+    }
+
+    /**
+     * Set the first start flag for first launch.
+     *
+     * @param isFirstStart whether or not to display warnings for illegal column names.
+     */
+    public void setFirstStart(final boolean isFirstStart) {
+        firstStart = isFirstStart;
+    }
+
+    /**
+     */
+    public boolean getShareData() {
+        return shareData;
+    }
+
+    /**
+     */
+    public void setShareData(final boolean share) {
+        shareData = share;
     }
 
     /**
