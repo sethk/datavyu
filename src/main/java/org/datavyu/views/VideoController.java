@@ -1554,20 +1554,14 @@ public final class VideoController extends DatavyuDialog
             for (StreamViewer streamViewer : streamViewers) {
                 // TODO: Tie offset & duration to stream viewer only and pull it in the track model
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-                // We can only use the step function if this frame rate is close enough to the highest frame rate
-                if (streamViewer.isStepEnabled() && almostEqual(streamViewer.getFramesPerSecond(), frameRate,
-                        ALMOST_EQUAL_FRAME_RATES)) {
-                    streamViewer.stepBackward();
-                    logger.debug("Jog Forward Stream " + streamViewer.getIdentifier() +
-                                    " Master Clock " + newTime +
-                                    " Stream Clock " + streamViewer.getCurrentTime());
-                } else if (trackModel != null){
+                if (trackModel != null){
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.min(Math.max(trackTime - (trackTime % stepSize) - stepSize, 0),
-                                            trackModel.getDuration());
+                    long newStreamTime = Math.max( Math.min(Math.max(trackTime - (trackTime % stepSize) - stepSize, 0),
+                                            trackModel.getDuration())
+                        , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionStart());
 
                     logger.info("Jog back from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds");
 
@@ -1597,23 +1591,14 @@ public final class VideoController extends DatavyuDialog
      */
     private void syncStreams() {
         long clockTime = (long) clockTimer.getClockTime();
-        double frameRate = frameRateController.getFrameRate();
-        long stepSize = (long)(MILLI_IN_SEC / frameRate);
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         for (StreamViewer streamViewer : streamViewers) {
             TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
             if (trackModel != null){
                 // Get the stream time
                 long trackTime = clockTime - trackModel.getOffset();
-                // Notice that the new time is in jogs to frame markers by being modulo step size
-//                long newTime = Math.min(Math.max(trackTime - (trackTime % stepSize), 0),
-//                        trackModel.getDuration());
-                // We should sync according to the trackTime and not the newTime the hjog methods
-                // will set the new time fot the streams
-//                if (Math.abs(newTime - streamViewer.getCurrentTime()) < SYNC_THRESHOLD) {
                 if (Math.abs(trackTime - streamViewer.getCurrentTime()) >= ClockTimer.SYNC_THRESHOLD) {
                     streamViewer.setCurrentTime(trackTime);
-//                    streamViewer.setCurrentTime(newTime);
                 }
             }
         }
@@ -1638,20 +1623,14 @@ public final class VideoController extends DatavyuDialog
             long newTime = clockTime - (clockTime % stepSize) + stepSize;
             for (StreamViewer streamViewer : streamViewers) {
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-                // TODO: Tie offset & duration to stream viewer only and pull it in the track model
-                if (streamViewer.isStepEnabled() && almostEqual(streamViewer.getFramesPerSecond(), frameRate,
-                        ALMOST_EQUAL_FRAME_RATES)) {
-                    streamViewer.stepForward();
-                    logger.debug("Jog Forward Stream " + streamViewer.getIdentifier() +
-                                    " Master Clock " + newTime +
-                                    " Stream Clock " + streamViewer.getCurrentTime());
-                } else if (trackModel != null){
+                if (trackModel != null){
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.min(Math.max(trackTime - (trackTime % stepSize) + stepSize, 0),
-                                            trackModel.getDuration());
+                    long newStreamTime = Math.min(Math.min(Math.max(trackTime - (trackTime % stepSize) + stepSize, 0),
+                                            trackModel.getDuration())
+                       , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionEnd());
 
                     logger.info("Jog forward from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds.");
 

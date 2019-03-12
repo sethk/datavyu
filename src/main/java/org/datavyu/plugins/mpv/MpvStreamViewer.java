@@ -167,7 +167,7 @@ public class MpvStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isStepEnabled() { return true; }
+    public boolean isStepEnabled() { return false; }
 
     @Override
     public boolean isPlaying() { return player != null && player.isPlaying(); }

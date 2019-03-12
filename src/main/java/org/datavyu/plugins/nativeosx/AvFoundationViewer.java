@@ -131,5 +131,5 @@ public class AvFoundationViewer extends StreamViewerDialog  {
   public boolean isSeekPlaybackEnabled() { return player.isSeekPlaybackEnabled(); }
 
   @Override
-  public boolean isStepEnabled() { return true; }
+  public boolean isStepEnabled() { return false; }
 }
