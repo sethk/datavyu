@@ -578,19 +578,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
     @Override
     public synchronized void clockSeekPlayback(final double clockTime) {
-        if (isSeekPlaybackEnabled() && isPlaying()) {
-            MixerController mixerController = Datavyu.getVideoController().getMixerController();
-            TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
-            TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
-            if (trackModel != null) {
-                logger.info(
-                    "Clock Seek Playback is seeking stream "
-                        + getIdentifier()
-                        + " to time: "
-                        + (clockTime - trackModel.getOffset()));
-                setCurrentTime((long) clockTime - trackModel.getOffset());
-            }
-        }
+        // Nothing to do here
     }
 
     @Override
@@ -636,7 +624,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
             double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
             double difference = Math.abs(trackTime - getCurrentTime());
             if (difference >= ClockTimer.SYNC_THRESHOLD
-                && !isSeekPlaybackEnabled()) {
+                || isSeekPlaybackEnabled()) {
                 logger.info("Sync of clock with difference: " + difference + " milliseconds.");
                 setCurrentTime((long) trackTime);
             }
@@ -653,7 +641,8 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         if (trackModel != null) {
             if (clockTime >= trackModel.getOffset()
                 && clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
-                && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()) {
+                && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()
+                && !isSeekPlaybackEnabled()) {
                 logger.info("Clock Start Starts track: " + getIdentifier() + " at time: " + clockTime);
                 start();
             }

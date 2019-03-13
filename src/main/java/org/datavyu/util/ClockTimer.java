@@ -63,7 +63,7 @@ public final class ClockTimer {
     private float rate = 1F;
 
     private ScheduledExecutorService execService
-        =   Executors.newScheduledThreadPool(4);
+        =   Executors.newScheduledThreadPool(3);
 
     /** Listeners of this clock */
     private Set<ClockListener> clockListeners = new HashSet<>();
@@ -80,14 +80,12 @@ public final class ClockTimer {
         maxTime = 0;
         isStopped = true;
 
-        execService.scheduleAtFixedRate(() -> periodicSync(),
-            CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
-        execService.scheduleAtFixedRate(() -> checkClockBoundary(),
-            CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
-        execService.scheduleAtFixedRate(() -> checkStreamsBoundary(),
-            CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
-        execService.scheduleAtFixedRate(() -> notifySeekPlayback(),
-            CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
+        execService.scheduleAtFixedRate(() -> periodicSync()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
+        execService.scheduleAtFixedRate(() -> checkClockBoundary()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
+        execService.scheduleAtFixedRate(() -> checkStreamsBoundary()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -310,6 +308,8 @@ public final class ClockTimer {
         notifyCheckStreamsBoundary();
     }
 
+    // Notify seek playback could be used if a different interval is need for the
+    // For the fake playback scheduler
     private void notifySeekPlayback() {
         for (ClockListener clockListener : clockListeners) {
             clockListener.clockSeekPlayback(clockTime);
