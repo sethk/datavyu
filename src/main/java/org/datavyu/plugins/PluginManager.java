@@ -478,13 +478,12 @@ public final class PluginManager {
     }
 
     /** Given short name, return associated plugin.
-     * @param shortName Short name of plugin (e.g., ffmpeg, jfx, nativeosx.
+     * @param uuid UUID of plugin.
      * @return plugin Associated plugin.
      */
-    public Plugin getPluginFromShortName(String shortName){
-        UUID id = UUID.nameUUIDFromBytes(("plugin." + shortName).getBytes());
+    public Plugin getPluginFromUUID(UUID uuid){
         for(Plugin p : getPlugins()) {
-            if(p.getPluginUUID().equals(id)) return p;
+            if(p.getPluginUUID().equals(uuid)) return p;
         }
         return null;
     }

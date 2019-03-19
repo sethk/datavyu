@@ -316,18 +316,18 @@ public final class VideoController extends DatavyuDialog
 
     /* Open a video using specified file path and plugin.
         @param filepath Name of video file
-        @param plugin Name of plugin to use (currently short names: jfx, ffmpeg, nativeosx
+        @param pluginUUID UUID of the plugin
      */
-    public Identifier openVideo(final String filepath, final String pluginStr) throws FileNotFoundException {
+    public Identifier openVideo(final String filepath, final UUID pluginUUID) throws FileNotFoundException {
         File videoFile = new File(filepath);
         if(!videoFile.exists()){
             logger.error("Cannot find file: " + filepath);
             return null;
         }
 
-        Plugin plugin = PluginManager.getInstance().getPluginFromShortName(pluginStr);
+        Plugin plugin = PluginManager.getInstance().getPluginFromUUID(pluginUUID);
         if(plugin == null ){
-            logger.error("Cannot find plugin: " + pluginStr);
+            logger.error("Cannot find plugin with UUID: " + pluginUUID);
             return null;
         }
 
