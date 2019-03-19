@@ -2805,26 +2805,94 @@ def show_columns(*names)
   valid_names.each{ |x| $db.getVariable(x).setHidden(false) }
 end
 
+# @return [Hash] mapping from plugin names to UUID. 
+def plugin_uuids
+  {
+    'ffmpeg' => 'f13f226e-df7e-31dc-8bba-f35c71e53479',
+    'nativeosx' => 'db3fc496-58a7-3706-8538-3f61278b5bec'
+  }
+end
+
 # Add a video to the current spreadsheet/controller.
 # @param filepath [String] path to the file
-# @param plugin [String] short name of plugin to load video with; currently supprots jfx, nativeosx, ffmpeg
+# @param plugin [String] id of the plugin to use; either UUID or short name: ffmpeg, nativeosx, mpv
 # @param onset [Integer] start point of video in milliseconds
 # @param timeout [Integer] seconds to wait for the video to load up
 # @return [True, False] true if filepath and plugin are valid, false otherwise
 # @since 1.4.2
 def new_video(filepath, plugin, onset=0, timeout=5)
-  id = Datavyu.getVideoController.openVideo(filepath, plugin)
+  if plugin_uuids.key?(plugin)
+    plugin_id = plugin_uuids[plugin]
+  elsif plugin_uuids.value?(plugin)
+    plugin_id = plugin
+  else
+    puts "Warning: invalid plugin \"#{plugin}\""
+    return false
+  end
+
+  uuid = java.util.UUID.from_string(plugin_id)
+  id = Datavyu.getVideoController.openVideo(filepath, uuid)
   return false if id.nil?
 
-  success = false
   # Attempt to set track offset until timeout
-  tracks = Datavyu.getVideoController.getMixerController.getTracksEditorController
+  success = false
+  tracks = Datavyu.getVideoController
+                  .getMixerController
+                  .getTracksEditorController
+  tracks.set_track_offset(id, onset)
   t = Time.now
   while (Time.now - t).to_f < timeout
     success = tracks.setTrackOffset(id, onset)
     break if success
+
     sleep(0.5)
   end
 
-  return success
+  puts "WARNING: added video but timed out trying to set start point." unless success
+
+  success
+end
+
+# Save video controller information to spreadsheet column.
+# Each stream is saved to a different cell.
+# Onset and offset of cells designate track positions.
+# @param column_name [String] name of the returned column
+# @param file_code [String] code name of source file
+# @param plugin_code [String] code name of player plugin
+# @param plugin_uuid? [Boolean] save plugin as uuid if true, name otherwise
+def videos_to_column(column = 'tracks__',
+                     file_code = 'file',
+                     plugin_code = 'plugin', plugin_uuid = false)
+  if column.class == String
+    tracks_col = new_column(column, file_code, plugin_code)
+  end
+
+  streams = Datavyu.get_video_controller.get_stream_viewers
+  streams.each do |stream|
+    ncell = tracks_col.new_cell
+    ncell.change_code(file_code,
+                      stream.get_source_file.get_path)
+    uuid = org.datavyu.plugins.PluginManager
+              .get_instance
+              .get_associated_plugin(stream.get_class.get_name)
+              .get_plugin_uuid
+              .to_s
+    plugin = plugin_uuid ? uuid : plugin_uuids.key(uuid)
+    ncell.change_code(plugin_code, plugin)
+    ncell.onset = stream.get_offset
+    ncell.offset = ncell.onset + stream.get_duration
+  end
+  tracks_col
+end
+
+def column_to_videos(column = 'tracks__', file_code = 'file',
+                     plugin_code = 'plugin', timeout = 5)
+  tracks_col = column.class == String ? get_column(column) : column
+  raise "Invalid column: #{column}" if tracks_col.nil?
+
+  tracks_col.cells.each do |cell|
+    new_video(cell.get_code(file_code),
+              cell.get_code(plugin_code),
+              cell.onset, timeout)
+  end
 end
