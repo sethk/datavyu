@@ -7,6 +7,7 @@ import org.datavyu.plugins.StreamViewerDialog;
 
 import java.awt.*;
 import java.io.File;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 public class AvFoundationViewer extends StreamViewerDialog  {
@@ -39,6 +40,11 @@ public class AvFoundationViewer extends StreamViewerDialog  {
   public void setCurrentTime(long time) {
     logger.info("Set time to: " + time + " milliseconds.");
     player.setCurrentTime(time / 1000.0);
+  }
+
+  @Override
+  public void setCurrentFrame(int frame) {
+    throw new NotImplementedException();
   }
 
   @Override

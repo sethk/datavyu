@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import org.datavyu.util.ClockTimer;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MpvStreamViewer extends StreamViewerDialog {
 
@@ -73,6 +74,11 @@ public class MpvStreamViewer extends StreamViewerDialog {
                 logger.error("Unable to set time to " + time + " milliseconds, due to error: ", e);
             }
         });
+    }
+
+    @Override
+    public void setCurrentFrame(int frame) {
+        throw new NotImplementedException();
     }
 
     @Override

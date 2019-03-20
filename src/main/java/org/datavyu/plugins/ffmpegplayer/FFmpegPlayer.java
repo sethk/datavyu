@@ -70,6 +70,13 @@ public class FFmpegPlayer extends JPanel {
 	public void setCurrentTime(double position) { mediaPlayer.seek(position); }
 
 	/**
+	 * Seek to a frame index.
+	 *
+	 * @param frame index.
+	 */
+	public void setCurrentFrame(int frame) { mediaPlayer.seekToFrame(frame); }
+
+	/**
 	 * Clean up the player before closing.
 	 */
 	public void cleanUp() { mediaPlayer.dispose(); }
@@ -122,7 +129,4 @@ public class FFmpegPlayer extends JPanel {
 	boolean isPlaying() { return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING; }
 
   public double getFPS() { return mediaPlayer.getFps();	}
-
-	public boolean isSeekPlaybackEnabled() { return mediaPlayer.getRate() < 0F
-																						|| mediaPlayer.getRate() > 8F ; }
 }

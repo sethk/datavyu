@@ -360,15 +360,9 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         pack();
         invalidate();
 
-        // BugzID:679 + 2407: Need to make the window visible before we know the
+        // Need to make the window visible before we know the
         // dimensions because of a QTJava bug
         setViewerVisible(true);
-
-        originalVideoSize = getOriginalVideoSize();
-        logger.info("Setting video size to:" + originalVideoSize);
-        setPreferredSize(originalVideoSize);
-        setBounds(getX(), getY(), (int) originalVideoSize.getWidth(), (int) originalVideoSize.getHeight());
-        pack();
 
         if (framesPerSecond == -1) {
             framesPerSecond = getPlayerFramesPerSecond();
@@ -376,8 +370,8 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
         logger.info("Frames per second: " + framesPerSecond);
 
-        // Display the first frame
-        setCurrentTime(0L);
+        // No need to seek to the first frame
+        // The plugins already display the first frame
     }
 
     /**
@@ -386,7 +380,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     public float getFramesPerSecond() {
         return framesPerSecond;
     }
-    
+
     public void setFramesPerSecond(float framesPerSecond) {
         this.framesPerSecond = framesPerSecond;
         isAssumedFramesPerSecond = false;
@@ -534,19 +528,13 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     protected abstract void cleanUp();
 
     @Override
-    public CustomActions getCustomActions() {
-        return actions;
-    }
+    public CustomActions getCustomActions() { return actions; }
 
     @Override
-    public Identifier getIdentifier() {
-        return identifier;
-    }
+    public Identifier getIdentifier() { return identifier; }
 
     @Override
-    public void close() {
-        cleanUp();
-    }
+    public void close() { cleanUp(); }
 
     @Override
     public void setViewerVisible(final boolean isVisible) {
@@ -575,10 +563,20 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     @Override
     public boolean isSeekPlaybackEnabled() { return false; }
 
-
     @Override
     public synchronized void clockSeekPlayback(final double clockTime) {
-        // Nothing to do here
+        MixerController mixerController = Datavyu.getVideoController().getMixerController();
+        TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
+        TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
+        if (trackModel != null
+            && isSeekPlaybackEnabled()) {
+            logger.info("Is seek playback " + isSeekPlaybackEnabled()
+                        + "Clock Seek Playback is seeking stream "
+                        + getIdentifier()
+                        + " to time: "
+                        + (clockTime - trackModel.getOffset()));
+            setCurrentTime((long) clockTime - trackModel.getOffset());
+        }
     }
 
     @Override
@@ -593,7 +591,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
         if (trackModel != null && !clockTimer.isPaused()) {
             // Only if in range and not already playing and not in seek playback
-            if ( clockTime >= trackModel.getOffset()
+            if (clockTime >= trackModel.getOffset()
                 && clockTime <= trackModel.getOffset() + trackModel.getDuration()
                 && !isPlaying()
                 && !isSeekPlaybackEnabled()) {
@@ -624,8 +622,8 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
             double trackTime = Math.min(Math.max(clockTime - trackModel.getOffset(), 0), trackModel.getDuration());
             double difference = Math.abs(trackTime - getCurrentTime());
             if (difference >= ClockTimer.SYNC_THRESHOLD
-                || isSeekPlaybackEnabled()) {
-                logger.info("Sync of clock with difference: " + difference + " milliseconds.");
+                && !isSeekPlaybackEnabled()) {
+                logger.info("Sync stream " + getIdentifier() + " clock with difference: " + difference + " milliseconds.");
                 setCurrentTime((long) trackTime);
             }
         }
@@ -637,15 +635,14 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
         MixerController mixerController = Datavyu.getVideoController().getMixerController();
         TracksEditorController tracksEditorController = mixerController.getTracksEditorController();
         TrackModel trackModel = tracksEditorController.getTrackModel(getIdentifier());
-        // TODO: Ensure that there is a return value by tying offset/duration directly to the object
-        if (trackModel != null) {
-            if (clockTime >= trackModel.getOffset()
+        // TODO: Ensure that there is a return valuey tying offset/duration directly to the object
+        if (trackModel != null
+                && clockTime >= trackModel.getOffset()
                 && clockTime < mixerController.getRegionController().getModel().getRegion().getRegionEnd()
                 && clockTime > mixerController.getRegionController().getModel().getRegion().getRegionStart()
                 && !isSeekPlaybackEnabled()) {
                 logger.info("Clock Start Starts track: " + getIdentifier() + " at time: " + clockTime);
                 start();
-            }
         }
     }
 

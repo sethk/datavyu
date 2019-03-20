@@ -65,9 +65,6 @@ import java.util.*;
 public final class VideoController extends DatavyuDialog
         implements ClockListener, TracksControllerListener, PropertyChangeListener {
 
-//    /** Sync threshold for HARD sync between */
-//    private static final long SYNC_THRESHOLD = 31L; // milliseconds
-
     /** Threshold used to compare frame rates */
     private static final double ALMOST_EQUAL_FRAME_RATES = 1e-1*5;
 
@@ -1554,16 +1551,25 @@ public final class VideoController extends DatavyuDialog
             for (StreamViewer streamViewer : streamViewers) {
                 // TODO: Tie offset & duration to stream viewer only and pull it in the track model
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-                if (trackModel != null){
+                if (streamViewer.isStepEnabled()) {
+                    double streamStep = 1.0 / streamViewer.getFramesPerSecond();
+                    double frameNB =  (double)((newTime - trackModel.getOffset()) / 1000.0) / streamStep;
+
+                    logger.info("Stream " + streamViewer.getIdentifier()
+                        + " - Jog back to frame " + (int) frameNB);
+
+                    streamViewer.setCurrentFrame((int) frameNB);
+                } else if (trackModel != null){
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.max( Math.min(Math.max(trackTime - (trackTime % stepSize) - stepSize, 0),
+                    long newStreamTime = Math.max( Math.min(Math.max(trackTime - stepSize, 0),
                                             trackModel.getDuration())
                         , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionStart());
 
-                    logger.info("Jog back from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds");
+                    logger.info("Stream " + streamViewer.getIdentifier()
+                        + " - Jog back from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds");
 
                     streamViewer.setCurrentTime(newStreamTime);
                 }
@@ -1571,7 +1577,7 @@ public final class VideoController extends DatavyuDialog
             }
 
             //Force the time in order to update the cell highlighting
-            clockTimer.setForceTime(newTime);
+            clockTimer.setTime(newTime);
 
             updateCurrentTimeLabelAndNeedle(newTime);
         }
@@ -1623,23 +1629,32 @@ public final class VideoController extends DatavyuDialog
             long newTime = clockTime - (clockTime % stepSize) + stepSize;
             for (StreamViewer streamViewer : streamViewers) {
                 TrackModel trackModel = tracksEditorController.getTrackModel(streamViewer.getIdentifier());
-                if (trackModel != null){
+                if (streamViewer.isStepEnabled()) {
+                    double streamStep = 1.0 / streamViewer.getFramesPerSecond();
+                    double frameNB =  (double)( (newTime - trackModel.getOffset()) / 1000.0) / streamStep;
+
+                    logger.info("Stream " + streamViewer.getIdentifier()
+                        + " - Jog forward to frame " + (int) frameNB);
+
+                    streamViewer.setCurrentFrame((int) frameNB);
+                } else if (trackModel != null){
                     // Get the stream time
                     long trackTime = clockTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.min(Math.min(Math.max(trackTime - (trackTime % stepSize) + stepSize, 0),
+                    long newStreamTime = Math.min(Math.min(Math.max(trackTime + stepSize, 0),
                                             trackModel.getDuration())
                        , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionEnd());
 
-                    logger.info("Jog forward from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds.");
+                    logger.info("Stream " + streamViewer.getIdentifier()
+                        + " - Jog forward from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds.");
 
                     streamViewer.setCurrentTime(newStreamTime);
                 }
                 // otherwise we can't step
             }
             //Force the time in order to update the cell highlighting
-            clockTimer.setForceTime(newTime);
+            clockTimer.setTime(newTime);
             updateCurrentTimeLabelAndNeedle(newTime);
         }
     }

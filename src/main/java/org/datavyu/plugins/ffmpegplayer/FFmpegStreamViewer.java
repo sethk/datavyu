@@ -74,6 +74,22 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
+    public void setCurrentFrame(int frame) {
+        launch(() -> {
+            try {
+                if (!isSeeking) {
+                    isSeeking = true;
+                    logger.info("Set Frame to: " + frame);
+                    player.setCurrentFrame(frame);
+                    isSeeking = false;
+                }
+            } catch (Exception e) {
+                logger.error("Unable to set frame to " + frame + ", due to error: ", e);
+            }
+        });
+    }
+
+    @Override
     public void start() {
         launch(() -> {
             if (!isPlaying()) {
@@ -165,11 +181,12 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     }
 
     @Override
-    public boolean isStepEnabled() { return false; }
+    public boolean isStepEnabled() { return true; }
 
     @Override
     public boolean isPlaying() { return player != null && player.isPlaying(); }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return player.isSeekPlaybackEnabled(); }
+    public boolean isSeekPlaybackEnabled() { return getRate() < 0F
+                                                || getRate() > 8F; }
 }
