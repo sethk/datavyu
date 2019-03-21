@@ -63,7 +63,7 @@ public final class ClockTimer {
     private float rate = 1F;
 
     private ScheduledExecutorService execService
-        =   Executors.newScheduledThreadPool(3);
+        =   Executors.newScheduledThreadPool(4);
 
     /** Listeners of this clock */
     private Set<ClockListener> clockListeners = new HashSet<>();
@@ -85,6 +85,8 @@ public final class ClockTimer {
         execService.scheduleAtFixedRate(() -> checkClockBoundary()
             , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
         execService.scheduleAtFixedRate(() -> checkStreamsBoundary()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
+        execService.scheduleAtFixedRate(() -> notifySeekPlayback()
             , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
