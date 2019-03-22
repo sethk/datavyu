@@ -10,7 +10,6 @@ public class AvFoundationPlayer {
 
   private static Logger logger = LogManager.getLogger(AvFoundationPlayer.class);
 
-
   private AVFoundationMediaPlayer mediaPlayer;
   
   AvFoundationPlayer(AvFoundationViewer viewer, File mediaFile) {
