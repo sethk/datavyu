@@ -477,9 +477,9 @@ public final class PluginManager {
         return viewerClassToPlugin.get(dataViewer);
     }
 
-    /** Given short name, return associated plugin.
-     * @param uuid UUID of plugin.
-     * @return plugin Associated plugin.
+    /** Given uuid, return associated plugin.
+     *  @param uuid UUID of plugin.
+     *  @return plugin Associated plugin.
      */
     public Plugin getPluginFromUUID(UUID uuid){
         for(Plugin p : getPlugins()) {
