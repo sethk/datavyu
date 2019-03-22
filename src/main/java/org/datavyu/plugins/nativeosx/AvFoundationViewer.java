@@ -16,11 +16,14 @@ public class AvFoundationViewer extends StreamViewerDialog  {
   private static Logger logger = LogManager.getFormatterLogger(AvFoundationViewer.class);
 
   private AvFoundationPlayer player;
+  private final long firstFrameTime;
 
   AvFoundationViewer(final Identifier identifier, final File sourceFile, final Frame parent, final boolean modal) {
     super(identifier, parent, modal);
     logger.info("Opening file: " + sourceFile.getAbsolutePath());
     player = new AvFoundationPlayer(this, sourceFile);
+    firstFrameTime = (long) (player.getCurrentTime() * 1000);
+    logger.info("first frame PTS: " + firstFrameTime);
     setSourceFile(sourceFile);
   }
 
@@ -39,6 +42,11 @@ public class AvFoundationViewer extends StreamViewerDialog  {
   @Override
   public void setCurrentTime(long time) {
     logger.info("Set time to: " + time + " milliseconds.");
+    // Need to force the stream to start from the first frame PTS
+    // to guarantee a correct frame jogging
+    if (time <= 0 && !Double.isNaN(firstFrameTime)) {
+      time = firstFrameTime;
+    }
     player.setCurrentTime(time / 1000.0);
   }
 

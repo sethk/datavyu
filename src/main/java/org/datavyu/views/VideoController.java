@@ -1561,7 +1561,7 @@ public final class VideoController extends DatavyuDialog
                     streamViewer.setCurrentFrame((int) frameNB);
                 } else if (trackModel != null){
                     // Get the stream time
-                    long trackTime = clockTime - trackModel.getOffset();
+                    long trackTime = streamViewer.getCurrentTime();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
                     long newStreamTime = Math.max( Math.min(Math.max(trackTime - stepSize, 0),
@@ -1639,7 +1639,7 @@ public final class VideoController extends DatavyuDialog
                     streamViewer.setCurrentFrame((int) frameNB);
                 } else if (trackModel != null){
                     // Get the stream time
-                    long trackTime = clockTime - trackModel.getOffset();
+                    long trackTime = streamViewer.getCurrentTime();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
                     long newStreamTime = Math.min(Math.min(Math.max(trackTime + stepSize, 0),
