@@ -534,7 +534,11 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     public Identifier getIdentifier() { return identifier; }
 
     @Override
-    public void close() { cleanUp(); }
+    public void close() {
+        stop();
+        cleanUp();
+        dispose();
+    }
 
     @Override
     public void setViewerVisible(final boolean isVisible) {

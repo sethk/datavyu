@@ -29,6 +29,8 @@ public class AvFoundationPlayer {
     return new Dimension(mediaPlayer.getImageWidth(), mediaPlayer.getImageHeight());
   }
 
+  public double getStartTime() { return mediaPlayer.getStartTime(); }
+
   public void setMute(final boolean newMute) { mediaPlayer.setMute(newMute); }
 
   public void stop() { mediaPlayer.stop(); }

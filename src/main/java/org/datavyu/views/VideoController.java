@@ -311,9 +311,10 @@ public final class VideoController extends DatavyuDialog
         return openVideo(selectedFile, plugin);
     }
 
-    /* Open a video using specified file path and plugin.
-        @param filepath Name of video file
-        @param plugin Name of plugin to use (currently short names: jfx, ffmpeg, nativeosx
+    /**
+     * Open a video using specified file path and plugin.
+     * @param filepath Name of video file
+     * @param pluginStr Name of plugin to use (currently short names: jfx, ffmpeg, nativeosx
      */
     public Identifier openVideo(final String filepath, final String pluginStr) throws FileNotFoundException {
         File videoFile = new File(filepath);
@@ -578,14 +579,7 @@ public final class VideoController extends DatavyuDialog
 
         streamViewers.remove(streamViewer);
 
-        streamViewer.stop();
         streamViewer.close();
-
-        JDialog viewDialog = streamViewer.getParentJDialog();
-
-        if (viewDialog != null) {
-            viewDialog.dispose();
-        }
 
         // Remove the frame rate, this is problematic if we have several tracks with the same frame rate
         frameRateController.removeFrameRate(streamViewer.getIdentifier().asLong());
