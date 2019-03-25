@@ -470,6 +470,12 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
             if ((property != null) && !property.equals("")) {
                 framesPerSecond = Float.parseFloat(property);
             }
+
+            // make Sure that we have a valid FPS
+            // Otherwise seek and jogging won't work
+            if (framesPerSecond <= 0) {
+                framesPerSecond = getPlayerFramesPerSecond();
+            }
         } catch (IOException e) {
             logger.error("Error loading settings", e);
         }
