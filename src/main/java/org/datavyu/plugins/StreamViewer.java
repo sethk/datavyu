@@ -94,7 +94,7 @@ public interface StreamViewer {
     void setFramesPerSecond(float framesPerSecond);
 
     /**
-     * @return The current time in milliseconds.
+     * @return The current time in milliseconds, or -1 if player PTS is NaN.
      */
     long getCurrentTime();
 
