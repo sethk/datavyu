@@ -262,14 +262,14 @@ public final class ClockTimer {
     /**
      * @return True if clock is Paused.
      */
-    public synchronized boolean isPaused() {
+    public boolean isPaused() {
         return isStopped;
     }
 
     /**
      * @return True if clock is stopped.
      */
-    public synchronized boolean isStopped() {
+    public boolean isStopped() {
         return getRate() == 0f;
     }
 

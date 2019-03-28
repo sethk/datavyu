@@ -151,7 +151,11 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
 
     @Override
     public long getCurrentTime() {
-      return (long) (player.getCurrentTime() * 1000);
+      double playerTime = player.getCurrentTime();
+      if (Double.isNaN(playerTime)) {
+          return -1; // return a negative value in case of NaN
+      }
+      return (long) (playerTime * 1000);
     }
 
     @Override

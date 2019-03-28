@@ -433,7 +433,7 @@ public final class VideoController extends DatavyuDialog
     }
 
     public void clockForceSync(double clockTime) {
-        logger.info("Forced sync");
+        logger.debug("Forced sync to " + clockTime + " milliseconds.");
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
@@ -478,6 +478,7 @@ public final class VideoController extends DatavyuDialog
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockStop(double clockTime) {
+        logger.debug("Stop Clock at " + clockTime + " milliseconds.");
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
@@ -486,6 +487,7 @@ public final class VideoController extends DatavyuDialog
      * @param clockTime Current clockTimer time in milliseconds.
      */
     public void clockPause(double clockTime) {
+        logger.debug("Pause Clock at " + clockTime + " milliseconds.");
         // Updates the position of the needle and label
         updateCurrentTimeLabelAndNeedle((long) clockTime);
     }
@@ -494,6 +496,7 @@ public final class VideoController extends DatavyuDialog
      * @param rate Current (updated) clockTimer rate.
      */
     public void clockRate(float rate) {
+        logger.debug("Update rate speed to " + rate);
         labelSpeed.setText(FloatingPointUtils.doubleToFractionStr(rate));
     }
 
@@ -1369,11 +1372,11 @@ public final class VideoController extends DatavyuDialog
     public void pauseAction() {
         // Toggle between isPlaying and not isPlaying
         if (clockTimer.isPaused() && !clockTimer.isStopped()) {
-            logger.info("Pause: Resume isPlaying at rate: " + clockTimer.getRate());
+            logger.info("Resume playback at rate: " + clockTimer.getRate());
             clockTimer.start();
             labelSpeed.setText(FloatingPointUtils.doubleToFractionStr(clockTimer.getRate()));
         } else {
-            logger.info("Pause: Stop isPlaying at rate: " + clockTimer.getRate());
+            logger.info("Pause playback at rate: " + clockTimer.getRate());
             clockTimer.pause();
             clockTimer.setForceTime((long) clockTimer.getStreamTime());
             labelSpeed.setText("[" + FloatingPointUtils.doubleToFractionStr(clockTimer.getRate())  + "]");
