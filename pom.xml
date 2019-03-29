@@ -291,11 +291,21 @@
             <name>oss-jfrog-artifactory-releases</name>
             <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </repository>
+
         <repository>
             <snapshots />
             <id>snapshots</id>
             <name>oss-jfrog-artifactory-snapshots</name>
             <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </repository>
+
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-datavyu-datavyu</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/datavyu/datavyu</url>
         </repository>
     </repositories>
 
@@ -327,11 +337,21 @@
             <name>oss-jfrog-artifactory-releases</name>
             <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </pluginRepository>
+
         <pluginRepository>
             <snapshots />
             <id>snapshots</id>
             <name>oss-jfrog-artifactory-snapshots</name>
             <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </pluginRepository>
+
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-datavyu-datavyu</id>
+            <name>bintray-plugins</name>
+            <url>https://dl.bintray.com/datavyu/datavyu</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -570,11 +590,11 @@
             <!-- Copies project resources to the output directory -->
             <!-- Artifact: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-resources-plugin -->
             <!-- Documentation: -->
-            <!-- Updated here: 09/20/2017 -->
+            <!-- Updated here: 03/29/2019 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -912,16 +932,6 @@
             <version>1.18</version>
         </dependency>
 
-        <!-- Note, remove this dependency, fest-swing-testng has been updated to 1.2.1 Jun 2010 -->
-        <!-- TestNG-specific extension for FEST-Swing -->
-        <!-- Artifact: https://mvnrepository.com/artifact/org.easytesting/fest-swing-testng -->
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-swing-testng</artifactId>
-            <version>1.2.1</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- A testing framework for the JVM -->
         <!-- Artifactory: https://mvnrepository.com/artifact/org.testng/testng -->
         <!-- Documentation: http://testng.org/doc/documentation-main.html -->
@@ -997,23 +1007,15 @@
             <version>1.2</version>
         </dependency>
 
-        <!-- Deprecated, see https://lists.apple.com/archives/quicktime-java/2008/Jun/msg00018.html -->
-        <!-- From our own artifactory on the www server at NYU -->
-        <dependency>
-            <groupId>quicktime</groupId>
-            <artifactId>QTJava</artifactId>
-            <version>7</version>
-        </dependency>
-
         <!-- Core and expanded libraries including utility classes, google's collections, io classes, etc. -->
         <!-- guava replaces the google-collections -->
         <!-- Artifactory: https://mvnrepository.com/artifact/com.google.guava/guava -->
         <!-- Documentation: https://github.com/google/guava/wiki -->
-        <!-- Updated here: 09/19/2017 -->
+        <!-- Updated here: 03/29/2019 -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>27.1-jre</version>
         </dependency>
 
         <!-- OSX look and feel file chooser -->
@@ -1049,30 +1051,30 @@
         <!-- Logger API -->
         <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
         <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
-        <!-- Updated here: 09/20/2017 -->
+        <!-- Updated here: 03/29/2019 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.9.0</version>
+            <version>2.11.2</version>
         </dependency>
 
         <!-- Logger Core -->
         <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
         <!-- Documentation: (see API) -->
-        <!-- Updated here: 09/20/2017 -->
+        <!-- Updated here: 03/29/2019 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.9.0</version>
+            <version>2.11.2</version>
         </dependency>
 
         <!-- JSON Parser -->
         <!-- Artifact: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-        <!-- Updated here: 02/15/2018  -->
+        <!-- Updated here: 03/29/2019  -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.4</version>
+            <version>2.9.8</version>
         </dependency>
 
         <dependency>
@@ -1080,13 +1082,13 @@
                  (identical to) version x.y.1, x.y.2, etc. -->
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.4</version>
+            <version>2.9.8</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.4</version>
+            <version>2.9.8</version>
         </dependency>
 
         <!-- Updates with JRE from java version >= 1.7 -->

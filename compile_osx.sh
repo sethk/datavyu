@@ -16,6 +16,4 @@ curl http://www.datavyu.org/docs/user-guide.pdf > packaged_docs/user-guide.pdf
 
 # This line builds using the JFX packager
 # Older version until 1.4.0
-# mvn clean -Dmaven.test.skip=true jfx:native
-# Version 1.4.1
-mvn clean -Djavacpp.platform=macosx-x86_64 -Dmaven.test.skip=true jfx:native
+mvn clean -Dmaven.test.skip=true jfx:native
