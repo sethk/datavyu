@@ -2,13 +2,13 @@ package org.datavyu.plugins.ffmpegplayer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.MediaPlayerData;
+import org.datavyu.plugins.MediaPlayer;
 import org.datavyu.plugins.PlayerStateEvent;
-import org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import org.datavyu.plugins.ffmpeg.FfmpegSdlAwtMediaPlayer;
 
 public class FFmpegPlayer extends JPanel {
 
@@ -19,7 +19,7 @@ public class FFmpegPlayer extends JPanel {
   private static Logger logger = LogManager.getFormatterLogger(FFmpegPlayer.class);
 	
 	/** The movie stream for this movie player */
-	private MediaPlayerData mediaPlayer;
+	private MediaPlayer mediaPlayer;
 
 	/**
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
@@ -32,7 +32,7 @@ public class FFmpegPlayer extends JPanel {
 	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
 		setLayout(new BorderLayout());
 		try {
-			mediaPlayer = new FfmpegJavaMediaPlayer(sourceFile.toURI(), viewer);
+			mediaPlayer = new FfmpegSdlAwtMediaPlayer(sourceFile.toURI());
 			mediaPlayer.init();
 		}catch (Exception e) {
 			logger.error("Cannot initialize ffmpeg player due to error: ", e);
@@ -129,4 +129,7 @@ public class FFmpegPlayer extends JPanel {
 	boolean isPlaying() { return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING; }
 
   public double getFPS() { return mediaPlayer.getFps();	}
+
+	public boolean isSeekPlaybackEnabled() { return mediaPlayer.isSeekPlaybackEnabled(); }
+
 }
