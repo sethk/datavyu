@@ -161,6 +161,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     @Override
     protected void cleanUp() {
         logger.info("Destroying the Player");
+        clockTimer.unRegisterListener(this);
         player.cleanUp();
     }
 
@@ -191,6 +192,13 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     public boolean isPlaying() { return player != null && player.isPlaying(); }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return getRate() < 0F
-                                                || getRate() > 8F; }
+    public boolean isSeekPlaybackEnabled() { return player.isSeekPlaybackEnabled(); }
+
+    @Override
+    public void setViewerVisible(final boolean isVisible) {
+        player.setViewerVisible(isVisible);
+        this.isVisible = isVisible;
+        setVolume();
+    }
+
 }

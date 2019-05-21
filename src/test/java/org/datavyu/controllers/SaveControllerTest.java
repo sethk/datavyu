@@ -14,6 +14,8 @@
  */
 package org.datavyu.controllers;
 
+import static org.testng.Assert.assertTrue;
+
 import org.apache.commons.io.IOUtils;
 import org.datavyu.models.db.*;
 import org.datavyu.models.project.Project;
@@ -23,7 +25,6 @@ import org.testng.annotations.Test;
 
 import java.io.*;
 
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests for saving Datavyu project and CSV files.

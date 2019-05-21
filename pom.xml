@@ -416,7 +416,7 @@
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>ffmpeg-plugin</artifactId>
-                    <version>0.19-SNAPSHOT</version>
+                    <version>0.20</version>
                     <classifier>mac</classifier>
                 </dependency>
             </dependencies>
@@ -435,7 +435,7 @@
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>ffmpeg-plugin</artifactId>
-                    <version>0.19-SNAPSHOT</version>
+                    <version>0.20</version>
                     <classifier>win</classifier>
                 </dependency>
             </dependencies>
@@ -1106,6 +1106,12 @@
             <artifactId>google-analytics-java</artifactId>
             <version>2.0.0</version>
         </dependency>
+      <dependency>
+        <groupId>org.easytesting</groupId>
+        <artifactId>fest-swing</artifactId>
+        <version>1.2a4</version>
+        <scope>test</scope>
+      </dependency>
 
     </dependencies>
 

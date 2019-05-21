@@ -21,11 +21,13 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.*;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.models.project.Project;
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Tests for the Variable Interface

@@ -222,7 +222,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
      * if the track is hidden from view (this means hiding the track mutes
      * the volume).
      */
-    private void setVolume() {
+    protected void setVolume() {
         setPlayerVolume(isVisible ? volume : 0F);
         volumeButton.setIcon(getVolumeButtonIcon());
     }

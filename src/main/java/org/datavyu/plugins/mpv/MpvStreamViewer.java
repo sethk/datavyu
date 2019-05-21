@@ -149,6 +149,7 @@ public class MpvStreamViewer extends StreamViewerDialog {
     @Override
     protected void cleanUp() {
         logger.info("Destroying the Player");
+        clockTimer.unRegisterListener(this);
         player.cleanUp();
     }
 

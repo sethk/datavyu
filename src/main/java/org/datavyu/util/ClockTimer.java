@@ -282,6 +282,15 @@ public final class ClockTimer {
         clockListeners.add(listener);
     }
 
+  /**
+   * Un-Registers a clock listener
+   *
+   * @param listener Listener requiring clockTick updates
+   */
+    public synchronized void unRegisterListener(final ClockListener listener) {
+        clockListeners.remove(listener);
+    }
+
     /**
      * Update the clock time with the elapsed time since the last update
      */
