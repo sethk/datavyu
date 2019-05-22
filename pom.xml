@@ -412,7 +412,7 @@
                     <artifactId>quaqua-osx64</artifactId>
                     <version>7.0.1</version>
                 </dependency>
-                <!-- This is a beta version of the FFmpeg plugin 0.18-SNAPSHOT -->
+                <!--FFmpeg plugin 0.20 -->
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>ffmpeg-plugin</artifactId>
