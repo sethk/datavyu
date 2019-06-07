@@ -130,8 +130,6 @@ public class FFmpegPlayer extends JPanel {
 
   public double getFPS() { return mediaPlayer.getFps();	}
 
-	public boolean isSeekPlaybackEnabled() { return mediaPlayer.isSeekPlaybackEnabled(); }
-
 	public void setViewerVisible(final boolean isVisible) {
 		if (isVisible) {
 			mediaPlayer.showSDLWindow();

@@ -192,7 +192,7 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
     public boolean isPlaying() { return player != null && player.isPlaying(); }
 
     @Override
-    public boolean isSeekPlaybackEnabled() { return player.isSeekPlaybackEnabled(); }
+    public boolean isSeekPlaybackEnabled() { return playBackRate < 0F; }
 
     @Override
     public void setViewerVisible(final boolean isVisible) {
