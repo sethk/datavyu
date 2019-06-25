@@ -836,9 +836,13 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
             commandLineFile = args[0];
         }
 
-        // Check for updates
-        if (DatavyuVersion.isUpdateAvailable() && !DatavyuVersion.isIgnoreVersion()) {
-            Datavyu.getApplication().show(new UpdateVersion(Datavyu.getApplication().getMainFrame(), true));
+        try {
+            // Check for updates
+            if (DatavyuVersion.isUpdateAvailable() && !DatavyuVersion.isIgnoreVersion()) {
+                Datavyu.getApplication().show(new UpdateVersion(Datavyu.getApplication().getMainFrame(), true));
+            }
+        } catch (ExceptionInInitializerError e) {
+            logger.error("Cannot reach Datavyu servers " + e.getMessage());
         }
     }
 
