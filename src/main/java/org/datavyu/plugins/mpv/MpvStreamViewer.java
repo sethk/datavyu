@@ -150,6 +150,7 @@ public class MpvStreamViewer extends StreamViewerDialog {
     protected void cleanUp() {
         logger.info("Destroying the Player");
         clockTimer.unRegisterListener(this);
+        Datavyu.getVideoController().shutdown(getIdentifier());
         player.cleanUp();
     }
 
