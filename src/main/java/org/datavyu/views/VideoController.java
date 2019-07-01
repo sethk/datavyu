@@ -1562,12 +1562,12 @@ public final class VideoController extends DatavyuDialog
                     long trackTime = streamViewer.getCurrentTime();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.max( Math.min(Math.max(trackTime - stepSize, 0),
+                    long newStreamTime = Math.max( Math.min(Math.max(newTime, 0),
                                             trackModel.getDuration())
                         , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionStart());
 
                     logger.info("Stream " + streamViewer.getIdentifier()
-                        + " - Jog back from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds");
+                        + " - Jog back from " + newTime + " milliseconds to " + newStreamTime + " milliseconds");
 
                     streamViewer.setCurrentTime(newStreamTime);
                 }
@@ -1640,12 +1640,12 @@ public final class VideoController extends DatavyuDialog
                     long trackTime = streamViewer.getCurrentTime();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.min(Math.min(Math.max(trackTime + stepSize, 0),
+                    long newStreamTime = Math.min(Math.min(Math.max(newTime, 0),
                                             trackModel.getDuration())
                        , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionEnd());
 
                     logger.info("Stream " + streamViewer.getIdentifier()
-                        + " - Jog forward from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds.");
+                        + " - Jog forward from " + newTime + " milliseconds to " + newStreamTime + " milliseconds.");
 
                     streamViewer.setCurrentTime(newStreamTime);
                 }
