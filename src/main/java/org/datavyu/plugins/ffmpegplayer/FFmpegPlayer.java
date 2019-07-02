@@ -1,9 +1,11 @@
 package org.datavyu.plugins.ffmpegplayer;
 
+import java.awt.event.KeyEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaPlayer;
 import org.datavyu.plugins.PlayerStateEvent;
+import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import javax.swing.*;
@@ -20,6 +22,7 @@ public class FFmpegPlayer extends JPanel {
 	
 	/** The movie stream for this movie player */
 	private MediaPlayer mediaPlayer;
+	private SdlKeyEventListener keyEventListener;
 
 	/**
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
@@ -34,6 +37,18 @@ public class FFmpegPlayer extends JPanel {
 		try {
 			mediaPlayer = new FfmpegSdlMediaPlayer(sourceFile.toURI());
 			mediaPlayer.init();
+			keyEventListener = (source, nativeMediaRef, javaKeyCode) -> {
+        logger.debug("Player dispatching event " + javaKeyCode);
+        viewer.dispatchEvent(new KeyEvent(
+            viewer,
+            KeyEvent.KEY_PRESSED,
+            System.currentTimeMillis(),
+            0,
+            javaKeyCode,
+            KeyEvent.CHAR_UNDEFINED,
+            KeyEvent.KEY_LOCATION_NUMPAD));
+      };
+      mediaPlayer.addSdlKeyEventListener(keyEventListener);
 		}catch (Exception e) {
 			logger.error("Cannot initialize ffmpeg player due to error: ", e);
 		}
@@ -79,7 +94,10 @@ public class FFmpegPlayer extends JPanel {
 	/**
 	 * Clean up the player before closing.
 	 */
-	public void cleanUp() { mediaPlayer.dispose(); }
+	public void cleanUp() {
+		mediaPlayer.removeSdlKeyEventListener(keyEventListener);
+		mediaPlayer.dispose();
+	}
 
 	/**
 	 * Set the start back speed for this player.
