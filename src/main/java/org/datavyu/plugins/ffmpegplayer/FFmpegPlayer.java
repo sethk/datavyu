@@ -95,7 +95,9 @@ public class FFmpegPlayer extends JPanel {
 	 * Clean up the player before closing.
 	 */
 	public void cleanUp() {
-		mediaPlayer.removeSdlKeyEventListener(keyEventListener);
+    if (keyEventListener != null) {
+      mediaPlayer.removeSdlKeyEventListener(keyEventListener);
+		}
 		mediaPlayer.dispose();
 	}
 
