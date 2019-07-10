@@ -138,12 +138,14 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
         super(parent, modal);
 
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-            @Override
-            public boolean dispatchKeyEvent(final KeyEvent e) {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+            .addKeyEventDispatcher(
+            new KeyEventDispatcher() {
+              @Override
+              public boolean dispatchKeyEvent(final KeyEvent e) {
                 return Datavyu.getApplication().dispatchKeyEvent(e);
-            }
-        });
+              }
+            });
 
         this.identifier = identifier;
         offset = 0;
