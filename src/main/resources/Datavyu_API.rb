@@ -345,7 +345,7 @@ class RColumn
   # @since 1.3.6
   def self.sanitize_codename(name)
     sanitized = name.gsub(/(\W)+/, '').downcase
-    sanitized.gsub(/(^\d{1})/, '_\\1')
+    sanitized.gsub!(/(^\d{1})/, '_\\1')
     sanitized
   end
 
