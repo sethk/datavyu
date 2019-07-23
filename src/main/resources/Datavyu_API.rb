@@ -772,13 +772,19 @@ alias :getColumn :get_column
 # Translate a Ruby column object into a Datavyu column and saves it to the spreadsheet.
 # If two parameters are specified, the first parameter is the name under which the column will be saved.
 # @note This function will overwrite existing spreadsheet columns with the same name as specified column / name.
+# @overload set_column(name, column, sanitize_codes)
+#   Saves column to spreadsheet with given name
+#   @param name [String] Name to save column as
+#   @param column [RColumn] Column object to save
+#   @param sanitize_codes [Boolean] When true, uses sanitized names for codes
+# @overload set_column(column, sanitize_codes)
 # @param args [String, RColumn] the name and RColumn object to save; the name parameter may be omitted
 # @return nil
 # @example
 #       trial = get_column("trial")
 #         ... Do some modification to trial ...
 #       set_column(trial)
-def set_column(*args)
+def set_column(*args, sanitize_codes: true)
 
   if args.length == 1
     var = args[0]
@@ -805,9 +811,10 @@ def set_column(*args)
     end
 
     # Set variable's vocab
-    for arg in var.arglist
+    var.arglist.zip(var.old_args).each do |arg, old_arg|
       new_arg = v.addArgument(Argument::Type::NOMINAL)
-      new_arg.name = arg
+      an = sanitize_codes ? arg : old_arg
+      new_arg.name = an
       main_arg = var.db_var.getRootNode()
       child_args = main_arg.childArguments
 
@@ -922,7 +929,7 @@ alias :setColumn :set_column
 # the given RColumn object.
 # Behaves similar to setVariable(), but this will ALWAYS delete
 # and rebuild the spreadsheet colum and its vocab.
-def set_column!(*args)
+def set_column!(*args, sanitize_codes: true)
   if args.length == 1
     var = args[0]
     name = var.name
@@ -931,70 +938,8 @@ def set_column!(*args)
     name = args[0]
   end
 
-  if getColumnList().include?(name)
-    deleteVariable(name)
-  end
-
-  # Create a new variable
-  v = $db.createVariable(name, Argument::Type::MATRIX)
-  var.db_var = v
-
-  if var.arglist.length > 0
-    var.db_var.removeArgument("code01")
-  end
-
-  # Set variable's vocab
-  for arg in var.arglist
-    new_arg = v.addArgument(Argument::Type::NOMINAL)
-    new_arg.name = arg
-    main_arg = var.db_var.getRootNode()
-    child_args = main_arg.childArguments
-
-    child_args.get(child_args.length-1).name = arg
-
-    var.db_var.setRootNode(main_arg)
-  end
-  var.db_var = v
-
-  # Create new cells and fill them in for each cell in the variable
-  for cell in var.cells
-    # Copy the information from the ruby variable to the new cell
-    cell.db_cell = var.db_var.createCell()
-
-    value = cell.db_cell.getCellValue()
-
-    if cell.onset != cell.db_cell.getOnset
-      cell.db_cell.setOnset(cell.onset)
-    end
-
-    if cell.offset != cell.db_cell.getOffset
-      cell.db_cell.setOffset(cell.offset)
-    end
-
-    # Matrix cell
-    if cell.db_cell.getVariable.getRootNode.type == Argument::Type::MATRIX
-      values = cell.db_cell.getCellValue().getArguments()
-      for arg in var.old_args
-        # Find the arg in the dataStore's arglist that we are looking for
-        for i in 0...values.size
-          dbarg = values[i]
-          dbarg_name = dbarg.getArgument.name
-          if dbarg_name == arg and not ["", nil].include?(cell.get_arg(var.convert_argname(arg)))
-            dbarg.set(cell.get_arg(var.convert_argname(arg)))
-            break
-          end
-        end
-      end
-      # Non-matrix cell
-    else
-      value = cell.db_cell.getCellValue()
-      value.set(cell.get_arg("var"))
-    end
-  end
-
-  # if var.hidden
-  var.db_var.setHidden(var.hidden)
-  # end
+  var.db_var = nil
+  set_column(name, var, sanitize_codes: sanitize_codes)
 end
 alias :setVariable! :set_column!
 
