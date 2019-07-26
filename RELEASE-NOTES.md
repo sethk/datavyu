@@ -1,7 +1,35 @@
+# Datavyu 1.5.0 Release Notes
+## 07/26/2019
+### Notable Changes
+* Removed JavaFX plugin
+* Removed MPV plugin
+* Major improvements to FFMPEG plugin
+* Add FFMPEG as default plugin for Mac and Windows
+  * Users will receive a deprecation notice when opening Datavyu files which
+  were using removed plugins. Videos will automatically re-open using FFMPEG.
+* Re-work highlight and highlight and focus for more intuitive use
+* New installations will prompt users to share usage data
+* (ruby api) add function to save and load track information to/from a spreadsheet column
+
+
+### Bug Fixes
+* (general) fix crashing when VLC is installed
+* (general) fix memory leaks when removing videos
+* (general) fix startup crash when no network connection is available
+* (playback) fix jogging outside of locked region
+* (ruby api) compute_kappa won't crash on edge case
+* (ruby api) fix sanitization of code names when they start with a number
+
+### Known Issues
+* Controller track video resize buttons do not work
+* Mouse disappears in video window
+* Ghost window opens up on Mac FFMPEG
+---
+
 # Datavyu 1.4.2 Release Notes
 ## 11/19/2018
 
-### New features
+### New Features
 * Introduced MPV plugin for Windows:
     * Added support for 1080p Resolution.
     * Playback speed from -32x to +32x for Images and Audio.
@@ -16,7 +44,7 @@
 * Added new Ruby API function to load a video from a script.
 * Re-arrange column from the Code Editor dialog.
 
-### Bug fixes
+### Bug Fixes
 * Fixed installation issues on older Mac OS versions.
 * Fixed unselected spreadsheet cells when clicking on the Video Controller window.
 * Load the correct plugin from the OPF file.
@@ -37,10 +65,12 @@
     * Seeking (either through Find or synchronization when stopping) does not always produce same frame. May seek to adjacent frame.
     * Inconsistent frame reporting between plugins. We suggest using the same plugin when coding to maintain consistency.
 
+---
+
 # Datavyu 1.4.1 Release Notes
 ## 06/28/2018
 
-### New features
+### New Features
 * FFMPEG plugin for Windows.
     * Upgraded to FFmpeg 4.0 version.
     * Added Support for 720p Resolution.
@@ -50,7 +80,7 @@
 * Improved Cell highlighting while seeking.
 * Added Undo feature for cells created using Quick Key mode.
 
-### Bug fixes
+### Bug Fixes
 * Fixed flickering issues when clicking on Hidden Columns.
 * Fixed `CMD+L` and `CMD+R` bug for corner cases.
 * Fixed add cell to left/right columns not working.
@@ -78,7 +108,7 @@
 # Datavyu 1.4.0 Release Notes
 ## 04/26/2018
 
-### New features
+### New Features
 * FFMPEG plugin for Windows.
   * Still under development. Currently only supports 480p video. Expect performance issues with higher quality files.
 * Removed plugins not being maintained (e.g., VLC, MPlayer).
@@ -88,7 +118,7 @@
 * `CMD + W`, `CTRL + W` closes currently open spreadsheet on Mac and Windows, respectively.
 * Updated dependencies for R and Ruby script plugins
 
-### Bug fixes
+### Bug Fixes
 * Allows to save filenames with non-ascii characters, e.g. Umlaut in German
 * Fixed plugin loading error for NativeOSX plugin.
 * OSX plugin playback more responsive to jogs, cell locking, and seeks.
