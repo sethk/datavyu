@@ -1,29 +1,30 @@
 # Datavyu 1.5.0 Release Notes
 ## 07/26/2019
 ### Notable Changes
-* Removed JavaFX plugin
-* Removed MPV plugin
-* Major improvements to FFMPEG plugin
+* Removed JavaFX plugin.
+* Removed MPV plugin.
+* Major improvements to FFMPEG plugin.
 * Add FFMPEG as default plugin for Mac and Windows
   * Users will receive a deprecation notice when opening Datavyu files which
   were using removed plugins. Videos will automatically re-open using FFMPEG.
-* Re-work highlight and highlight and focus for more intuitive use
-* New installations will prompt users to share usage data
-* (ruby api) add function to save and load track information to/from a spreadsheet column
+* Re-work highlight and highlight and focus for more intuitive use.
+* New installations will prompt users to share usage data.
+* (ruby api) add function to save and load track information to/from a spreadsheet column.
 
 
 ### Bug Fixes
-* (general) fix crashing when VLC is installed
-* (general) fix memory leaks when removing videos
-* (general) fix startup crash when no network connection is available
-* (playback) fix jogging outside of locked region
-* (ruby api) compute_kappa won't crash on edge case
-* (ruby api) fix sanitization of code names when they start with a number
+* (general) fix crashing when VLC is installed.
+* (general) fix memory leaks when removing videos.
+* (general) fix startup crash when no network connection is available.
+* (playback) fix jogging outside of locked region.
+* (ruby api) compute_kappa won't crash on edge case.
+* (ruby api) fix sanitization of code names when they start with a number.
 
 ### Known Issues
-* Controller track video resize buttons do not work
-* Mouse disappears in video window
-* Ghost window opens up on Mac FFMPEG
+* Controller track video resize buttons do not work.
+* Mouse disappears in video window.
+* Ghost window opens up on Mac FFMPEG.
+* Shortcuts not working on Mac FFMPEG Window.
 ---
 
 # Datavyu 1.4.2 Release Notes
