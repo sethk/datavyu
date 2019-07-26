@@ -94,7 +94,7 @@ public interface StreamViewer {
     void setFramesPerSecond(float framesPerSecond);
 
     /**
-     * @return The current time in milliseconds.
+     * @return The current time in milliseconds, or -1 if player PTS is NaN.
      */
     long getCurrentTime();
 
@@ -107,6 +107,11 @@ public interface StreamViewer {
      * Stops the play back of the data stream
      */
     void stop();
+
+    /**
+     * Pauses the play back of the data stream
+     */
+    void pause();
 
     /**
      * Steps foward
@@ -143,6 +148,13 @@ public interface StreamViewer {
      * @param time Position in milliseconds.
      */
     void setCurrentTime(long time);
+
+    /**
+     * Seek to a frame index.
+     *
+     * @param frame index.
+     */
+    void setCurrentFrame(int frame);
 
     /**
      * @return Custom track painter implementation. Must not return null.

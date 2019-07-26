@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.ffmpegplayer.FFmpegPlugin;
-import org.datavyu.plugins.javafx.JfxPlugin;
 import org.datavyu.util.MacOS;
 import org.jdesktop.application.LocalStorage;
 
@@ -362,19 +361,19 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
+                    if ("FFmpeg Plugin".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("FFmpeg Plugin".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
                     if ("Native OSX Video".equals(o1.getPluginName())) {
                         return -1;
                     }
 
                     if ("Native OSX Video".equals(o2.getPluginName())) {
-                        return 1;
-                    }
-
-                    if ("QTKit Video".equals(o1.getPluginName())) {
-                        return -1;
-                    }
-
-                    if ("QTKit Video".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -393,11 +392,11 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
-                    if ("JavaFX Video".equals(o1.getPluginName())) {
+                    if ("FFmpeg Plugin".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("JavaFX Video".equals(o2.getPluginName())) {
+                    if ("FFmpeg Plugin".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -415,11 +414,11 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
-                    if ("JavaFX Video".equals(o1.getPluginName())) {
+                    if ("FFmpeg Plugin".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("JavaFX Video".equals(o2.getPluginName())) {
+                    if ("FFmpeg Plugin".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -443,22 +442,16 @@ public final class PluginManager {
         // Hard-code plugins for Windows, OSX, and Linux
         if (classifier.equals("datavyu.video")) {
 
-            // Mac default is OSXPlugin
+            // Mac default is FFmpegPlugin
             if (Datavyu.getPlatform() == Datavyu.Platform.MAC) {
-                return MacOS.getNativeOSXPlugin();
+                return new FFmpegPlugin();
             }
 
             // Windows default is FFmpegPlugin
             if (Datavyu.getPlatform() == Datavyu.Platform.WINDOWS) {
-                FFmpegPlugin fFmpegPlugin = new FFmpegPlugin();
-                logger.info("Loading windows plugin: " + fFmpegPlugin.getPluginName());
-                return fFmpegPlugin;
+                return new FFmpegPlugin();
             }
 
-            // Linux default is JFXPlugin
-            if (Datavyu.getPlatform() == Datavyu.Platform.LINUX) {
-                return new JfxPlugin();
-            }
         }
 
         for (Plugin candidate : pluginClassifiers.get(classifier)) {
@@ -484,14 +477,13 @@ public final class PluginManager {
         return viewerClassToPlugin.get(dataViewer);
     }
 
-    /** Given short name, return associated plugin.
-     * @param shortName Short name of plugin (e.g., ffmpeg, jfx, nativeosx.
-     * @return plugin Associated plugin.
+    /** Given uuid, return associated plugin.
+     *  @param uuid UUID of plugin.
+     *  @return plugin Associated plugin.
      */
-    public Plugin getPluginFromShortName(String shortName){
-        UUID id = UUID.nameUUIDFromBytes(("plugin." + shortName).getBytes());
+    public Plugin getPluginFromUUID(UUID uuid){
         for(Plugin p : getPlugins()) {
-            if(p.getPluginUUID().equals(id)) return p;
+            if(p.getPluginUUID().equals(uuid)) return p;
         }
         return null;
     }

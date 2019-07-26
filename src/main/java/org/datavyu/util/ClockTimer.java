@@ -14,10 +14,14 @@
  */
 package org.datavyu.util;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 /**
@@ -25,25 +29,20 @@ import java.util.TimerTask;
  */
 public final class ClockTimer {
 
+    /** The logger for this class. */
+    private static Logger logger = LogManager.getLogger(ClockTimer.class);
+
     /** Synchronization threshold in milliseconds */
     public static final long SYNC_THRESHOLD = 1500L; // 1.5 sec  (because some plugins are not very precise in seek)
 
     /** Clock tick period in milliseconds */
-    private static final long CLOCK_SYNC_INTERVAL = 1500L;
+    private static final long CLOCK_INTERVAL = 100L;
 
     /** Clock initial delay in milliseconds */
-    private static final long CLOCK_SYNC_DELAY = 0L;
+    private static final long CLOCK_DELAY = 0L;
 
     /** Convert nanoseconds to milliseconds */
     private static final long NANO_IN_MILLI = 1000000L;
-
-    private static final long CHECK_BOUNDARY_INTERVAL = 100L; // milliseconds
-
-    private static final long CHECK_BOUNDARY_DELAY = 0L;
-
-    private static final long SEEK_PLAYBACK_INTERVAL = 31L; // milliseconds
-
-    private static final long SEEK_PLAYBACK_DELAY = 0L;
 
     /** Minimum time for the clock in milliseconds */
     private long minTime;
@@ -63,6 +62,9 @@ public final class ClockTimer {
     /** The rate factor for the clock updates */
     private float rate = 1F;
 
+    private ScheduledExecutorService execService
+        =   Executors.newScheduledThreadPool(4);
+
     /** Listeners of this clock */
     private Set<ClockListener> clockListeners = new HashSet<>();
 
@@ -78,37 +80,14 @@ public final class ClockTimer {
         maxTime = 0;
         isStopped = true;
 
-        // Sync timer at lower frequency
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                periodicSync();
-            }
-        }, CLOCK_SYNC_DELAY, CLOCK_SYNC_INTERVAL);
-
-        // Clock Boundary checker at higher frequency
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                checkClockBoundary();
-            }
-        }, CHECK_BOUNDARY_DELAY, CHECK_BOUNDARY_INTERVAL);
-
-        // Streams Boundary checker at higher frequency
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                checkStreamsBoundary();
-            }
-        }, CHECK_BOUNDARY_DELAY, CHECK_BOUNDARY_INTERVAL);
-
-        // Seek playback for fast, backward playback
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                notifySeekPlayback();
-            }
-        }, SEEK_PLAYBACK_DELAY, SEEK_PLAYBACK_INTERVAL);
+        execService.scheduleAtFixedRate(() -> periodicSync()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
+        execService.scheduleAtFixedRate(() -> checkClockBoundary()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
+        execService.scheduleAtFixedRate(() -> checkStreamsBoundary()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
+        execService.scheduleAtFixedRate(() -> notifySeekPlayback()
+            , CLOCK_DELAY, CLOCK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -117,6 +96,7 @@ public final class ClockTimer {
      * @param minTime The minimum stream time
      */
     public synchronized void setMinTime(long minTime) {
+        logger.debug("Setting Clock minimum time");
         this.minTime = minTime;
     }
 
@@ -126,6 +106,7 @@ public final class ClockTimer {
      * @param maxTime The maximum stream time
      */
     public synchronized void setMaxTime(long maxTime) {
+        logger.debug("Setting Clock maximum time");
         this.maxTime = maxTime;
     }
 
@@ -177,6 +158,7 @@ public final class ClockTimer {
      */
     public synchronized void setTime(long time) {
         if (minTime <= time && time <= maxTime) {
+            logger.debug("Setting Clock time to: " + time);
             clockTime = time;
             // Don't notify a sync or force a sync
             // The time will be updated by a periodic sync
@@ -213,12 +195,16 @@ public final class ClockTimer {
         }
     }
 
-    /**
-     * Sets the update rate for the clock
-     *
-     * @param newRate New update rate
-     */
-    public synchronized void setRate(float newRate) {
+  /**
+   * Sets the update rate for the clock.
+   *
+   * <p>IMPORTANT: Setting the rate to 0 will stop the clock and fires a
+   * notify stop event.
+   *
+   * @param newRate New update rate
+   */
+  public synchronized void setRate(float newRate) {
+        logger.debug("Setting Clock Rate to " + newRate + "X");
         updateElapsedTime();
         rate = newRate;
         // FIRST notify about the rate change
@@ -237,21 +223,16 @@ public final class ClockTimer {
      */
     public synchronized void start() {
         if (isStopped) {
+            logger.debug("Starting Clock");
             isStopped = false;
             lastTime = System.nanoTime();
             notifyStart();
         }
     }
 
-    /**
-     * If the clock is not stopped, then this stops the clock and fires a notify
-     * stop event with the current clock time
-     *
-     * WARNING: If you want to influence the rate as well you need to set the rate to 0
-     * instead of calling stop directly!
-     */
-    public synchronized void stop() {
+    private synchronized void stop() {
         if (!isStopped) {
+            logger.debug("Stopping Clock");
             updateElapsedTime();
             isStopped = true;
             notifyStop();
@@ -261,10 +242,35 @@ public final class ClockTimer {
     }
 
     /**
+     * If the clock is not stopped, then this pause the clock and fires a notify
+     * pause event with the current clock time
+     *
+     * WARNING: If you want to influence the rate as well you need to set the rate to 0
+     * instead of calling stop directly!
+     */
+    public synchronized void pause() {
+        if (!isStopped) {
+            logger.debug("Pausing Clock");
+            updateElapsedTime();
+            isStopped = true;
+            notifyPause();
+            // Force sync after a stop
+            notifyForceSync();
+        }
+    }
+
+    /**
+     * @return True if clock is Paused.
+     */
+    public boolean isPaused() {
+        return isStopped;
+    }
+
+    /**
      * @return True if clock is stopped.
      */
-    public synchronized boolean isStopped() {
-        return isStopped;
+    public boolean isStopped() {
+        return getRate() == 0f;
     }
 
     /**
@@ -274,6 +280,15 @@ public final class ClockTimer {
      */
     public synchronized void registerListener(final ClockListener listener) {
         clockListeners.add(listener);
+    }
+
+  /**
+   * Un-Registers a clock listener
+   *
+   * @param listener Listener requiring clockTick updates
+   */
+    public synchronized void unRegisterListener(final ClockListener listener) {
+        clockListeners.remove(listener);
     }
 
     /**
@@ -304,10 +319,9 @@ public final class ClockTimer {
         notifyCheckStreamsBoundary();
     }
 
+    // Notify seek playback could be used if a different interval is need for the
+    // For the fake playback scheduler
     private void notifySeekPlayback() {
-        // TODO: Remove this once plugin's support fast playback forward / backward playback
-        // Only activate the seek playback for rates < 0 or > 2x
-        //if (rate > 2F || rate < 0F) { }
         for (ClockListener clockListener : clockListeners) {
             clockListener.clockSeekPlayback(clockTime);
         }
@@ -371,6 +385,14 @@ public final class ClockTimer {
     }
 
     /**
+     * Notify clock listeners of pause event.
+     */
+    private void notifyPause() {
+        for (ClockListener clockListener : clockListeners) {
+            clockListener.clockPause(clockTime);
+        }
+    }
+    /**
      * Listener interface for clock 'ticks'.
      */
     public interface ClockListener {
@@ -408,6 +430,11 @@ public final class ClockTimer {
          * @param clockTime Current time in milliseconds
          */
         void clockStop(double clockTime);
+
+        /**
+         * @param clockTime Current time in milliseconds
+         */
+        void clockPause(double clockTime);
 
         /**
          * @param rate Current (updated) rate.

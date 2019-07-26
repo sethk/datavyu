@@ -3,7 +3,6 @@
 # @author Shohan Hasan
 # Please read the function headers for information on how to use them.
 
-
 # Licensing information:
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -50,16 +49,15 @@ $debug = false
 # Prints the specified message if global variable #debug set true.
 # @param s item to print to console
 # @return nil
-def print_debug(*s)
-  if $debug == true
-    p s
-  end
+def print_debug(*str)
+  p str if $debug
 end
 
-# Set $db, this is so that JRuby doesn't decide to overwrite it halfway thru the script.
+# Set $db, this is so that JRuby doesn't decide
+# to overwrite it halfway thru the script.
 $db = Datavyu.get_project_controller.get_data_store
 $pj = Datavyu.get_project_controller.get_project
-$sp = Datavyu.get_view()
+$sp = Datavyu.get_view
 
 # Ruby representation of a spreadsheet cell.
 # Generally, the two ways to get access to a cell are:
@@ -73,10 +71,12 @@ $sp = Datavyu.get_view()
 # @!attribute offset
 #   @return [Fixnum] offset time of the cell in milliseconds
 # @!attribute [rw] arglist
-#   @note Use RColumn methods to modify column codes. Changing this list for the cell has no effect on the column.
+#   @note Use RColumn methods to modify column codes.
+#         Changing this list for the cell has no effect on the column.
 #   @return [Array<String>] list of codes inherited from parent column.
 # @!attribute argvals
-#   @note Dangerous to modify this directly since the order of the values must match the order of the code names.
+#   @note Dangerous to modify this directly since the order
+#         of the values must match the order of the code names.
 #   @return [Array] list of code values
 # @!attribute db_cell
 #   @note MODIFY AT OWN RISK.
@@ -184,7 +184,6 @@ class RCell
   #       trial.cells[0].change_code("onset", 1000)
   #       set_column(trial)
   def change_code(arg, val)
-    arg = arg.gsub(/(\W)+/, "").downcase
     if arg == "onset"
       val = val.to_i if val.class == String
       @onset = val
@@ -194,14 +193,17 @@ class RCell
     elsif arg == "ordinal"
       val = val.to_i if val.class == String
       @ordinal = val
-    elsif @arglist.include?(arg)
-      for i in 0..arglist.length-1
-        if arglist[i] == arg and not arg.nil?
-          argvals[i] = val.to_s
-        end
-      end
     else
-      raise "Unable to change code '#{arg}'; no such code found."
+      san_arg = RColumn.sanitize_codename(arg)
+      if self.arglist.include?(san_arg)
+        for i in 0..arglist.length-1
+          if arglist[i] == arg and not arg.nil?
+            argvals[i] = val.to_s
+          end
+        end
+      else
+        raise "Unable to change code '#{arg}'; no such code found."
+      end
     end
   end
   alias :change_arg :change_code
@@ -332,21 +334,23 @@ class RColumn
   attr_accessor :name, :type, :cells, :arglist, :old_args, :dirty, :db_var, :hidden
 
   def initialize()
-    hidden = false
+    self.hidden = false
   end
 
-  # Validate code name. Remove special characters and replace
+  # Validate code name. Replace non-alphanumeric characters
+  # with underscores and prepend an underscore if the code
+  # starts with a number.
   # @param name string to validate
   # @return [String] validated code name
   # @since 1.3.6
   def self.sanitize_codename(name)
-    sanitized = name.gsub(/(\W)+/, "").downcase
-    sanitized.gsub(/(^\d{1})/, '_\\1')
-    return sanitized
+    sanitized = name.gsub(/(\W)+/, '').downcase
+    sanitized.gsub!(/(^\d{1})/, '_\\1')
+    sanitized
   end
 
   def convert_argname(arg)
-    return RColumn.sanitize_codename(arg)
+    RColumn.sanitize_codename(arg)
   end
 
   # @note This function is not for general use.
@@ -360,10 +364,7 @@ class RColumn
     arglist.each do |arg|
       # Regex to delete any character not a-z,0-9,or _
       print_debug arg
-      if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(arg[0].chr)
-        arg = "_" + arg
-      end
-      @arglist << arg.gsub(/(\W)+/, "").downcase
+      @arglist << RColumn.sanitize_codename(arg)
     end
     if !newcells.nil?
       ord = 0
@@ -409,7 +410,7 @@ class RColumn
       c.onset = cell.onset
       c.offset = cell.offset
       self.arglist.each do |code|
-        c.change_arg(code, cell.get_arg(code)) if cell.arglist.include?(code)
+        c.change_code(code, cell.get_arg(code)) if cell.arglist.include?(code)
       end
     end
     c.parent = @name
@@ -432,15 +433,14 @@ class RColumn
   def change_code_name(old_name, new_name)
     i = @old_args.index(old_name)
     @old_args[i] = new_name
-    if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(old_name[1].chr)
-      old_name = "_" + old_name
-    end
-    old_name = old_name.gsub(/(\W)+/, "").downcase
+
+    # Sanitize code
+    old_name = RColumn.sanitize_codename(old_name)
 
     i = @arglist.index(old_name)
     @arglist[i] = new_name
     for cell in @cells
-      cell.change_arg_name(i, new_name)
+      cell.change_code_name(i, new_name)
     end
 
     @dirty = true
@@ -452,14 +452,11 @@ class RColumn
   # @return nil
   def add_code(name)
     @old_args << name
-    if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(name[1].chr)
-      name = "_" + name
-    end
-    name = name.gsub(/(\W)+/, "").downcase
+    san_name = RColumn.sanitize_codename(name)
 
-    @arglist << name
+    @arglist << san_name
     for cell in @cells
-      cell.add_arg(name)
+      cell.add_arg(san_name)
     end
 
     @dirty = true
@@ -472,11 +469,11 @@ class RColumn
   def remove_code(name)
     @old_args.delete(name)
 
-    name = name.gsub(/(\W)+/, "").downcase
-    @arglist.delete(name)
+    san_name = RColumn.sanitize_codename(name)
+    @arglist.delete(san_name)
 
     for cell in @cells
-      cell.remove_arg(name)
+      cell.remove_arg(san_name)
     end
 
     @dirty = true
@@ -680,11 +677,21 @@ def compute_kappa(pri_col, rel_col, *codes)
   observed_values = Hash.new{ |h, k| h[k] = [] }
   cells.each do |cell|
     codes.each do |code|
-      observed_values[code] << cell.get_arg(code)
+      observed_values[code] << cell.get_code(code)
     end
   end
 
-  observed_values.each_value{ |v| v.uniq! }
+  # Take the unique values for each code.
+  # Filter out codes that do not have minimum number of required values to compute kappa.
+  observed_values.delete_if do |c, vs|
+    vs.uniq!
+    if vs.size < 2
+      puts "Cannot compute score for #{c} (less than 2 values observed): #{v.join(',')}"
+      true
+    else
+      false
+    end
+  end
 
   # Init contingency tables for each code name
   tables = Hash.new
@@ -699,8 +706,8 @@ def compute_kappa(pri_col, rel_col, *codes)
   end
 
   cellPairs.each_pair do |pricell, relcell|
-    codes.each do |x|
-      tables[x].add(pricell.get_arg(x), relcell.get_arg(x))
+    tables.keys.each do |x|
+      tables[x].add(pricell.get_code(x), relcell.get_code(x))
     end
   end
 
@@ -765,13 +772,19 @@ alias :getColumn :get_column
 # Translate a Ruby column object into a Datavyu column and saves it to the spreadsheet.
 # If two parameters are specified, the first parameter is the name under which the column will be saved.
 # @note This function will overwrite existing spreadsheet columns with the same name as specified column / name.
+# @overload set_column(name, column, sanitize_codes)
+#   Saves column to spreadsheet with given name
+#   @param name [String] Name to save column as
+#   @param column [RColumn] Column object to save
+#   @param sanitize_codes [Boolean] When true, uses sanitized names for codes
+# @overload set_column(column, sanitize_codes)
 # @param args [String, RColumn] the name and RColumn object to save; the name parameter may be omitted
 # @return nil
 # @example
 #       trial = get_column("trial")
 #         ... Do some modification to trial ...
 #       set_column(trial)
-def set_column(*args)
+def set_column(*args, sanitize_codes: true)
 
   if args.length == 1
     var = args[0]
@@ -798,9 +811,10 @@ def set_column(*args)
     end
 
     # Set variable's vocab
-    for arg in var.arglist
+    var.arglist.zip(var.old_args).each do |arg, old_arg|
       new_arg = v.addArgument(Argument::Type::NOMINAL)
-      new_arg.name = arg
+      an = sanitize_codes ? arg : old_arg
+      new_arg.name = an
       main_arg = var.db_var.getRootNode()
       child_args = main_arg.childArguments
 
@@ -915,7 +929,7 @@ alias :setColumn :set_column
 # the given RColumn object.
 # Behaves similar to setVariable(), but this will ALWAYS delete
 # and rebuild the spreadsheet colum and its vocab.
-def set_column!(*args)
+def set_column!(*args, sanitize_codes: true)
   if args.length == 1
     var = args[0]
     name = var.name
@@ -924,70 +938,8 @@ def set_column!(*args)
     name = args[0]
   end
 
-  if getColumnList().include?(name)
-    deleteVariable(name)
-  end
-
-  # Create a new variable
-  v = $db.createVariable(name, Argument::Type::MATRIX)
-  var.db_var = v
-
-  if var.arglist.length > 0
-    var.db_var.removeArgument("code01")
-  end
-
-  # Set variable's vocab
-  for arg in var.arglist
-    new_arg = v.addArgument(Argument::Type::NOMINAL)
-    new_arg.name = arg
-    main_arg = var.db_var.getRootNode()
-    child_args = main_arg.childArguments
-
-    child_args.get(child_args.length-1).name = arg
-
-    var.db_var.setRootNode(main_arg)
-  end
-  var.db_var = v
-
-  # Create new cells and fill them in for each cell in the variable
-  for cell in var.cells
-    # Copy the information from the ruby variable to the new cell
-    cell.db_cell = var.db_var.createCell()
-
-    value = cell.db_cell.getCellValue()
-
-    if cell.onset != cell.db_cell.getOnset
-      cell.db_cell.setOnset(cell.onset)
-    end
-
-    if cell.offset != cell.db_cell.getOffset
-      cell.db_cell.setOffset(cell.offset)
-    end
-
-    # Matrix cell
-    if cell.db_cell.getVariable.getRootNode.type == Argument::Type::MATRIX
-      values = cell.db_cell.getCellValue().getArguments()
-      for arg in var.old_args
-        # Find the arg in the dataStore's arglist that we are looking for
-        for i in 0...values.size
-          dbarg = values[i]
-          dbarg_name = dbarg.getArgument.name
-          if dbarg_name == arg and not ["", nil].include?(cell.get_arg(var.convert_argname(arg)))
-            dbarg.set(cell.get_arg(var.convert_argname(arg)))
-            break
-          end
-        end
-      end
-      # Non-matrix cell
-    else
-      value = cell.db_cell.getCellValue()
-      value.set(cell.get_arg("var"))
-    end
-  end
-
-  # if var.hidden
-  var.db_var.setHidden(var.hidden)
-  # end
+  var.db_var = nil
+  set_column(name, var, sanitize_codes: sanitize_codes)
 end
 alias :setVariable! :set_column!
 
@@ -1036,7 +988,7 @@ def make_reliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
     end
     cell.arglist.each do |arg|
       if !args_to_keep.include?(arg)
-        cell.change_arg(arg, "")
+        cell.change_code(arg, "")
       end
     end
   end
@@ -1170,11 +1122,11 @@ def add_codes_to_column(var, *args)
 
   for cell in var.cells
     new_cell = var_new.make_new_cell()
-    new_cell.change_arg("onset", cell.onset)
-    new_cell.change_arg("offset", cell.offset)
+    new_cell.onset = cell.onset
+    new_cell.offset = cell.offset
     for arg in var.arglist
       v = eval "cell.#{arg}"
-      new_cell.change_arg(arg, v)
+      new_cell.change_code(arg, v)
     end
   end
 
@@ -1226,36 +1178,36 @@ def fix_one_off_cells(col1, col2)
 
       if (cell1.onset - cell2.onset).abs == 1
         print_debug "UPDATING CELL"
-        cell2.change_arg("onset", cell1.onset)
+        cell2.onset = cell1.onset
         print_debug "CELL2 ONSET IS NOW " + cell1.onset.to_s
         if j > 0 and col2.cells[j-1].offset == cell2.offset
-          col2.cells[j-1].change_arg("offset", col2.cells[i-1].offset + 1)
+          col2.cells[j-1].offset = col2.cells[i-1].offset + 1
         end
       end
 
       if (cell1.offset - cell2.offset).abs == 1
         print_debug "UPDATING CELL"
-        cell2.change_arg("offset", cell1.offset)
+        cell2.offset = cell1.offset
         print_debug "CELL2 OFFSET IS NOW " + cell1.offset.to_s
         if col2.cells[j+1].onset == cell2.offset
-          col2.cells[j+1].change_arg("onset", col2.cells[i-1].onset + 1)
+          col2.cells[j+1].onset = col2.cells[i-1].onset + 1
         end
       end
 
       if cell2.onset - cell1.offset == 1
         print_debug "UPDATING CELL"
-        cell1.change_arg("offset", cell2.onset)
+        cell1.offset = cell2.onset
         print_debug "CELL1 OFFSET IS NOW " + cell2.onset.to_s
         if col1.cells[i+1].onset == cell1.offset
-          col1.cells[i+1].change_arg("onset", col1.cells[i+1].onset + 1)
+          col1.cells[i+1].onset = col1.cells[i+1].onset + 1
         end
       end
       if cell1.onset - cell2.offset == 1
         print_debug "UPDATING CELL"
-        cell2.change_arg("offset", cell1.onset)
+        cell2.offset = cell1.onset
         print_debug "CELL2 OFFSET IS NOW " + cell1.onset.to_s
         if col2.cells[j+1].onset == cell2.offset
-          col2.cells[j+1].change_arg("onset", col2.cells[i+1].onset + 1)
+          col2.cells[j+1].onset = col2.cells[i+1].onset + 1
         end
       end
     end
@@ -1450,8 +1402,8 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
     if v1cell != nil or v2cell != nil
       mutex_cell = mutex.create_cell
 
-      mutex_cell.change_arg("onset", t0)
-      mutex_cell.change_arg("offset", t1)
+      mutex_cell.onset = t0
+      mutex_cell.offset = t1
       fillMutexCell(v1cell, v2cell, mutex_cell, mutex, var1_argprefix, var2_argprefix)
     end
 
@@ -1462,11 +1414,11 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
   # go through each time in the list and create a cell
 
   for arg in mutex.arglist
-    mutex.change_arg_name(arg, arg.gsub("___", "_"))
+    mutex.change_code_name(arg, arg.gsub("___", "_"))
   end
   for i in 0..mutex.cells.length-1
     c = mutex.cells[i]
-    c.change_arg("ordinal", i+1)
+    c.ordinal = i+1
   end
   puts "Created a column with #{mutex.cells.length} cells."
 
@@ -1482,13 +1434,13 @@ def fill_mutex_cell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix)
       a = arg.gsub(var1_argprefix, "")
       if arg.index(var1_argprefix) == 0
         v = eval "v1cell.#{a}"
-        cell.change_arg(arg, v)
+        cell.change_code(arg, v)
       end
 
       a = arg.gsub(var2_argprefix, "")
       if arg.index(var2_argprefix) == 0
         v = eval "v2cell.#{a}"
-        cell.change_arg(arg, v)
+        cell.change_code(arg, v)
       end
     end
 
@@ -1497,7 +1449,7 @@ def fill_mutex_cell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix)
       a = arg.gsub(var1_argprefix, "")
       if arg.index(var1_argprefix) == 0
         v = eval "v1cell.#{a}"
-        cell.change_arg(arg, v)
+        cell.change_code(arg, v)
       end
     end
 
@@ -1506,7 +1458,7 @@ def fill_mutex_cell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix)
       a = arg.gsub(var2_argprefix, "")
       if arg.index(var2_argprefix) == 0
         v = eval "v2cell.#{a}"
-        cell.change_arg(arg, v)
+        cell.change_code(arg, v)
       end
     end
   end
@@ -1588,9 +1540,9 @@ def merge_columns(name, *cols)
 
 			for c in ocells
 				unless c.nil?
-					ncell.change_arg(c.parent.downcase+"_ordinal", c.ordinal)
+					ncell.change_code(c.parent.downcase+"_ordinal", c.ordinal)
 					c.arglist.each do |a|
-						ncell.change_arg(c.parent.downcase+"_"+a, c.get_code(a))
+						ncell.change_code(c.parent.downcase+"_"+a, c.get_code(a))
 					end
 				end
 			end
@@ -1853,8 +1805,8 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
           offset = cellData[1].to_i / 60.0 * 1000
 
           # Set onset/offset of cell
-          cell.change_arg("onset", onset.round)
-          cell.change_arg("offset", offset.round)
+          cell.onset = onset.round
+          cell.offset = offset.round
 
           # Split up cell data
           data = cellData[cellData.length - 1]
@@ -1878,20 +1830,19 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
             data << nil
           end
           # Cycle thru cell data arguments and fill them into the cell matrix
-          narg = 0
           if data.is_a?(String)
             argname = cell.arglist.last
-            cell.change_arg(argname, data)
+            cell.change_code(argname, data)
           elsif data.is_a?(Array)
             data.each_with_index do |d, i|
               print_debug cell.arglist[1]
               argname = cell.arglist[i]
               if d == nil
-                cell.change_arg(argname, "")
+                cell.change_code(argname, "")
               elsif d == "" or d.index("<") != nil
-                cell.change_arg(argname, "")
+                cell.change_code(argname, "")
               else
-                cell.change_arg(argname, d)
+                cell.change_code(argname, d)
               end
             end
           end
@@ -2026,8 +1977,8 @@ def load_macshapa_db2(filename, write_to_gui, *ignore_vars)
           offset = cellData[1].to_i / 60.0 * 1000
 
           # Set onset/offset of cell
-          cell.change_arg("onset", onset.round)
-          cell.change_arg("offset", offset.round)
+          cell.onset = onset.round
+          cell.offset = offset.round
 
           # Split up cell data
           data = cellData[cellData.length - 1]
@@ -2051,20 +2002,19 @@ def load_macshapa_db2(filename, write_to_gui, *ignore_vars)
             data << nil
           end
           # Cycle thru cell data arguments and fill them into the cell matrix
-          narg = 0
           if data.is_a?(String)
             argname = cell.arglist.last
-            cell.change_arg(argname, data)
+            cell.change_code(argname, data)
           elsif data.is_a?(Array)
             data.each_with_index do |d, i|
               print_debug cell.arglist[1]
               argname = cell.arglist[i]
               if d == nil
-                cell.change_arg(argname, "")
+                cell.change_code(argname, "")
               elsif d == "" or d.index("<") != nil
-                cell.change_arg(argname, "")
+                cell.change_code(argname, "")
               else
-                cell.change_arg(argname, d)
+                cell.change_code(argname, d)
               end
             end
           end
@@ -2189,7 +2139,7 @@ def transfer_columns(db1, db2, remove, *varnames)
         c = newvar.make_new_cell()
         # Clone the existing cell arguments to the new cell.
         cell.arglist.each { |x|
-          c.change_arg(x, cell.get_arg(x))
+          c.change_code(x, cell.get_arg(x))
         }
         c.ordinal = cell.ordinal
         c.onset = cell.onset
@@ -2246,10 +2196,7 @@ alias :transferVariable :transfer_columns
 #   check_reliability("trial", "rel.trial", "trialnum", 100)
 def check_reliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
   # Make the match_arg conform to the method format that is used
-  if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(match_arg[0].chr)
-    match_arg = match_arg[1..match_arg.length]
-  end
-  match_arg = match_arg.gsub(/(\W)+/, "").downcase
+  match_arg = RColumn.sanitize_codename(match_arg)
 
   # Set up our method variables
   dump_file = dump_file[0]
@@ -2414,10 +2361,7 @@ def check_valid_codes(var, dump_file, *arg_code_pairs)
         exit
       end
       arg = arg_code_pairs[i]
-      if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(arg[1].chr)
-        arg = arg[1..arg.length]
-      end
-      arg = arg.gsub(/(\W )+/, "").downcase
+      arg = RColumn.sanitize_codename(arg)
 
       arg_code[arg] = arg_code_pairs[i+1]
     end
@@ -2480,10 +2424,7 @@ def check_valid_codes2(data, outfile, *arg_filt_pairs)
     		end
 
     		arg = arg_filt_pairs[i]
-    		if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
-    			arg = arg[1..arg.length]
-    		end
-    		arg = arg.gsub(/(\W )+/,"").downcase
+                arg = RColumn.sanitize_codename(arg)
 
   	    # Add the filter for this code.  If the given filter is an array, convert it to a regular expression using Regex.union
         arg_code[arg] = arg_filt_pairs[i+1]
@@ -2580,7 +2521,7 @@ def check_valid_codes3(map, outfile = nil)
       outfile.puts errors
       outfile.close
     end
-	end
+  end
 
   return [err_count, errors]
 end
@@ -2636,7 +2577,7 @@ def smooth_column(colname, tol=33)
     nextcell = col.cells[i+1]
 
     if nextcell.onset - curcell.offset < tol
-      nextcell.change_arg("onset", curcell.offset)
+      nextcell.onset = curcell.offset
     end
   end
   setVariable(colname, col)
@@ -2795,26 +2736,138 @@ def show_columns(*names)
   valid_names.each{ |x| $db.getVariable(x).setHidden(false) }
 end
 
-# Add a video to the current spreadsheet/controller.
-# @param filepath [String] path to the file
-# @param plugin [String] short name of plugin to load video with; currently supprots jfx, nativeosx, ffmpeg
-# @param onset [Integer] start point of video in milliseconds
-# @param timeout [Integer] seconds to wait for the video to load up
-# @return [True, False] true if filepath and plugin are valid, false otherwise
-# @since 1.4.2
-def new_video(filepath, plugin, onset=0, timeout=5)
-  id = Datavyu.getVideoController.openVideo(filepath, plugin)
-  return false if id.nil?
-
-  success = false
-  # Attempt to set track offset until timeout
-  tracks = Datavyu.getVideoController.getMixerController.getTracksEditorController
-  t = Time.now
-  while (Time.now - t).to_f < timeout
-    success = tracks.setTrackOffset(id, onset)
-    break if success
-    sleep(0.5)
+# Provide access to Datavyu's video controllers.
+class RVideoController
+  # @return [Hash] mapping from plugin names to UUID.
+  def self.plugin_uuids
+    {
+      'ffmpeg' => 'f13f226e-df7e-31dc-8bba-f35c71e53479',
+      'nativeosx' => 'db3fc496-58a7-3706-8538-3f61278b5bec'
+    }
   end
 
-  return success
+  # @return Datavyu's video controller
+  def self.video_controller
+    Datavyu.get_video_controller
+  end
+
+  # @return Datavyu's mixer controller
+  def self.mixer_controller
+    video_controller.get_mixer_controller
+  end
+
+  # @return Datavyu's video tracks controller
+  def self.tracks_controller
+    mixer_controller.get_tracks_editor_controller
+  end
+
+  # Set the start point of a video
+  # @param stream_id stream identifier
+  # @param onset [Long] start time
+  # @param timeout [Integer] seconds to wait for video repositioning to finish
+  def self.set_video_onset(stream_id, onset, timeout = 5)
+    success = false
+    t = Time.now
+    while (Time.now - t).to_f < timeout
+      success = tracks_controller.set_track_offset(stream_id, onset)
+      break if success
+
+      sleep(0.5)
+    end
+    video_controller.repaint
+    success
+  end
+
+  # Add a video to the current spreadsheet/controller.
+  # @param filepath [String] path to the file
+  # @param plugin [String] id of the plugin to use; either UUID or short name: ffmpeg, nativeosx, mpv
+  # @param onset [Integer] start point of video in milliseconds
+  # @param timeout [Integer] seconds to wait for the video to load up
+  # @return [True, False] true if filepath and plugin are valid, false otherwise
+  # @since 1.4.2
+  def self.new_video(filepath, plugin, onset=0, timeout=5)
+    if plugin_uuids.key?(plugin)
+      plugin_id = plugin_uuids[plugin]
+    elsif plugin_uuids.value?(plugin)
+      plugin_id = plugin
+    else
+      raise "Warning: invalid plugin \"#{plugin}\""
+    end
+
+    uuid = java.util.UUID.from_string(plugin_id)
+    id = video_controller.open_video(filepath, uuid)
+    return false if id.nil?
+    p id
+    success = set_video_onset(id, onset, timeout)
+    puts "WARNING: added video but timed out trying to set start point." unless success
+  end
+
+  # @return video streams
+  def self.videos
+    video_controller.get_stream_viewers
+  end
+
+  # Get the uuid of the plugin a video is using
+  # @param video video stream
+  # @return [UUID] plugin uuid of video
+  def self.plugin_uuid_of(video)
+    org.datavyu.plugins.PluginManager.get_instance
+       .get_associated_plugin(video.get_class.get_name)
+       .get_plugin_uuid.to_s
+  end
+
+  # Get the name of the plugin a video is using
+  # @param video video stream
+  # @return [String] short name of plugin used to open the video
+  def self.plugin_of(video)
+    uuid = plugin_uuid_of(video)
+    plugin_uuids.key(uuid)
+  end
+
+end
+
+def new_video(filepath, plugin, onset = 0)
+  RVideoController.new_video(filepath, plugin, onset)
+end
+
+# Save video controller information to spreadsheet column.
+# Each stream is saved to a different cell.
+# Onset and offset of cells designate track positions.
+# @param column_name [String] name of the returned column
+# @param file_code [String] code name of source file
+# @param plugin_code [String] code name of player plugin
+# @param plugin_uuid? [Boolean] save plugin as uuid if true, name otherwise
+def videos_to_column(column = 'tracks__',
+                     file_code = 'file',
+                     plugin_code = 'plugin', plugin_uuid = false)
+  if column.class == String
+    tracks_col = new_column(column, file_code, plugin_code)
+  end
+
+  RVideoController.videos.each do |stream|
+    ncell = tracks_col.new_cell
+    ncell.change_code(file_code,
+                      stream.get_source_file.get_path)
+    plugin = if plugin_uuid
+               RVideoController.plugin_uuid_of(stream)
+             else
+               RVideoController.plugin_of(stream)
+             end
+    ncell.change_code(plugin_code, plugin)
+    ncell.onset = stream.get_offset
+    ncell.offset = ncell.onset + stream.get_duration
+  end
+  tracks_col
+end
+
+def column_to_videos(column = 'tracks__', file_code = 'file',
+                     plugin_code = 'plugin')
+  tracks_col = column.class == String ? get_column(column) : column
+  raise "Invalid column: #{column}" if tracks_col.nil?
+
+  tracks_col.cells.each do |cell|
+    new_video(cell.get_code(file_code),
+              cell.get_code(plugin_code),
+              cell.onset)
+  end
 end

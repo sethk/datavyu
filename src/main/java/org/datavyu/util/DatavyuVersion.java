@@ -161,13 +161,27 @@ public class DatavyuVersion {
         try {
             URL url = new URL(versionURL);
             URLConnection urlConnection = url.openConnection();
-
-            /* Bug 320: Add OS information to user-agent */
-            String userAgentStr = Application.getInstance(Datavyu.class).getContext()
-                    .getResourceMap(Build.class).getString("Application.version")
-                    + "\t" +System.getProperty("java.version")
-                    + "\t" + System.getProperty("os.name")
-                    + "\t" + System.getProperty("os.version");
+            String userAgentStr;
+            if (ConfigProperties.getInstance().getShareData()) {
+                /* Bug 320: Add OS information to user-agent */
+                userAgentStr =
+                Application.getInstance(Datavyu.class)
+                        .getContext()
+                        .getResourceMap(Build.class)
+                        .getString("Application.version")
+                        + "\t"
+                        + System.getProperty("java.version")
+                        + "\t"
+                        + System.getProperty("os.name")
+                        + "\t"
+                        + System.getProperty("os.version");
+            } else {
+                userAgentStr =
+                    Application.getInstance(Datavyu.class)
+                        .getContext()
+                        .getResourceMap(Build.class)
+                        .getString("Application.version");
+            }
             urlConnection.setRequestProperty("User-Agent", userAgentStr);
 
             // Read version and build

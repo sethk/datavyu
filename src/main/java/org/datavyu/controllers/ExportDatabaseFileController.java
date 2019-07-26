@@ -19,14 +19,15 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import javax.swing.JOptionPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
+import org.datavyu.Datavyu.Platform;
 import org.datavyu.models.db.*;
+import org.datavyu.util.MacOS;
 import org.datavyu.util.StringUtils;
-import org.datavyu.views.discrete.SpreadSheetPanel;
-import org.datavyu.views.discrete.SpreadsheetColumn;
+import org.datavyu.util.WindowsOS;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -95,14 +96,26 @@ public final class ExportDatabaseFileController {
 
             // Now that we have the first and last time, we loop over it using
             // playback model's frameRate as step size. Fallback is 30.0
-            double frameRate = 30.0;
+            double frameRate;
             try{
-                double fromDVC = Datavyu.getVideoController().getFrameRateController().getFrameRate();
-                if (fromDVC > 1.0) {
-                    frameRate = Datavyu.getVideoController().getFrameRateController().getFrameRate();
+                frameRate = Datavyu.getVideoController().getFrameRateController().getFrameRate();
+                if (frameRate <= 1.0) {
+                    throw new IllegalArgumentException("Invalid frame rate");
                 }
-            } catch(Exception e) {
+            } catch(IllegalArgumentException e) {
                 frameRate = 30.0;
+                String defaultOption = "Cancel";
+                String alternativeOption = "OK";
+                String[] options = Datavyu.getPlatform() == Platform.MAC ? MacOS
+                    .getOptions(defaultOption, alternativeOption) :
+                    WindowsOS.getOptions(defaultOption, alternativeOption);
+                int selectedOption = JOptionPane.showOptionDialog(Datavyu.getView().getComponent(),
+                    "Unable to get frame rate. Would you like to export with a 30 frame per second?",
+                    e.getMessage(),
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, defaultOption);
+                boolean confirmation = (Datavyu.getPlatform() == Platform.MAC) ? (selectedOption == 1) : (selectedOption == 0);
+                if (!confirmation) { return; }
                 logger.error("Unable to get frame rate. Assuming value: " + frameRate);
             }
             long current_time = firstTime;

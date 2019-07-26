@@ -14,10 +14,11 @@
  */
 package org.datavyu.util;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 
 
 public class FileUtilsTest {

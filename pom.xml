@@ -5,7 +5,7 @@
     <groupId>org.datavyu</groupId>
     <artifactId>datavyu</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.2</version>
+    <version>1.5.0</version>
     <name>Datavyu</name>
     <url>http://datavyu.org</url>
 
@@ -247,13 +247,13 @@
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>ip-10-0-0-114-releases</name>
-            <url>https://projects.databrary.org/artifactory/libs-release-local</url>
+            <name>oss-jfrog-artifactory-releases</name>
+            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>ip-10-0-0-114-snapshots</name>
-            <url>https://projects.databrary.org/artifactory/libs-snapshot-local</url>
+            <name>oss-jfrog-artifactory-snapshots</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -288,14 +288,24 @@
                 <enabled>false</enabled>
             </snapshots>
             <id>central</id>
-            <name>libs-release</name>
-            <url>https://projects.databrary.org/artifactory/libs-release</url>
+            <name>oss-jfrog-artifactory-releases</name>
+            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </repository>
+
         <repository>
             <snapshots />
             <id>snapshots</id>
-            <name>libs-snapshot</name>
-            <url>https://projects.databrary.org/artifactory/libs-snapshot</url>
+            <name>oss-jfrog-artifactory-snapshots</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </repository>
+
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-datavyu-datavyu</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/datavyu/datavyu</url>
         </repository>
     </repositories>
 
@@ -324,14 +334,24 @@
                 <enabled>false</enabled>
             </snapshots>
             <id>central</id>
-            <name>libs-release</name>
-            <url>https://projects.databrary.org/artifactory/libs-release</url>
+            <name>oss-jfrog-artifactory-releases</name>
+            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </pluginRepository>
+
         <pluginRepository>
             <snapshots />
             <id>snapshots</id>
-            <name>libs-snapshot</name>
-            <url>https://projects.databrary.org/artifactory/libs-snapshot</url>
+            <name>oss-jfrog-artifactory-snapshots</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </pluginRepository>
+
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-datavyu-datavyu</id>
+            <name>bintray-plugins</name>
+            <url>https://dl.bintray.com/datavyu/datavyu</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -387,30 +407,17 @@
             </activation>
 
             <dependencies>
-
-                <dependency>
-                    <groupId>org.datavyu</groupId>
-                    <artifactId>vlcLibs-macosx</artifactId>
-                    <version>2.2.2</version>
-                    <scope>provided</scope>
-                </dependency>
-
                 <dependency>
                     <groupId>ch.randelshofer.quaqua</groupId>
                     <artifactId>quaqua-osx64</artifactId>
                     <version>7.0.1</version>
                 </dependency>
-
+                <!--FFmpeg plugin 0.22-SNAPSHOT -->
                 <dependency>
                     <groupId>org.datavyu</groupId>
-                    <artifactId>libNativeOSXCanvas</artifactId>
-                    <version>0.92</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.datavyu</groupId>
-                    <artifactId>libQTKitCanvas</artifactId>
-                    <version>0.2</version>
+                    <artifactId>ffmpeg-plugin</artifactId>
+                    <version>0.22-20190710.212748-4</version>
+                    <classifier>mac</classifier>
                 </dependency>
             </dependencies>
 
@@ -425,7 +432,13 @@
             </activation>
 
             <dependencies>
-
+                <!--FFmpeg plugin 0.22-SNAPSHOT -->
+                <dependency>
+                    <groupId>org.datavyu</groupId>
+                    <artifactId>ffmpeg-plugin</artifactId>
+                    <version>0.22-20190710.212541-3</version>
+                    <classifier>win</classifier>
+                </dependency>
             </dependencies>
 
             <build>
@@ -520,14 +533,11 @@
                         <!-- The Compiler Plugin is used to compile the sources of your project -->
                         <!-- Artifact: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
                         <!-- Documentation: https://maven.apache.org/plugins/maven-compiler-plugin -->
-                        <!-- Updated 09/19/2017 -->
+                        <!-- Updated 02/26/2019 -->
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.7.0</version>
-                        <configuration>
+                        <configuration combine.self="append">
                             <debug>false</debug>
                             <optimize>true</optimize>
-                            <source>1.8</source>
-                            <target>1.8</target>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -581,11 +591,11 @@
             <!-- Copies project resources to the output directory -->
             <!-- Artifact: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-resources-plugin -->
             <!-- Documentation: -->
-            <!-- Updated here: 09/20/2017 -->
+            <!-- Updated here: 03/29/2019 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -673,10 +683,13 @@
             <!-- Updated here: 09/20/2017 -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <excludes>
+                        <exclude>**/org/datavyu/plugins/mpv/*</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 
@@ -872,13 +885,13 @@
         <!-- We must specify this JNA version first so that all our dependencies are happy -->
 
         <!-- Native interface access -->
-        <!-- Documentation: http://java-native-access.github.io/jna/4.5.0/javadoc/ -->
+        <!-- Documentation: http://java-native-access.github.io/jna/5.2.0/javadoc/ -->
         <!-- Artifact: https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
-        <!-- Updated here: 09/19/2017 -->
+        <!-- Updated here: 02/04/2019 -->
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>4.5.0</version>
+            <version>5.2.0</version>
         </dependency>
 
         <!-- Run ruby scripts from java -->
@@ -918,16 +931,6 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.18</version>
-        </dependency>
-
-        <!-- Note, remove this dependency, fest-swing-testng has been updated to 1.2.1 Jun 2010 -->
-        <!-- TestNG-specific extension for FEST-Swing -->
-        <!-- Artifact: https://mvnrepository.com/artifact/org.easytesting/fest-swing-testng -->
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-swing-testng</artifactId>
-            <version>1.2.1</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- A testing framework for the JVM -->
@@ -1005,23 +1008,15 @@
             <version>1.2</version>
         </dependency>
 
-        <!-- Deprecated, see https://lists.apple.com/archives/quicktime-java/2008/Jun/msg00018.html -->
-        <!-- From our own artifactory on the www server at NYU -->
-        <dependency>
-            <groupId>quicktime</groupId>
-            <artifactId>QTJava</artifactId>
-            <version>7</version>
-        </dependency>
-
         <!-- Core and expanded libraries including utility classes, google's collections, io classes, etc. -->
         <!-- guava replaces the google-collections -->
         <!-- Artifactory: https://mvnrepository.com/artifact/com.google.guava/guava -->
         <!-- Documentation: https://github.com/google/guava/wiki -->
-        <!-- Updated here: 09/19/2017 -->
+        <!-- Updated here: 03/29/2019 -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>27.1-jre</version>
         </dependency>
 
         <!-- OSX look and feel file chooser -->
@@ -1047,40 +1042,40 @@
         <!-- Java Framework for the vlc Media Player -->
         <!-- Artifact: https://mvnrepository.com/artifact/uk.co.caprica/vlcj -->
         <!-- Documentation: http://caprica.github.io/vlcj/javadoc/3.5.0/index.html -->
-        <!-- Updated here: 09/20/2017 -->
+        <!-- Updated here: 01/18/2019 -->
         <dependency>
             <groupId>uk.co.caprica</groupId>
             <artifactId>vlcj</artifactId>
-            <version>3.10.1</version>
+            <version>3.12.0</version>
         </dependency>
 
         <!-- Logger API -->
         <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
         <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
-        <!-- Updated here: 09/20/2017 -->
+        <!-- Updated here: 03/29/2019 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.9.0</version>
+            <version>2.11.2</version>
         </dependency>
 
         <!-- Logger Core -->
         <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
         <!-- Documentation: (see API) -->
-        <!-- Updated here: 09/20/2017 -->
+        <!-- Updated here: 03/29/2019 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.9.0</version>
+            <version>2.11.2</version>
         </dependency>
 
         <!-- JSON Parser -->
         <!-- Artifact: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-        <!-- Updated here: 02/15/2018  -->
+        <!-- Updated here: 03/29/2019  -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.4</version>
+            <version>2.9.9.1</version>
         </dependency>
 
         <dependency>
@@ -1088,40 +1083,13 @@
                  (identical to) version x.y.1, x.y.2, etc. -->
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.4</version>
+            <version>2.9.9</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.4</version>
-        </dependency>
-
-        <!-- FFmpeg 4.0 -->
-        <dependency>
-            <groupId>org.datavyu</groupId>
-            <artifactId>ffmpeg-libs</artifactId>
-            <version>4.0.2</version>
-        </dependency>
-
-        <!-- SDl 2.0.8 -->
-        <dependency>
-            <groupId>org.datavyu</groupId>
-            <artifactId>sdl-libs</artifactId>
-            <version>2.0.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.datavyu</groupId>
-            <artifactId>mpv-libs</artifactId>
-            <version>0.29.1</version>
-        </dependency>
-
-        <!-- This is a beta version of the FFmpeg plugin 0.18-SNAPSHOT -->
-        <dependency>
-            <groupId>org.datavyu</groupId>
-            <artifactId>ffmpeg-plugin</artifactId>
-            <version>0.19-20181119.212437-1</version>
+            <version>2.9.9</version>
         </dependency>
 
         <!-- Updates with JRE from java version >= 1.7 -->
@@ -1134,12 +1102,17 @@
             <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>
         </dependency>
 
-        <!-- Using ByteDeco to get the FPS for the JavaFX plugin -->
         <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>ffmpeg-platform</artifactId>
-            <version>3.4.2-1.4.1</version>
+            <groupId>com.brsanthu</groupId>
+            <artifactId>google-analytics-java</artifactId>
+            <version>2.0.0</version>
         </dependency>
+      <dependency>
+        <groupId>org.easytesting</groupId>
+        <artifactId>fest-swing</artifactId>
+        <version>1.2a4</version>
+        <scope>test</scope>
+      </dependency>
 
     </dependencies>
 

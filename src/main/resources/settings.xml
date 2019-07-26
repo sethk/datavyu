@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<java version="1.8.0_91" class="java.beans.XMLDecoder">
+<java version="1.8.0_172" class="java.beans.XMLDecoder">
  <object class="org.datavyu.util.ConfigProperties">
   <void property="doWarnOnIllegalColumnNames">
    <boolean>true</boolean>
@@ -9,6 +9,12 @@
   </void>
   <void property="ignoreVersion">
    <string></string>
+  </void>
+  <void property="firstStart">
+   <boolean>true</boolean>
+  </void>
+  <void property="shareData">
+   <boolean>false</boolean>
   </void>
   <void property="lastChosenDirectory">
    <string>C:\Users\Florian</string>

@@ -14,6 +14,8 @@
  */
 package org.datavyu.controllers;
 
+import static org.testng.Assert.assertEquals;
+
 import org.apache.logging.log4j.LogManager;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Cell;
@@ -28,7 +30,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
 
 /**
  * Tests for opening Datavyu project and CSV files.

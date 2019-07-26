@@ -14,6 +14,10 @@
  */
 package org.datavyu.controllers.project;
 
+import java.awt.Desktop;
+import java.awt.Font;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
@@ -394,18 +398,47 @@ public final class ProjectController {
 
             Plugin plugin = pluginManager.getAssociatedPlugin(setting.getPluginName());
 
-/*            // BugzID:2110
-            if ((plugin == null) && (setting.getPluginClassifier() != null)) {
-                plugin = pm.getCompatiblePlugin(setting.getPluginClassifier(), file);
-            }
-
             if (plugin == null) {
+                JLabel label = new JLabel();
+                Font font = label.getFont();
 
-                // Record missing plugin.
-                missingPluginList.add(setting.getPluginName());
+                // create some css from the label's font
+                StringBuilder style = new StringBuilder("font-family:").append(font.getFamily()).append(";");
+                style.append("font-weight:").append(font.isBold() ? "bold" : "normal").append(";");
+                style.append("font-size:").append(font.getSize()).append("pt;");
 
-                continue;
-            }*/
+                // html content
+                JEditorPane ep = new JEditorPane("text/html",
+                    "<html><body style=\"" + style + "\">"
+                        + "Datavyu no longer support this plugin, please <a href=\"http://www.datavyu.org/download.html\">visit</a> <br/>"
+                        + "to find the appropriate Datavyu version for your plugin.<br/>"
+                        + "The video will be opened with the default plugin.");
+
+                // handle link events
+                ep.addHyperlinkListener(new HyperlinkListener() {
+                    @Override
+                    public void hyperlinkUpdate(HyperlinkEvent evt) {
+                        if (evt.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                            try {
+                                // roll your own link launcher or use Desktop if J6+
+                                Desktop.getDesktop().browse(evt.getURL().toURI());
+                            } catch (Exception e) {
+                                logger.error("Error when opening hyper text " + e);
+                            }
+                        }
+                    }
+                });
+                ep.setEditable(false);
+                ep.setBackground(label.getBackground());
+
+                // show
+                JOptionPane.showMessageDialog(Datavyu.getView().getComponent()
+                    , ep
+                    , JOptionPane.MESSAGE_PROPERTY
+                    , JOptionPane.PLAIN_MESSAGE);
+
+                plugin = PluginManager.getInstance().getCompatiblePlugin(setting.getPluginClassifier(), file) ;
+            }
 
             final StreamViewer streamViewer = plugin.getNewStreamViewer(
                     Identifier.generateIdentifier(),

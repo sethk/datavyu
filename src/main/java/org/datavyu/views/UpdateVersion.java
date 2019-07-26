@@ -26,12 +26,15 @@ public class UpdateVersion extends JDialog {
     private JButton updateNowButton;
     private JSeparator jSeparator1;
     private JCheckBox checkPreRelease;
+    private JCheckBox checkShareData;
 
     private DatavyuVersion serverVersion;
 
     private void prepareDialog() {
         ConfigProperties configuration = ConfigProperties.getInstance();
         checkPreRelease.setSelected(configuration.getUsePreRelease());
+
+        checkShareData.setSelected(configuration.getShareData());
 
         DatavyuVersion localVersion = DatavyuVersion.getLocalVersion();
         serverVersion = DatavyuVersion.getServerVersion();
@@ -71,12 +74,14 @@ public class UpdateVersion extends JDialog {
         JLabel currentVersionLabel = new JLabel();
         JLabel updateAvailableLabel = new JLabel();
         JLabel checkingForUpdatesLabel = new JLabel();
+        JLabel checkingForDataShareLabel = new JLabel();
         localVersionLabel = new JLabel();
         serverVersionLabel = new JLabel();
         updateLaterButton = new JButton();
         updateMessage = new JLabel();
         updateNeverButton = new JButton();
         checkPreRelease = new JCheckBox();
+        checkShareData = new JCheckBox();
         jSeparator1 = new JSeparator();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -165,6 +170,34 @@ public class UpdateVersion extends JDialog {
             }
         });
 
+        checkingForDataShareLabel.setText("Data Collection Acknowledgment...");
+
+        checkShareData.setText("Share Data");
+        checkShareData.setFocusPainted(false);
+        checkShareData.setFocusable(false);
+        checkShareData.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                // if we're selecting it, we need to confirm if the user is sure
+                if (checkShareData.isSelected()) {
+                    int dialogResult;
+                    dialogResult = JOptionPane.showConfirmDialog(null,
+                        "Share Data!",
+                        "Datavyu ",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+                    if (dialogResult == JOptionPane.YES_OPTION) {
+                        checkShareData.setSelected(true);
+                    } else {
+                        checkShareData.setSelected(false);
+                    }
+                }
+
+                ConfigProperties.getInstance().setShareData(checkShareData.getSelectedObjects() != null);
+
+                prepareDialog();
+            }
+        });
+
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -178,6 +211,10 @@ public class UpdateVersion extends JDialog {
                                                                 .addComponent(checkingForUpdatesLabel)
                                                                 .addGap(30, 30, 30)
                                                                 .addComponent(checkPreRelease))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(checkingForDataShareLabel)
+                                                                .addGap(30, 30, 30)
+                                                                .addComponent(checkShareData))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                                         .addGroup(layout.createSequentialGroup()
@@ -213,8 +250,16 @@ public class UpdateVersion extends JDialog {
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(checkPreRelease)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, 18)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(checkingForDataShareLabel)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(checkShareData)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(currentVersionLabel)
                                         .addComponent(localVersionLabel))

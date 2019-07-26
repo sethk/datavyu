@@ -3,14 +3,14 @@
 [Setup]
 AppId={{org.datavyu}}
 AppName=datavyu
-AppVersion=1.0
-AppVerName=datavyu
+AppVersion=1.5.0
+AppVerName=Datavyu 1.5.0
 AppPublisher=Datavyu Foundation
 AppComments=datavyu
 AppCopyright=Copyright (C) 2015
-;AppPublisherURL=http://java.com/
-;AppSupportURL=http://java.com/
-;AppUpdatesURL=http://java.com/
+;AppPublisherURL=http://www.datavyu.org/
+;AppSupportURL=http://www.datavyu.org/contact.html
+;AppUpdatesURL=http://www.datavyu.org/download.html
 DefaultDirName={code:DefDirRoot}\datavyu
 DisableStartupPrompt=Yes
 DisableDirPage=No
@@ -50,6 +50,9 @@ Name: "{userdesktop}\datavyu"; Filename: "{app}\datavyu.exe";  IconFilename: "{a
 [Run]
 Filename: "{app}\datavyu.exe"; Description: "{cm:LaunchProgram,datavyu}"; Flags: nowait postinstall skipifsilent; Check: returnTrue()
 Filename: "{app}\datavyu.exe"; Parameters: "-install -svcName ""datavyu"" -svcDesc ""datavyu"" -mainExe ""datavyu.exe""  "; Check: returnFalse()
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{code:DefDirRoot}\datavyu"
 
 [UninstallRun]
 Filename: "{app}\datavyu.exe "; Parameters: "-uninstall -svcName datavyu -stopOnUninstall"; Check: returnFalse()

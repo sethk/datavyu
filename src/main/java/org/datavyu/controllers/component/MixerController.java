@@ -771,14 +771,20 @@ public final class MixerController implements PropertyChangeListener,
 
     public void enableHighlightAndFocusHandler(final ActionEvent e) {
         Datavyu.getVideoController().toggleCellHighlightingAutoFocus();
-        Datavyu.getVideoController().setCellHighlighting(Datavyu.getVideoController().getCellHighlightAndFocus());
 
-        if (!Datavyu.getVideoController().getCellHighlighting()) {
+        if (!Datavyu.getVideoController().getCellHighlightAndFocus()) {
             enableHighlightAndFocus.setText("Enable Highlight and Focus");
+            if (Datavyu.getVideoController().getCellHighlighting()) {
+                enableHighlightHandler(null);
+            }
         } else {
             enableHighlightAndFocus.setText("Disable Highlight and Focus");
+            if (!Datavyu.getVideoController().getCellHighlighting()) {
+                enableHighlightHandler(null);
+            }
         }
 
+        enableHighlight.setEnabled(!Datavyu.getVideoController().getCellHighlightAndFocus());
         Datavyu.getProjectController().getSpreadSheetPanel().redrawCells();
     }
 
