@@ -259,7 +259,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
      *
      * @return Aspect ratio as width/height.
      */
-    private double getAspectRatio() {
+    protected double getAspectRatio() {
         return (originalVideoSize != null) ? (originalVideoSize.getWidth() / originalVideoSize.getHeight()) : 1;
     }
 

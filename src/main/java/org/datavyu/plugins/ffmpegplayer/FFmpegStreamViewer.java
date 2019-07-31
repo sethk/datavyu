@@ -179,10 +179,19 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
 
     @Override
     protected void resizeVideo(float scale) {
-        super.resizeVideo(scale);
         logger.info("Resizing video to scale %2.2f", scale);
-        player.setScale(scale);
-        notifyChange();
+
+        if (getAspectRatio() > 0.0) {
+            int newHeight = (int) (player.getOriginalVideoSize().getHeight() * scale);
+            int newWidth = (int) (newHeight * getAspectRatio());
+              if (newWidth > player.getOriginalVideoSize().getWidth()) {
+                newWidth = (int) player.getOriginalVideoSize().getWidth();
+                newHeight = (int) (newWidth / getAspectRatio());
+              }
+
+            player.setViewerSize(newWidth, newHeight);
+            notifyChange();
+        }
     }
 
     @Override
