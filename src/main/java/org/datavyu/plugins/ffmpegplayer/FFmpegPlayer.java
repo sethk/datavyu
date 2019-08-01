@@ -157,4 +157,15 @@ public class FFmpegPlayer extends JPanel {
 			mediaPlayer.hideSDLWindow();
 		}
 	}
+
+	public int getViewerWidth() {
+		return mediaPlayer.getWindowWidth();
+	}
+	public int getViewerHeight() {
+		return mediaPlayer.getWindowHeight();
+	}
+
+	public void setViewerSize(final int width, final int height) {
+		mediaPlayer.setWindowSize(width, height);
+	}
 }

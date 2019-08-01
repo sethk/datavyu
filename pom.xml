@@ -416,7 +416,7 @@
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>ffmpeg-plugin</artifactId>
-                    <version>0.22-20190710.212748-4</version>
+                    <version>0.22-SNAPSHOT</version>
                     <classifier>mac</classifier>
                 </dependency>
             </dependencies>
@@ -436,7 +436,7 @@
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>ffmpeg-plugin</artifactId>
-                    <version>0.22-20190710.212541-3</version>
+                    <version>0.22-SNAPSHOT</version>
                     <classifier>win</classifier>
                 </dependency>
             </dependencies>
