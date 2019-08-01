@@ -457,7 +457,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
             property = settings.getProperty("visible");
             if ((property != null) && !property.equals("")) {
-                this.setVisible(Boolean.parseBoolean(property));
+                setViewerVisible(Boolean.parseBoolean(property));
                 setVolume();
             }
 
