@@ -543,6 +543,8 @@ public class SpreadsheetCell extends JPanel
             // Update the find windows to the newly selected cell's values
             Datavyu.getVideoController().setOnsetField(model.getOnset());
             Datavyu.getVideoController().setOffsetField(model.getOffset());
+        } else {
+            parentColumn.setIndexOfPreviousFocusedCell(getDataView().getEdTracker().indexOfCurrentEditor());
         }
     }
 
@@ -665,6 +667,8 @@ public class SpreadsheetCell extends JPanel
                 }
             }
         }
+
+        parentColumn.setIndexOfPreviousFocusedCell(getDataView().getEdTracker().indexOfCurrentEditor());
 
         List<Cell> selectedCells = Datavyu.getProjectController().getDataStore().getSelectedCells();
         List<Cell> newSelectedCell =  new ArrayList<>();
