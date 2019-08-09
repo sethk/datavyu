@@ -508,7 +508,7 @@ public final class SpreadsheetColumn extends JLabel implements VariableListener,
                             c.getDataView().getEdTracker().setEditor(c.getDataView().getEdTracker().getEditorAtArgIndex(firstEmpty));
                         } else {
                             c.requestFocus();
-                            c.getDataView().getEdTracker().setEditor(c.getDataView().getEdTracker().getEditorAtIndex(previouslyFocusedCellIdx));
+                            c.getDataView().getEdTracker().setEditor(c.getDataView().getEdTracker().getEditorAtIndex(previouslyFocusedCellIdx > -1 ? previouslyFocusedCellIdx : 0));
                         }
                     } else {
                         if(c.getCell().getCellValue().isEmpty()) {
