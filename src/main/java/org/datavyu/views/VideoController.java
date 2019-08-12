@@ -342,6 +342,7 @@ public final class VideoController extends DatavyuDialog
         new Thread(() -> {
             if (plugin != null) {
                 try {
+                    logger.debug("Open Video " + videoFile + " With plugin " + plugin);
                     StreamViewer streamViewer = plugin.getNewStreamViewer(
                             id,
                             videoFile,
