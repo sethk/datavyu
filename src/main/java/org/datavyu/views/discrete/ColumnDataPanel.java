@@ -329,7 +329,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                         cellUP.getCell().setHighlighted(true);
                         cellUP.getCell().setSelected(true);
-                        cellUP.getDataView().getEdTracker().setEditor(cellUP.getDataView().getEdTracker().getEditorAtIndex(pos));
+                        cellUP.getDataView().getEdTracker().setEditor(cellUP.getDataView().getEdTracker().getEditorAtIndex(pos > -1 ? pos : 0));
                         cellUP.requestFocus();
 
                         e.consume();
@@ -350,7 +350,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                         cellDOWN.getCell().setHighlighted(true);
                         cellDOWN.getCell().setSelected(true);
-                        cellDOWN.getDataView().getEdTracker().setEditor(cellDOWN.getDataView().getEdTracker().getEditorAtIndex(pos));
+                        cellDOWN.getDataView().getEdTracker().setEditor(cellDOWN.getDataView().getEdTracker().getEditorAtIndex(pos > -1 ? pos : 0));
                         cellDOWN.requestFocus();
 
                         e.consume();

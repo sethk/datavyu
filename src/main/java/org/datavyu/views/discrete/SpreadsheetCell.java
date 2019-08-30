@@ -543,7 +543,7 @@ public class SpreadsheetCell extends JPanel
             // Update the find windows to the newly selected cell's values
             Datavyu.getVideoController().setOnsetField(model.getOnset());
             Datavyu.getVideoController().setOffsetField(model.getOffset());
-        } else {
+        } else if(getDataView().getEdTracker().indexOfCurrentEditor() > -1) {
             parentColumn.setIndexOfPreviousFocusedCell(getDataView().getEdTracker().indexOfCurrentEditor());
         }
     }
@@ -580,6 +580,7 @@ public class SpreadsheetCell extends JPanel
         // User has clicked in magic spot, without modifier. Clear
         // currently selected cells and select this cell.
         if (!isEditorSrc && !groupSel && !contSel) {
+          logger.debug("User has clicked in magic spot, without modifier");
             ord.requestFocus();
             cellSelL.clearCellSelection();
             model.setHighlighted(!model.isSelected());
@@ -591,6 +592,7 @@ public class SpreadsheetCell extends JPanel
             // User has clicked on editor or magic spot with modifier. Add
             // this cell to the current selection.
         } else if (groupSel && !contSel) {
+          logger.debug("User has clicked on editor or magic spot with modifier.");
             ord.requestFocus();
             model.setHighlighted(!model.isSelected());
 
@@ -601,6 +603,7 @@ public class SpreadsheetCell extends JPanel
             // User has clicked on editor or magic spot with shift modifier.
             // Add this cell and everything in between the current selection.
         } else if (contSel) {
+          logger.debug("User has clicked on editor or magic spot with shift modifier");
             ord.requestFocus();
             cellSelL.addCellToContinousSelection(this);
 
@@ -609,6 +612,7 @@ public class SpreadsheetCell extends JPanel
         } else {
             // Only change selection if not selected.
             if (!model.isHighlighted()) {
+                logger.debug("Just highlighted");
                 // BugzID:320 - Deselect cells before selected cell contents.
                 cellSelL.clearCellSelection();
                 model.setHighlighted(true);
