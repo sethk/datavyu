@@ -959,7 +959,7 @@ public final class VideoController extends DatavyuDialog
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 
                     // Parse the new frame rate
-                    float newFramesPerSecond = 1F/Float.parseFloat(stepSizeTextField.getText());
+                    float newFramesPerSecond = Float.parseFloat(stepSizeTextField.getText());
 
                     // Update the frame rate controller with the user defined frame rate
                     frameRateController.addUserFrameRate(newFramesPerSecond);
