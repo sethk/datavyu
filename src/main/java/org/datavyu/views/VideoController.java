@@ -574,10 +574,10 @@ public final class VideoController extends DatavyuDialog
      *
      * @param id The identifier of the viewer to shutdown.
      */
-    public void shutdown(final Identifier id) {
+    public void shutdown(final Identifier id, boolean confirm) {
         StreamViewer streamViewer = getStreamViewer(id);
 
-        if ((streamViewer == null) || !shouldRemove()) {
+        if ((streamViewer == null) || (confirm && !shouldRemove())) {
             return;
         }
 
@@ -605,6 +605,9 @@ public final class VideoController extends DatavyuDialog
         Datavyu.getProjectController().projectChanged();
     }
 
+    public void shutdown(final Identifier id){
+        shutdown(id, true);
+    }
     /**
      * Binds a window event listener to a stream viewer.
      *
