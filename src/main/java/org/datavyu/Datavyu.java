@@ -171,8 +171,6 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
     public static void main(final String[] args) {
         // If we are running on a MAC set system properties
         if (Datavyu.getPlatform() == Platform.MAC) {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Datavyu");
             System.setProperty("Quaqua.jniIsPreloaded", "true");
         }
         launch(Datavyu.class, args);
