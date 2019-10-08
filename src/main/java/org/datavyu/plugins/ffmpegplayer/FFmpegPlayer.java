@@ -8,11 +8,9 @@ import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 
-public class FFmpegPlayer extends JPanel {
+public class FFmpegPlayer implements SdlKeyEventListener {
 
   /** Identifier for object serialization */
   private static final long serialVersionUID = 5109839668203738974L;
@@ -22,7 +20,8 @@ public class FFmpegPlayer extends JPanel {
 	
 	/** The movie stream for this movie player */
 	private MediaPlayer mediaPlayer;
-	private SdlKeyEventListener keyEventListener;
+
+	private FFmpegStreamViewer viewer;
 
 	/**
 	 * Construct an FFmpegPlayer by creating the underlying movie stream provider
@@ -33,22 +32,11 @@ public class FFmpegPlayer extends JPanel {
      * @param sourceFile The source file
 	 */
 	FFmpegPlayer(FFmpegStreamViewer viewer, File sourceFile) {
-		setLayout(new BorderLayout());
-		try {
-			mediaPlayer = new FfmpegSdlMediaPlayer(sourceFile.toURI());
-			mediaPlayer.init();
-			keyEventListener = (source, nativeMediaRef, javaKeyCode) -> {
-        logger.debug("Player dispatching event " + javaKeyCode);
-        viewer.dispatchEvent(new KeyEvent(
-            viewer,
-            KeyEvent.KEY_PRESSED,
-            System.currentTimeMillis(),
-            0,
-            javaKeyCode,
-            KeyEvent.CHAR_UNDEFINED,
-            KeyEvent.KEY_LOCATION_NUMPAD));
-      };
-      mediaPlayer.addSdlKeyEventListener(keyEventListener);
+    try {
+    	this.viewer = viewer;
+			this.mediaPlayer = new FfmpegSdlMediaPlayer(sourceFile.toURI());
+			this.mediaPlayer.init();
+			this.mediaPlayer.addSdlKeyEventListener(this);
 		}catch (Exception e) {
 			logger.error("Cannot initialize ffmpeg player due to error: ", e);
 		}
@@ -60,15 +48,6 @@ public class FFmpegPlayer extends JPanel {
 	 * @return Duration of the opened stream.
 	 */
 	public double getDuration() {	return mediaPlayer.getDuration();	}
-
-	/**
-	 * Get the original stream size (not the size when a viewing window is used).
-	 *
-	 * @return Original stream size: width, height.
-	 */
-	public Dimension getOriginalVideoSize() {
-		return new Dimension(mediaPlayer.getImageWidth(), mediaPlayer.getImageHeight());
-	}
 
 	/**
 	 * Get the current time in seconds.
@@ -95,10 +74,8 @@ public class FFmpegPlayer extends JPanel {
 	 * Clean up the player before closing.
 	 */
 	public void cleanUp() {
-    if (keyEventListener != null) {
-      mediaPlayer.removeSdlKeyEventListener(keyEventListener);
-		}
-		mediaPlayer.dispose();
+		this.mediaPlayer.removeSdlKeyEventListener(this);
+		this.mediaPlayer.dispose();
 	}
 
 	/**
@@ -167,5 +144,20 @@ public class FFmpegPlayer extends JPanel {
 
 	public void setViewerSize(final int width, final int height) {
 		mediaPlayer.setWindowSize(width, height);
+	}
+
+	@Override
+	public void onKeyEvent(Object source, long nativeMediaRef, int javaKeyCode) {
+		logger.debug("Player dispatching event " + javaKeyCode);
+		if (viewer != null) {
+			viewer.dispatchEvent(new KeyEvent(
+					viewer,
+					KeyEvent.KEY_PRESSED,
+					System.currentTimeMillis(),
+					0,
+					javaKeyCode,
+					KeyEvent.CHAR_UNDEFINED,
+					KeyEvent.KEY_LOCATION_NUMPAD));
+		}
 	}
 }

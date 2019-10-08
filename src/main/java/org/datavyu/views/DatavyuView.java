@@ -136,6 +136,9 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     private javax.swing.JSeparator jSeparator11;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JSeparator fileMenuSeparator;
+    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem newCellLeftMenuItem;
     private javax.swing.JMenuItem newCellMenuItem;
     private javax.swing.JMenuItem newCellRightMenuItem;
@@ -1971,7 +1974,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         menuBar.setFocusable(false);
-        javax.swing.JMenu fileMenu = new javax.swing.JMenu();
+        fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
         closeTabMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
@@ -1982,8 +1985,8 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         saveAsMenuItem = new javax.swing.JMenuItem();
         exportMenuItem = new javax.swing.JMenuItem();
         exportByFrameMenuItem = new javax.swing.JMenuItem();
-        javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
-        javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
+        fileMenuSeparator = new javax.swing.JSeparator();
+        exitMenuItem = new javax.swing.JMenuItem();
         spreadsheetMenu = new javax.swing.JMenu();
         showSpreadsheetMenuItem = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -2139,7 +2142,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         spreadsheetMenu.setName("spreadsheetMenu");
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-                logger.info("Menu Selected - Selected Columns: " + Datavyu.getProjectController().getDataStore().getSelectedVariables());
+                logger.debug("Menu Selected - Selected Columns: " + Datavyu.getProjectController().getDataStore().getSelectedVariables());
                 if(Datavyu.getPlatform() == Platform.WINDOWS) {
                     Datavyu.getProjectController().setLastSelectedVariables(Datavyu.getProjectController().getDataStore().getSelectedVariables());
                     Datavyu.getProjectController().setLastSelectedCells(Datavyu.getProjectController().getDataStore().getSelectedCells());
@@ -2149,7 +2152,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
             }
 
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
-                logger.info("Menu Deselected - Selected Columns: " + Datavyu.getView().getSpreadsheetPanel().getDataStore().getSelectedVariables());
+                logger.debug("Menu Deselected - Selected Columns: " + Datavyu.getView().getSpreadsheetPanel().getDataStore().getSelectedVariables());
                 //We request the Focus only for the Windows version
                 if(Datavyu.getPlatform() == Platform.WINDOWS) {
                     Datavyu.getView().getSpreadsheetPanel().requestFocus();
@@ -2353,7 +2356,7 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         scriptMenu.setName("scriptMenu");
         scriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateFavourites(evt);
+              populateFavourites(evt);
             }
 
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
