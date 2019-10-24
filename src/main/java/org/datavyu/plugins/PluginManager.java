@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.ffmpegplayer.FFmpegPlugin;
+import org.datavyu.plugins.nativeosx.AvFoundationViewer;
 import org.datavyu.util.MacOS;
 import org.jdesktop.application.LocalStorage;
 
@@ -474,6 +475,12 @@ public final class PluginManager {
      * {@code null} otherwise.
      */
     public Plugin getAssociatedPlugin(final String dataViewer) {
+        //Native OSX backward compatibility
+        if (dataViewer.equals("org.datavyu.plugins.nativeosx.NativeOSXViewer")) {
+            // Datavyu 1.3.7
+            logger.info("Native OSX " + AvFoundationViewer.class.getName());
+            return viewerClassToPlugin.get(AvFoundationViewer.class.getName());
+        }
         return viewerClassToPlugin.get(dataViewer);
     }
 
