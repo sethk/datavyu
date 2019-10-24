@@ -1560,7 +1560,7 @@ public final class VideoController extends DatavyuDialog
                     logger.info("Stream " + streamViewer.getIdentifier()
                         + " - Jog back to frame " + (int) frameNB);
 
-                    streamViewer.setCurrentFrame((int) frameNB);
+                    streamViewer.stepBackward();
                 } else if (trackModel != null){
                     // Get the stream time
                     long trackTime = streamViewer.getCurrentTime();
@@ -1638,7 +1638,7 @@ public final class VideoController extends DatavyuDialog
                     logger.info("Stream " + streamViewer.getIdentifier()
                         + " - Jog forward to frame " + (int) frameNB);
 
-                    streamViewer.setCurrentFrame((int) frameNB);
+                    streamViewer.stepForward();
                 } else if (trackModel != null){
                     // Get the stream time
                     long trackTime = streamViewer.getCurrentTime();

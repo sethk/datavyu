@@ -54,11 +54,6 @@ public class AvFoundationViewer extends StreamViewerDialog  {
   }
 
   @Override
-  public void setCurrentFrame(int frame) {
-    throw new NotImplementedException();
-  }
-
-  @Override
   public void setRate(final float rate) {
     logger.info("Setting playback speed to: " + rate + "X");
     playBackRate = rate;
