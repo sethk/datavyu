@@ -416,7 +416,7 @@
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>ffmpeg-plugin</artifactId>
-                    <version>0.22-SNAPSHOT</version>
+                    <version>0.22-20191024.164304-9</version>
                     <classifier>mac</classifier>
                 </dependency>
             </dependencies>
@@ -436,7 +436,7 @@
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>ffmpeg-plugin</artifactId>
-                    <version>0.22-SNAPSHOT</version>
+                    <version>0.22-20191024.170713-10</version>
                     <classifier>win</classifier>
                 </dependency>
             </dependencies>
@@ -687,9 +687,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <excludes>
-                        <exclude>**/org/datavyu/plugins/mpv/*</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
 

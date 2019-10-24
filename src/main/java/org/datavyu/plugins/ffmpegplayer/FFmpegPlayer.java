@@ -64,13 +64,6 @@ public class FFmpegPlayer implements SdlKeyEventListener {
 	public void setCurrentTime(double position) { mediaPlayer.seek(position); }
 
 	/**
-	 * Seek to a frame index.
-	 *
-	 * @param frame index.
-	 */
-	public void setCurrentFrame(int frame) { mediaPlayer.seekToFrame(frame); }
-
-	/**
 	 * Clean up the player before closing.
 	 */
 	public void cleanUp() {

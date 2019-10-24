@@ -66,20 +66,6 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
   }
 
   @Override
-  public void setCurrentFrame(int frame) {
-    try {
-      if (!isSeeking) {
-        isSeeking = true;
-        logger.info("Set Frame to: " + frame);
-        player.setCurrentFrame(frame);
-        isSeeking = false;
-      }
-    } catch (Exception e) {
-      logger.error("Unable to set frame to " + frame + ", due to error: ", e);
-    }
-  }
-
-  @Override
   public void start() {
     if (!isPlaying()) {
       logger.info("Starting the video");

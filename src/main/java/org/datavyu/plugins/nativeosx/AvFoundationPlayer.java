@@ -17,7 +17,7 @@ public class AvFoundationPlayer {
       mediaPlayer = new AVFoundationMediaPlayer(mediaFile.toURI(), viewer);
       mediaPlayer.init();
     }catch (Exception e) {
-      logger.error("Cannot initialize MPV player due to error: ", e);
+      logger.error("Cannot initialize Native OSX player due to error: ", e);
     }
   }
 
