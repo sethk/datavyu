@@ -1563,15 +1563,15 @@ public final class VideoController extends DatavyuDialog
                     streamViewer.stepBackward();
                 } else if (trackModel != null){
                     // Get the stream time
-                    long trackTime = streamViewer.getCurrentTime();
+                    long trackTime = newTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.max( Math.min(Math.max(newTime, 0),
+                    long newStreamTime = Math.max( Math.min(Math.max(trackTime, 0),
                                             trackModel.getDuration())
                         , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionStart());
 
                     logger.info("Stream " + streamViewer.getIdentifier()
-                        + " - Jog back from " + newTime + " milliseconds to " + newStreamTime + " milliseconds");
+                        + " - Jog back from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds");
 
                     streamViewer.setCurrentTime(newStreamTime);
                 }
@@ -1641,15 +1641,15 @@ public final class VideoController extends DatavyuDialog
                     streamViewer.stepForward();
                 } else if (trackModel != null){
                     // Get the stream time
-                    long trackTime = streamViewer.getCurrentTime();
+                    long trackTime = newTime - trackModel.getOffset();
 
                     // Notice that the new time is in jogs to frame markers by being modulo step size
-                    long newStreamTime = Math.min(Math.min(Math.max(newTime, 0),
+                    long newStreamTime = Math.min(Math.min(Math.max(trackTime, 0),
                                             trackModel.getDuration())
                        , Datavyu.getVideoController().getMixerController().getRegionController().getModel().getRegion().getRegionEnd());
 
                     logger.info("Stream " + streamViewer.getIdentifier()
-                        + " - Jog forward from " + newTime + " milliseconds to " + newStreamTime + " milliseconds.");
+                        + " - Jog forward from " + trackTime + " milliseconds to " + newStreamTime + " milliseconds.");
 
                     streamViewer.setCurrentTime(newStreamTime);
                 }
