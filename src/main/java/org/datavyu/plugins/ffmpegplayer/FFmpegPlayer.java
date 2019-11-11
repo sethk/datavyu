@@ -3,7 +3,7 @@ package org.datavyu.plugins.ffmpegplayer;
 import java.awt.event.KeyEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.MediaPlayerWindow;
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
@@ -12,14 +12,11 @@ import java.io.File;
 
 public class FFmpegPlayer implements SdlKeyEventListener {
 
-  /** Identifier for object serialization */
-  private static final long serialVersionUID = 5109839668203738974L;
-
-  /** The logger for this class */
-  private static Logger logger = LogManager.getFormatterLogger(FFmpegPlayer.class);
+  	/** The logger for this class */
+  	private static Logger logger = LogManager.getFormatterLogger(FFmpegPlayer.class);
 	
 	/** The movie stream for this movie player */
-	private MediaPlayer mediaPlayer;
+	private MediaPlayerWindow mediaPlayer;
 
 	private FFmpegStreamViewer viewer;
 
@@ -118,21 +115,22 @@ public class FFmpegPlayer implements SdlKeyEventListener {
 
 	boolean isPlaying() { return mediaPlayer.getState() == PlayerStateEvent.PlayerState.PLAYING; }
 
-  public double getFPS() { return mediaPlayer.getFps();	}
+  	public double getFPS() { return mediaPlayer.getFps();	}
 
 	public void setViewerVisible(final boolean isVisible) {
 		if (isVisible) {
-			mediaPlayer.showSDLWindow();
+			mediaPlayer.showWindow();
 		} else {
-			mediaPlayer.hideSDLWindow();
+			mediaPlayer.hideWindow();
 		}
 	}
 
-	public int getViewerWidth() {
-		return mediaPlayer.getWindowWidth();
+	public int getImageWidth() {
+		return mediaPlayer.getImageWidth();
 	}
-	public int getViewerHeight() {
-		return mediaPlayer.getWindowHeight();
+
+	public int getImageHeight() {
+		return mediaPlayer.getImageHeight();
 	}
 
 	public void setViewerSize(final int width, final int height) {

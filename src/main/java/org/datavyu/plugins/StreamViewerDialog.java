@@ -241,6 +241,8 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
 
     protected abstract Dimension getOriginalVideoSize();
 
+    protected abstract void setViewerSize(int width, int height);
+
     /**
      * {@inheritDoc}
      */
@@ -260,7 +262,7 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
      * @return Aspect ratio as width/height.
      */
     private double getAspectRatio() {
-        return (originalVideoSize != null) ? (originalVideoSize.getWidth() / originalVideoSize.getHeight()) : 1;
+        return (getOriginalVideoSize() != null) ? (getOriginalVideoSize().getWidth() / getOriginalVideoSize().getHeight()) : 1;
     }
 
     @Override
@@ -281,15 +283,14 @@ public abstract class StreamViewerDialog extends DatavyuDialog implements Stream
     protected void resizeVideo(final float scale) {
 
         // Resampling is assumed to be done in the plugin
-        int scaleHeight = (int) (originalVideoSize.getHeight() * scale);
+        int scaleHeight = (int) (getOriginalVideoSize().getHeight() * scale);
 
         // lock the aspect ratio
         if (getAspectRatio() > 0.0) {
-            int newWidth = (int) (scaleHeight * getAspectRatio()) + getInsets().left + getInsets().right;
-            int newHeight = scaleHeight + getInsets().bottom + getInsets().top;
+            int newWidth = (int) (scaleHeight * getAspectRatio());
+            int newHeight = scaleHeight;
 
-            setSize(newWidth, newHeight);
-            validate();
+            setViewerSize(newWidth, newHeight);
         }
         notifyChange();
     }
