@@ -39,7 +39,13 @@ public class AvFoundationViewer extends StreamViewerDialog  {
   @Override
   protected Dimension getOriginalVideoSize() {
     logger.debug("Getting Image Dimension");
-    return player.getOriginalVideoSize();
+    return new Dimension(player.getImageWidth(), player.getImageHeight());
+  }
+
+  @Override
+  protected void setViewerSize(int width, int height) {
+    player.setViewerSize(width,height);
+    validate();
   }
 
   @Override

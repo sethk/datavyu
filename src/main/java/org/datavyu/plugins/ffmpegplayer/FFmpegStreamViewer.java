@@ -48,7 +48,12 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
   @Override
   protected Dimension getOriginalVideoSize() {
     logger.debug("Getting Image Dimension");
-    return new Dimension(player.getViewerWidth(), player.getViewerHeight());
+    return new Dimension(player.getImageWidth(), player.getImageHeight());
+  }
+
+  @Override
+  protected void setViewerSize(int width, int height) {
+    player.setViewerSize(width,height);
   }
 
   @Override
@@ -143,18 +148,6 @@ public class FFmpegStreamViewer extends StreamViewerDialog {
   public void stepBackward() {
     logger.info("Step backward");
     player.stepBackward();
-  }
-
-  @Override
-  protected void resizeVideo(float scale) {
-    if (scale > 0.0) {
-      logger.info("Resizing video to scale %2.2f", scale);
-      int newHeight = (int) (player.getViewerHeight() * scale);
-      int newWidth = (int) (player.getViewerWidth() * scale);
-
-      player.setViewerSize(newWidth, newHeight);
-      notifyChange();
-    }
   }
 
   @Override

@@ -25,8 +25,15 @@ public class AvFoundationPlayer {
 
   public double getDuration() { return mediaPlayer.getDuration(); }
 
-  public Dimension getOriginalVideoSize() {
-    return new Dimension(mediaPlayer.getImageWidth(), mediaPlayer.getImageHeight());
+  public int getImageWidth() {
+    return mediaPlayer.getImageWidth();
+  }
+  public int getImageHeight() {
+    return mediaPlayer.getImageHeight();
+  }
+
+  public void setViewerSize(final int width, final int height) {
+    mediaPlayer.setWindowSize(width, height);
   }
 
   public double getStartTime() { return mediaPlayer.getStartTime(); }
