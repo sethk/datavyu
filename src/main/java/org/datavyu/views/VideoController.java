@@ -166,10 +166,10 @@ public final class VideoController extends DatavyuDialog
     private JTextField onsetTextField;
 
     /** */
-    private JButton goBackButton;
+    private JButton jumpByButton;
 
     /** */
-    private JTextField goBackTextField;
+    private JTextField jumpByTextField;
 
     /** */
     private JTextField stepSizeTextField;
@@ -233,6 +233,8 @@ public final class VideoController extends DatavyuDialog
     private boolean highlightAndFocus = false;
 
     private FrameRateController frameRateController = new FrameRateController();
+
+    private int jumpDirection = -1;
 
     /**
      * Create a new VideoController.
@@ -707,7 +709,7 @@ public final class VideoController extends DatavyuDialog
      */
     private void initComponents() {
         gridButtonPanel = new JPanel();
-        goBackTextField = new JTextField();
+        jumpByTextField = new JTextField();
         stepSizeTextField = new JTextField();
         onsetTextField = new JTextField();
         JButton addDataButton = new JButton();
@@ -824,7 +826,7 @@ public final class VideoController extends DatavyuDialog
             //Placeholder - perhaps eventually the sync video button
             gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
         } else {
-            addGoBackPair();
+            addJumpByPair();
         }
         // Set cell onset button with 7
         setCellOnsetButton = buildButton("setCellOnset");
@@ -841,7 +843,7 @@ public final class VideoController extends DatavyuDialog
 
         // MAC and WINDOWS DIFFER
         if (osModifier.equals("osx")) {
-            addGoBackPair();
+            addJumpByPair();
         } else {
             // Find button (big plus)
             findButton = buildButton("find", "win");
@@ -925,15 +927,15 @@ public final class VideoController extends DatavyuDialog
         pack();
     }
 
-    private void addGoBackPair() {
+    private void addJumpByPair() {
         //Go back button - minus key
-        goBackButton = buildButton("goBack", null);
-        gridButtonPanel.add(goBackButton, NUM_PAD_KEY_SIZE);
+        jumpByButton = buildButton("jumpBy", null);
+        gridButtonPanel.add(jumpByButton, NUM_PAD_KEY_SIZE);
         //Go back text field
-        goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        goBackTextField.setText("00:00:05:000");
-        goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(makeLabelAndTextFieldPanel(new JLabel("Jump by"), goBackTextField),
+        jumpByTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        jumpByTextField.setText("00:00:05:000");
+        jumpByTextField.setName("jumpByTextField");
+        gridButtonPanel.add(makeLabelAndTextFieldPanel(new JLabel("Jump by"), jumpByTextField),
                 WIDE_TEXT_FIELD_SIZE);
     }
 
@@ -1303,8 +1305,17 @@ public final class VideoController extends DatavyuDialog
     /**
      * Simulates go back button clicked.
      */
-    public void pressGoBack() {
-        goBackButton.doClick();
+    public void pressJumpBack() {
+        jumpDirection = -1;
+        jumpByButton.doClick();
+    }
+
+    /**
+     * Simulates go back button clicked.
+     */
+    public void pressJumpForward() {
+        jumpDirection = 1;
+        jumpByButton.doClick();
     }
 
     /**
@@ -1478,9 +1489,9 @@ public final class VideoController extends DatavyuDialog
      */
     @Action
     @SuppressWarnings("unused")  // Called through actionMap
-    public void goBackAction() {
+    public void jumpByAction() {
         try {
-            long backTime = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
+            long backTime = jumpDirection * CLOCK_FORMAT.parse(jumpByTextField.getText()).getTime();
             long newTime = (long) clockTimer.getClockTime() + backTime;
             logger.info("Jump back by " +  backTime + " From: " + clockTimer.getStreamTime() + " To: " + newTime);
             clockTimer.setForceTime(newTime);

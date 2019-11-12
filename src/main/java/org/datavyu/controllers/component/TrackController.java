@@ -349,7 +349,7 @@ public final class TrackController implements ViewerStateListener, PropertyChang
             DecimalFormat df = new DecimalFormat();
             df.setMaximumFractionDigits(2);
             df.setMinimumFractionDigits(2);
-            frameRateLabel.setText("FPS:" + df.format(frameRate));
+            frameRateLabel.setText("FPS: " + df.format(frameRate));
         }
 
         final String trackName = mediaPath.getName();
