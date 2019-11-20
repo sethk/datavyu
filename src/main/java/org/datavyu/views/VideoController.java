@@ -175,7 +175,7 @@ public final class VideoController extends DatavyuDialog
     private JTextField stepSizeTextField;
 
     /** */
-    private JLabel stepSizeLabel = new JLabel("Frame Per Second");
+    private JLabel stepSizeLabel = new JLabel("Frame Rate");
 
     /** */
     private JPanel stepSizePanel;
