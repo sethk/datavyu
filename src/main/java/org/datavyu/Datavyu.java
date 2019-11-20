@@ -549,8 +549,10 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
 
                 if (modifiers == InputEvent.CTRL_MASK) {
                     videoController.clearRegionOfInterestAction();
+                } else if (modifiers == InputEvent.SHIFT_MASK){
+                    videoController.pressJumpForward();
                 } else {
-                    videoController.pressGoBack();
+                    videoController.pressJumpBack();
                 }
 
                 break;
