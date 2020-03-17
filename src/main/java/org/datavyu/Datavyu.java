@@ -431,6 +431,129 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
             }
         }
 
+        if (evt.isAltDown()
+                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+            switch (getPlatform()) {
+                case WINDOWS:
+                    switch (WindowsOS.remapKeyChar(evt.getKeyChar())) {
+                        case 'U':
+                            videoController.pressPlay();
+                            evt.consume();
+                            return true;
+                        case 'J':
+                            videoController.pressStop();
+                            evt.consume();
+                            return true;
+                        case 'M':
+                            videoController.pressPause();
+                            evt.consume();
+                            return true;
+                        case ',': // comma
+                            videoController.jogForwardAction();
+                            evt.consume();
+                            return true;
+                        case 'N':
+                            videoController.jogBackAction();
+                            evt.consume();
+                            return true;
+                        case 'H':
+                            videoController.pressShuttleBack();
+                            evt.consume();
+                            return true;
+                        case 'K':
+                            videoController.pressShuttleForward();
+                            evt.consume();
+                            return true;
+                        case 'Y':
+                            videoController.pressSetCellOnset();
+                            evt.consume();
+                            return true;
+                        case 'I':
+                            videoController.pressSetCellOffsetNine();
+                            evt.consume();
+                            return true;
+                        case 'T':
+                            videoController.pressPointCell(); // win point cell
+                            evt.consume();
+                            return true;
+                        case 'F':
+                            if (modifiers == InputEvent.SHIFT_MASK) {
+                                videoController.findOffsetAction();
+                                videoController.pressFind();
+                            } else if (modifiers == InputEvent.CTRL_MASK) {
+                                // IMPORTANT: Don't change the order of
+                                // the video controller calls, it will break
+                                // the features.
+                                videoController.setRegionOfInterestAction();
+                                videoController.pressFind();
+                            } else {
+                                videoController.pressFind();
+                            }
+                    }
+
+                    break;
+
+                default: {
+
+                    switch (evt.getKeyChar()) {
+                        case 'u':
+                            videoController.pressPlay();
+                            evt.consume();
+                            return true;
+                        case 'j':
+                            videoController.pressStop();
+                            evt.consume();
+                            return true;
+                        case 'm':
+                            videoController.pressPause();
+                            evt.consume();
+                            return true;
+                        case ',': // comma
+                            videoController.jogForwardAction();
+                            evt.consume();
+                            return true;
+                        case 'n':
+                            videoController.jogBackAction();
+                            evt.consume();
+                            return true;
+                        case 'h':
+                            videoController.pressShuttleBack();
+                            evt.consume();
+                            return true;
+                        case 'k':
+                            videoController.pressShuttleForward();
+                            evt.consume();
+                            return true;
+                        case 'y':
+                            videoController.pressSetCellOnset();
+                            evt.consume();
+                            return true;
+                        case 'i':
+                            videoController.pressSetCellOffsetNine();
+                            evt.consume();
+                            return true;
+                        case 't':
+                            videoController.pressPointCell(); // win point cell
+                            evt.consume();
+                            return true;
+                        case 'f':
+                            if (modifiers == InputEvent.SHIFT_MASK) {
+                                videoController.findOffsetAction();
+                                videoController.pressFind();
+                            } else if (modifiers == InputEvent.CTRL_MASK) {
+                                // IMPORTANT: Don't change the order of
+                                // the video controller calls, it will break
+                                // the features.
+                                videoController.setRegionOfInterestAction();
+                                videoController.pressFind();
+                            } else {
+                                videoController.pressFind();
+                            }
+                    }
+                }
+            }
+        }
+
         /**
          * The following cases handle numpad keystrokes.
          */
@@ -465,7 +588,7 @@ public final class Datavyu extends SingleFrameApplication implements KeyEventDis
                 break;
 
             case KeyEvent.VK_EQUALS:
-                //Mac - point cell
+                //Mac - point ceresult = false;ll
                 if (getPlatform().equals(Platform.MAC)) {
                     videoController.pressPointCell();
                 }
