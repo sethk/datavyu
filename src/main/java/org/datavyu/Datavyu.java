@@ -415,6 +415,92 @@ public final class Datavyu extends SingleFrameApplication
         // BugzID:468 - Define accelerator keys based on OS.
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
+//        if (evt.getID() == KeyEvent.KEY_TYPED) {
+//            switch (evt.getKeyCode()) {
+//                case KeyEvent.VK_P:
+//                  if (evt.isAltDown()) {
+//                    dataController.pressPointCell();
+//                    evt.consume();
+//                    return true;
+//                  }
+//                case KeyEvent.VK_F7:
+//                  dataController.pressSetCellOnset();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F8:
+//                  dataController.pressPlay();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F9:
+//                  dataController.pressSetCellOffsetNine();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F4:
+//                  dataController.pressShuttleBack();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F5:
+//                  dataController.pressStop();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F6:
+//                  dataController.pressShuttleForward();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F1:
+//                  dataController.jogBackAction();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F2:
+//                  dataController.pressPause();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F3:
+//                  dataController.jogForwardAction();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_N:
+//                  if (evt.isAltDown()) {
+//                    dataController.pressCreateNewCellSettingOffset();
+//                  }
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_T:
+//                  if (evt.isAltDown()) {
+//                    dataController.pressSetCellOffsetPeriod();
+//                  }
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F10:
+//                  if (modifiers == InputEvent.CTRL_MASK) {
+//                    dataController.clearRegionOfInterestAction();
+//                  } else {
+//                    dataController.pressGoBack();
+//                  }
+//                  return true;
+//                case KeyEvent.VK_F:
+//                  if (evt.isAltDown() && modifiers == InputEvent.SHIFT_MASK) {
+//                    dataController.findOffsetAction();
+//                    dataController.pressFind();
+//                  } else if (evt.isAltDown() && modifiers == InputEvent.CTRL_MASK) {
+//                    // IMPORTANT: Don't change the order of
+//                    // the video controller calls, it will break
+//                    // the features.
+//                    dataController.setRegionOfInterestAction();
+//                    dataController.pressFind();
+//                  } else if (evt.isAltDown()) {
+//                    dataController.pressFind();
+//                  }
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F12:
+//                  dataController.pressCreateNewCell();
+//                  evt.consume();
+//                  return true;
+//                default:
+//                  break;
+//             }
+//        }
         // If we are typing a key that is a shortcut - we consume it straight
         // away.
         if ((evt.getID() == KeyEvent.KEY_TYPED) && (modifiers == keyMask)) {
@@ -532,6 +618,90 @@ public final class Datavyu extends SingleFrameApplication
 
         if ((evt.getID() == KeyEvent.KEY_PRESSED)
                 && (evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD)) {
+//             switch (evt.getKeyCode()) {
+//                case KeyEvent.VK_P:
+//                  if (evt.isAltDown()) {
+//                    dataController.pressPointCell();
+//                  }
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F7:
+//                  dataController.pressSetCellOnset();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F8:
+//                  dataController.pressPlay();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F9:
+//                  dataController.pressSetCellOffsetNine();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F4:
+//                  dataController.pressShuttleBack();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F5:
+//                  dataController.pressStop();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F6:
+//                  dataController.pressShuttleForward();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F1:
+//                  dataController.jogBackAction();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F2:
+//                  dataController.pressPause();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F3:
+//                  dataController.jogForwardAction();
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_N:
+//                  if (evt.isAltDown()) {
+//                    dataController.pressCreateNewCellSettingOffset();
+//                  }
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_T:
+//                  if (evt.isAltDown()) {
+//                    dataController.pressSetCellOffsetPeriod();
+//                  }
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F10:
+//                  if (modifiers == InputEvent.CTRL_MASK) {
+//                    dataController.clearRegionOfInterestAction();
+//                  } else {
+//                    dataController.pressGoBack();
+//                  }
+//                  return true;
+//                case KeyEvent.VK_F:
+//                  if (evt.isAltDown() && modifiers == InputEvent.SHIFT_MASK) {
+//                    dataController.findOffsetAction();
+//                    dataController.pressFind();
+//                  } else if (evt.isAltDown() && modifiers == InputEvent.CTRL_MASK) {
+//                    // IMPORTANT: Don't change the order of
+//                    // the video controller calls, it will break
+//                    // the features.
+//                    dataController.setRegionOfInterestAction();
+//                    dataController.pressFind();
+//                  } else if (evt.isAltDown()) {
+//                    dataController.pressFind();
+//                  }
+//                  evt.consume();
+//                  return true;
+//                case KeyEvent.VK_F12:
+//                  dataController.pressCreateNewCell();
+//                  evt.consume();
+//                  return true;
+//                default:
+//                  break;
+//             }
 
             switch (evt.getKeyCode()) {
 
