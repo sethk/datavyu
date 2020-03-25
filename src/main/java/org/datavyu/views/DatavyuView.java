@@ -259,7 +259,7 @@ public final class DatavyuView extends FrameView
                 keyMask));
 
         // Set reset zoom to keyMask + '0'
-        resetZoomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
+        resetZoomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G,
                 keyMask));
 
         // Set the save accelerator to keyMask + 'S'
@@ -329,10 +329,10 @@ public final class DatavyuView extends FrameView
         goBackMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
                 keyMask));
 
-        setOnsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
+        setOnsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
                 keyMask));
 
-        setOffsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
+        setOffsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
                 keyMask));
 
         pointCellMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
@@ -341,7 +341,7 @@ public final class DatavyuView extends FrameView
         createCellSetOffsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
                 keyMask));
 
-        setOffsetPeriodMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DECIMAL,
+        setOffsetPeriodMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
                 keyMask));
 
         if (panel != null) {
