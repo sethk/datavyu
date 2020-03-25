@@ -164,6 +164,8 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem setOnsetMenuItem;
     private javax.swing.JMenuItem setOffsetMenuItem;
     private javax.swing.JMenuItem pointCellMenuItem;
+    private javax.swing.JMenuItem setOffsetPeriodMenuItem;
+    private javax.swing.JMenuItem createCellSetOffsetMenuItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem redoSpreadSheetMenuItem;
     private javax.swing.JMenuItem resetZoomMenuItem;
@@ -334,6 +336,12 @@ public final class DatavyuView extends FrameView
                 keyMask));
 
         pointCellMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
+                keyMask));
+
+        createCellSetOffsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
+                keyMask));
+
+        setOffsetPeriodMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DECIMAL,
                 keyMask));
 
         if (panel != null) {
@@ -1631,6 +1639,16 @@ public final class DatavyuView extends FrameView
         Datavyu.getApplication().getDataController().pressSetCellOffsetNine();
     }
 
+    @Action
+    public void createCellSetOffset() {
+        Datavyu.getApplication().getDataController().pressCreateNewCellSettingOffset();
+    }
+
+    @Action
+    public void setOffsetPeriod() {
+        Datavyu.getApplication().getDataController().pressSetCellOffsetPeriod();
+    }
+
 
     /**
      * Action for showing the video converter dialog.
@@ -2120,6 +2138,8 @@ public final class DatavyuView extends FrameView
         setOnsetMenuItem = new javax.swing.JMenuItem();
         setOffsetMenuItem = new javax.swing.JMenuItem();
         pointCellMenuItem = new javax.swing.JMenuItem();
+        createCellSetOffsetMenuItem = new javax.swing.JMenuItem();
+        setOffsetPeriodMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
         setFavouritesMenuItem = new javax.swing.JMenuItem();
@@ -2452,6 +2472,14 @@ public final class DatavyuView extends FrameView
         pointCellMenuItem.setName("pointCell");
         controllerMenu.add(pointCellMenuItem);
 
+        setOffsetPeriodMenuItem.setAction(actionMap.get("setOffsetPeriod"));
+        setOffsetPeriodMenuItem.setName("setOffsetPeriod");
+        controllerMenu.add(setOffsetPeriodMenuItem);
+
+        createCellSetOffsetMenuItem.setAction(actionMap.get("createCellSetOffset"));
+        createCellSetOffsetMenuItem.setName("createCellSetOffset");
+        controllerMenu.add(createCellSetOffsetMenuItem);
+
         jogForwardMenuItem.setAction(actionMap.get("jogForward"));
         jogForwardMenuItem.setName("jogForward");
         controllerMenu.add(jogForwardMenuItem);
@@ -2459,12 +2487,11 @@ public final class DatavyuView extends FrameView
         jogBackwardMenuItem.setAction(actionMap.get("jogBackward"));
         jogBackwardMenuItem.setName("jogBackward");
         controllerMenu.add(jogBackwardMenuItem);
+        controllerMenu.add(jSeparatorController2);
 
         videoConverterMenuItem.setAction(actionMap.get("showVideoConverter"));
         videoConverterMenuItem.setName("videoConverterMenuItem");
         controllerMenu.add(videoConverterMenuItem);
-
-        controllerMenu.add(jSeparatorController2);
 
         menuBar.add(controllerMenu);
 
