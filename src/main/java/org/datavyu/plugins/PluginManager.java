@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.ffmpegplayer.FFmpegPlugin;
+import org.datavyu.plugins.nativeosx.AvFoundationPlugin;
 import org.datavyu.plugins.nativeosx.AvFoundationViewer;
 import org.datavyu.util.MacOS;
 import org.jdesktop.application.LocalStorage;
@@ -445,7 +446,7 @@ public final class PluginManager {
 
             // Mac default is FFmpegPlugin
             if (Datavyu.getPlatform() == Datavyu.Platform.MAC) {
-                return new FFmpegPlugin();
+                return new AvFoundationPlugin();
             }
 
             // Windows default is FFmpegPlugin

@@ -878,6 +878,73 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         new NewProjectController();
     }
 
+    @Action
+    public void play() {
+        Datavyu.getVideoController().pressPlay();
+    }
+
+    @Action
+    public void pause() {
+        Datavyu.getVideoController().pressPause();
+    }
+
+    @Action
+    public void stop() {
+        Datavyu.getVideoController().pressStop();
+    }
+
+    @Action
+    public void shuttleForward() {
+        Datavyu.getVideoController().pressShuttleForward();
+    }
+
+    @Action
+    public void shuttleBackward() {
+        Datavyu.getVideoController().pressShuttleBack();
+    }
+
+    @Action
+    public void goBack() {
+        Datavyu.getVideoController().pressJumpBack();
+    }
+
+    @Action
+    public void jogForward() {
+        Datavyu.getVideoController().jogForwardAction();
+    }
+
+    @Action
+    public void jogBackward() {
+        Datavyu.getVideoController().jogBackAction();
+    }
+
+    @Action
+    public void pointCell() {
+        Datavyu.getVideoController().pressPointCell();
+    }
+
+    @Action
+    public void setOnset() {
+        Datavyu.getVideoController().pressSetCellOnset();
+    }
+
+    @Action
+    public void setOffset() {
+        Datavyu.getVideoController().pressSetCellOffsetNine();
+    }
+
+    @Action
+    public void createCellSetOffset() {
+        Datavyu.getVideoController().pressCreateNewCellSettingOffset();
+    }
+
+    @Action
+    public void setOffsetPeriod() {
+        Datavyu.getVideoController().pressSetCellOffsetPeriod();
+    }
+
+
+
     /**
      * Action for closing current tab
      */

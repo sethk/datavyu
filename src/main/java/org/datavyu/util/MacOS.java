@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.ffmpegplayer.FFmpegPlugin;
+import org.datavyu.plugins.nativeosx.AvFoundationPlugin;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -228,10 +229,10 @@ public class MacOS {
      */
     public static Plugin getNativeOSXPlugin() {
         try {
-            return new FFmpegPlugin();
+            return new AvFoundationPlugin();
         } catch (Exception e) {
             logger.error("Could create plugin. Error: ", e);
         }
-        return new FFmpegPlugin();
+        return new AvFoundationPlugin();
     }
 }
