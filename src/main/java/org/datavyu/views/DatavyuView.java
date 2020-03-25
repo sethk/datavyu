@@ -129,6 +129,8 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPopupMenu.Separator jSeparator10;
+    private javax.swing.JPopupMenu.Separator jSeparatorController;
+    private javax.swing.JPopupMenu.Separator jSeparatorController2;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
@@ -150,6 +152,13 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem pushMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
     private javax.swing.JMenuItem videoConverterMenuItem;
+    private javax.swing.JMenuItem playMenuItem;
+    private javax.swing.JMenuItem stopMenuItem;
+    private javax.swing.JMenuItem pauseMenuItem;
+    private javax.swing.JMenuItem jogForwardMenuItem;
+    private javax.swing.JMenuItem jogBackwardMenuItem;
+    private javax.swing.JMenuItem shuttleForwardMenuItem;
+    private javax.swing.JMenuItem shuttleBackwardMenuItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem redoSpreadSheetMenuItem;
     private javax.swing.JMenuItem resetZoomMenuItem;
@@ -286,8 +295,29 @@ public final class DatavyuView extends FrameView
         deleteCellMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, keyMask));
 
         // Set enable quick key mode to keyMask + shift + 'K'
-        quickkeysMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, keyMask | InputEvent.SHIFT_MASK));
+        quickkeysMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, keyMask));
         highlightAndFocusMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, keyMask | InputEvent.SHIFT_MASK));
+
+        playMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8,
+                keyMask | InputEvent.SHIFT_MASK));
+
+        stopMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD5,
+                keyMask));
+
+        pauseMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
+                keyMask));
+
+        shuttleForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
+                keyMask | InputEvent.SHIFT_MASK));
+
+        shuttleBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
+                keyMask | InputEvent.SHIFT_MASK));
+
+        jogForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA,
+                keyMask | InputEvent.SHIFT_MASK));
+
+        jogBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+                keyMask | InputEvent.SHIFT_MASK));
 
         if (panel != null) {
             panel.deregisterListeners();
@@ -1529,6 +1559,42 @@ public final class DatavyuView extends FrameView
         Datavyu.getApplication().showDataController();
     }
 
+    @Action
+    public void play() {
+        Datavyu.getApplication().getDataController().pressPlay();
+    }
+
+    @Action
+    public void pause() {
+        Datavyu.getApplication().getDataController().pressPause();
+    }
+
+    @Action
+    public void stop() {
+        Datavyu.getApplication().getDataController().pressStop();
+    }
+
+    @Action
+    public void shuttleForward() {
+        Datavyu.getApplication().getDataController().pressShuttleForward();
+    }
+
+    @Action
+    public void shuttleBackward() {
+        Datavyu.getApplication().getDataController().pressShuttleBack();
+    }
+
+    @Action
+    public void jogForward() {
+        Datavyu.getApplication().getDataController().jogForwardAction();
+    }
+
+    @Action
+    public void jogBackward() {
+        Datavyu.getApplication().getDataController().jogBackAction();
+    }
+
+
     /**
      * Action for showing the video converter dialog.
      */
@@ -2003,7 +2069,16 @@ public final class DatavyuView extends FrameView
         pullMenuItem = new javax.swing.JMenuItem();
         controllerMenu = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
+        jSeparatorController = new javax.swing.JPopupMenu.Separator();
+        jSeparatorController2 = new javax.swing.JPopupMenu.Separator();
         videoConverterMenuItem = new javax.swing.JMenuItem();
+        playMenuItem = new javax.swing.JMenuItem();
+        stopMenuItem = new javax.swing.JMenuItem();
+        pauseMenuItem = new javax.swing.JMenuItem();
+        jogForwardMenuItem = new javax.swing.JMenuItem();
+        jogBackwardMenuItem = new javax.swing.JMenuItem();
+        shuttleForwardMenuItem = new javax.swing.JMenuItem();
+        shuttleBackwardMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
         setFavouritesMenuItem = new javax.swing.JMenuItem();
@@ -2297,6 +2372,36 @@ public final class DatavyuView extends FrameView
         qtControllerItem.setAction(actionMap.get("showQTVideoController"));
         qtControllerItem.setName("qtControllerItem");
         controllerMenu.add(qtControllerItem);
+
+        controllerMenu.add(jSeparatorController);
+
+        playMenuItem.setAction(actionMap.get("play"));
+        playMenuItem.setName("play");
+        controllerMenu.add(playMenuItem);
+
+        stopMenuItem.setAction(actionMap.get("stop"));
+        stopMenuItem.setName("stop");
+        controllerMenu.add(stopMenuItem);
+
+        pauseMenuItem.setAction(actionMap.get("pause"));
+        pauseMenuItem.setName("pause");
+        controllerMenu.add(pauseMenuItem);
+
+        shuttleForwardMenuItem.setAction(actionMap.get("shuttleForward"));
+        shuttleForwardMenuItem.setName("shuttleForward");
+        controllerMenu.add(shuttleForwardMenuItem);
+
+        shuttleBackwardMenuItem.setAction(actionMap.get("shuttleBackward"));
+        shuttleBackwardMenuItem.setName("shuttleBackward");
+        controllerMenu.add(shuttleBackwardMenuItem);
+
+        jogForwardMenuItem.setAction(actionMap.get("jogForward"));
+        jogForwardMenuItem.setName("jogForward");
+        controllerMenu.add(jogForwardMenuItem);
+
+        jogBackwardMenuItem.setAction(actionMap.get("jogBackward"));
+        jogBackwardMenuItem.setName("jogBackward");
+        controllerMenu.add(jogBackwardMenuItem);
 
         videoConverterMenuItem.setAction(actionMap.get("showVideoConverter"));
         videoConverterMenuItem.setName("videoConverterMenuItem");
