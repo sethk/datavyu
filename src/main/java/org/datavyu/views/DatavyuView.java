@@ -131,6 +131,8 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JSeparator jSeparator7;
+    private javax.swing.JPopupMenu.Separator jSeparatorController;
+    private javax.swing.JPopupMenu.Separator jSeparatorController2;
     private javax.swing.JPopupMenu.Separator jSeparator8;
     private javax.swing.JPopupMenu.Separator jSeparator9;
     private javax.swing.JSeparator jSeparator11;
@@ -150,6 +152,19 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
     private javax.swing.JMenuItem pullMenuItem;
     private javax.swing.JMenuItem pushMenuItem;
     private javax.swing.JMenuItem videoControllerMenuItem;
+    private javax.swing.JMenuItem playMenuItem;
+    private javax.swing.JMenuItem stopMenuItem;
+    private javax.swing.JMenuItem pauseMenuItem;
+    private javax.swing.JMenuItem jogForwardMenuItem;
+    private javax.swing.JMenuItem jogBackwardMenuItem;
+    private javax.swing.JMenuItem shuttleForwardMenuItem;
+    private javax.swing.JMenuItem shuttleBackwardMenuItem;
+    private javax.swing.JMenuItem goBackMenuItem;
+    private javax.swing.JMenuItem setOnsetMenuItem;
+    private javax.swing.JMenuItem setOffsetMenuItem;
+    private javax.swing.JMenuItem pointCellMenuItem;
+    private javax.swing.JMenuItem setOffsetPeriodMenuItem;
+    private javax.swing.JMenuItem createCellSetOffsetMenuItem;
     private javax.swing.JMenuItem videoConverterMenuItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem redoSpreadSheetMenuItem;
@@ -286,6 +301,45 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         // Set enable quick key mode to keyMask + shift + 'K'
         quickkeysMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, keyMask | InputEvent.SHIFT_MASK));
         highlightAndFocusMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, keyMask | InputEvent.SHIFT_MASK));
+
+        playMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
+                keyMask));
+
+        stopMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
+                keyMask));
+
+        pauseMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
+                keyMask));
+
+        shuttleForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
+                keyMask));
+
+        shuttleBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
+                keyMask));
+
+        jogForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3,
+                keyMask));
+
+        jogBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
+                keyMask));
+
+        goBackMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+                keyMask));
+
+        setOnsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
+                keyMask));
+
+        setOffsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
+                keyMask));
+
+        pointCellMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
+                keyMask));
+
+        createCellSetOffsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
+                keyMask));
+
+        setOffsetPeriodMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+                keyMask));
 
         if (panel != null) {
             panel.deregisterListeners();
@@ -2020,6 +2074,21 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         controllerMenu = new javax.swing.JMenu();
         videoControllerMenuItem = new javax.swing.JMenuItem();
         videoConverterMenuItem = new javax.swing.JMenuItem();
+        jSeparatorController = new javax.swing.JPopupMenu.Separator();
+        jSeparatorController2 = new javax.swing.JPopupMenu.Separator();
+        playMenuItem = new javax.swing.JMenuItem();
+        stopMenuItem = new javax.swing.JMenuItem();
+        pauseMenuItem = new javax.swing.JMenuItem();
+        jogForwardMenuItem = new javax.swing.JMenuItem();
+        jogBackwardMenuItem = new javax.swing.JMenuItem();
+        shuttleForwardMenuItem = new javax.swing.JMenuItem();
+        shuttleBackwardMenuItem = new javax.swing.JMenuItem();
+        goBackMenuItem = new javax.swing.JMenuItem();
+        setOnsetMenuItem = new javax.swing.JMenuItem();
+        setOffsetMenuItem = new javax.swing.JMenuItem();
+        pointCellMenuItem = new javax.swing.JMenuItem();
+        createCellSetOffsetMenuItem = new javax.swing.JMenuItem();
+        setOffsetPeriodMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
         setFavouritesMenuItem = new javax.swing.JMenuItem();
@@ -2346,6 +2415,62 @@ public final class DatavyuView extends FrameView implements FileDropEventListene
         videoControllerMenuItem.setAction(actionMap.get("showVideoController"));
         videoControllerMenuItem.setName("videoControllerItem");
         controllerMenu.add(videoControllerMenuItem);
+
+        controllerMenu.add(jSeparatorController);
+
+        playMenuItem.setAction(actionMap.get("play"));
+        playMenuItem.setName("play");
+        controllerMenu.add(playMenuItem);
+
+        stopMenuItem.setAction(actionMap.get("stop"));
+        stopMenuItem.setName("stop");
+        controllerMenu.add(stopMenuItem);
+
+        pauseMenuItem.setAction(actionMap.get("pause"));
+        pauseMenuItem.setName("pause");
+        controllerMenu.add(pauseMenuItem);
+
+        shuttleForwardMenuItem.setAction(actionMap.get("shuttleForward"));
+        shuttleForwardMenuItem.setName("shuttleForward");
+        controllerMenu.add(shuttleForwardMenuItem);
+
+        shuttleBackwardMenuItem.setAction(actionMap.get("shuttleBackward"));
+        shuttleBackwardMenuItem.setName("shuttleBackward");
+        controllerMenu.add(shuttleBackwardMenuItem);
+
+        goBackMenuItem.setAction(actionMap.get("goBack"));
+        goBackMenuItem.setName("goBack");
+        controllerMenu.add(goBackMenuItem);
+
+        setOnsetMenuItem.setAction(actionMap.get("setOnset"));
+        setOnsetMenuItem.setName("setCellOnset");
+        controllerMenu.add(setOnsetMenuItem);
+
+        setOffsetMenuItem.setAction(actionMap.get("setOffset"));
+        setOffsetMenuItem.setName("setCellOffset");
+        controllerMenu.add(setOffsetMenuItem);
+
+        pointCellMenuItem.setAction(actionMap.get("pointCell"));
+        pointCellMenuItem.setName("pointCell");
+        controllerMenu.add(pointCellMenuItem);
+
+        setOffsetPeriodMenuItem.setAction(actionMap.get("setOffsetPeriod"));
+        setOffsetPeriodMenuItem.setName("setOffsetPeriod");
+        controllerMenu.add(setOffsetPeriodMenuItem);
+
+        createCellSetOffsetMenuItem.setAction(actionMap.get("createCellSetOffset"));
+        createCellSetOffsetMenuItem.setName("createCellSetOffset");
+        controllerMenu.add(createCellSetOffsetMenuItem);
+
+        jogForwardMenuItem.setAction(actionMap.get("jogForward"));
+        jogForwardMenuItem.setName("jogForward");
+        controllerMenu.add(jogForwardMenuItem);
+
+        jogBackwardMenuItem.setAction(actionMap.get("jogBackward"));
+        jogBackwardMenuItem.setName("jogBackward");
+        controllerMenu.add(jogBackwardMenuItem);
+        controllerMenu.add(jSeparatorController2);
+
 
         videoConverterMenuItem.setAction(actionMap.get("showVideoConverter"));
         videoConverterMenuItem.setName("videoConverterMenuItem");
