@@ -61,6 +61,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -159,6 +160,10 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem jogBackwardMenuItem;
     private javax.swing.JMenuItem shuttleForwardMenuItem;
     private javax.swing.JMenuItem shuttleBackwardMenuItem;
+    private javax.swing.JMenuItem goBackMenuItem;
+    private javax.swing.JMenuItem setOnsetMenuItem;
+    private javax.swing.JMenuItem setOffsetMenuItem;
+    private javax.swing.JMenuItem pointCellMenuItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem redoSpreadSheetMenuItem;
     private javax.swing.JMenuItem resetZoomMenuItem;
@@ -295,29 +300,41 @@ public final class DatavyuView extends FrameView
         deleteCellMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, keyMask));
 
         // Set enable quick key mode to keyMask + shift + 'K'
-        quickkeysMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, keyMask));
+        quickkeysMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, keyMask | InputEvent.SHIFT_MASK));
         highlightAndFocusMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, keyMask | InputEvent.SHIFT_MASK));
 
-        playMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8,
-                keyMask | InputEvent.SHIFT_MASK));
+        playMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
+                keyMask));
 
-        stopMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD5,
+        stopMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
                 keyMask));
 
         pauseMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
                 keyMask));
 
-        shuttleForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
-                keyMask | InputEvent.SHIFT_MASK));
+        shuttleForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
+                keyMask));
 
-        shuttleBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
-                keyMask | InputEvent.SHIFT_MASK));
+        shuttleBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
+                keyMask));
 
-        jogForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA,
-                keyMask | InputEvent.SHIFT_MASK));
+        jogForwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3,
+                keyMask));
 
-        jogBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
-                keyMask | InputEvent.SHIFT_MASK));
+        jogBackwardMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
+                keyMask));
+
+        goBackMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+                keyMask));
+
+        setOnsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
+                keyMask));
+
+        setOffsetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
+                keyMask));
+
+        pointCellMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
+                keyMask));
 
         if (panel != null) {
             panel.deregisterListeners();
@@ -1585,6 +1602,11 @@ public final class DatavyuView extends FrameView
     }
 
     @Action
+    public void goBack() {
+        Datavyu.getApplication().getDataController().pressGoBack();
+    }
+
+    @Action
     public void jogForward() {
         Datavyu.getApplication().getDataController().jogForwardAction();
     }
@@ -1592,6 +1614,21 @@ public final class DatavyuView extends FrameView
     @Action
     public void jogBackward() {
         Datavyu.getApplication().getDataController().jogBackAction();
+    }
+
+    @Action
+    public void pointCell() {
+        Datavyu.getApplication().getDataController().pressPointCell();
+    }
+
+    @Action
+    public void setOnset() {
+        Datavyu.getApplication().getDataController().pressSetCellOnset();
+    }
+
+    @Action
+    public void setOffset() {
+        Datavyu.getApplication().getDataController().pressSetCellOffsetNine();
     }
 
 
@@ -2079,6 +2116,10 @@ public final class DatavyuView extends FrameView
         jogBackwardMenuItem = new javax.swing.JMenuItem();
         shuttleForwardMenuItem = new javax.swing.JMenuItem();
         shuttleBackwardMenuItem = new javax.swing.JMenuItem();
+        goBackMenuItem = new javax.swing.JMenuItem();
+        setOnsetMenuItem = new javax.swing.JMenuItem();
+        setOffsetMenuItem = new javax.swing.JMenuItem();
+        pointCellMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
         setFavouritesMenuItem = new javax.swing.JMenuItem();
@@ -2395,6 +2436,22 @@ public final class DatavyuView extends FrameView
         shuttleBackwardMenuItem.setName("shuttleBackward");
         controllerMenu.add(shuttleBackwardMenuItem);
 
+        goBackMenuItem.setAction(actionMap.get("goBack"));
+        goBackMenuItem.setName("goBack");
+        controllerMenu.add(goBackMenuItem);
+
+        setOnsetMenuItem.setAction(actionMap.get("setOnset"));
+        setOnsetMenuItem.setName("setCellOnset");
+        controllerMenu.add(setOnsetMenuItem);
+
+        setOffsetMenuItem.setAction(actionMap.get("setOffset"));
+        setOffsetMenuItem.setName("setCellOffset");
+        controllerMenu.add(setOffsetMenuItem);
+
+        pointCellMenuItem.setAction(actionMap.get("pointCell"));
+        pointCellMenuItem.setName("pointCell");
+        controllerMenu.add(pointCellMenuItem);
+
         jogForwardMenuItem.setAction(actionMap.get("jogForward"));
         jogForwardMenuItem.setName("jogForward");
         controllerMenu.add(jogForwardMenuItem);
@@ -2406,6 +2463,8 @@ public final class DatavyuView extends FrameView
         videoConverterMenuItem.setAction(actionMap.get("showVideoConverter"));
         videoConverterMenuItem.setName("videoConverterMenuItem");
         controllerMenu.add(videoConverterMenuItem);
+
+        controllerMenu.add(jSeparatorController2);
 
         menuBar.add(controllerMenu);
 
